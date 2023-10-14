@@ -1,0 +1,28 @@
+.week-number {
+    &__container {
+        display: flex;
+        gap: 16px;
+    }
+
+    &__btn {
+        border: none;
+        background-color: burlywood;
+
+        height: 30px;
+        width: 30px;
+        border-radius: 12px;
+    }
+}
+
+.week {
+    &__day-container {
+        padding: 8px 0;
+        background-color: beige;
+        border-radius: 12px;
+        border: #eee;
+        margin: 0 10px;
+    }
+
+    &__day {
+    }
+}
