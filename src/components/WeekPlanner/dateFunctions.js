@@ -2,12 +2,13 @@ import { getISOWeek } from "date-fns";
 
 // Function to generate the array of dates based on the week number
 export const generateDatesArray = (currentDate, currentWeek) => {
+    const weekDayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
     const weekStartDate =
         currentDate.getDate() -
         currentDate.getDay() +
         1 +
         (currentWeek - getISOWeek(currentDate)) * 7;
-    const weekDayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
     return Array.from({ length: 7 }, (_, i) => {
         const day = new Date(currentDate);

@@ -1,11 +1,11 @@
 import { getISOWeek } from "date-fns";
-import { useState } from "react";
+import React, { useState } from "react";
 import "./WeekPlanner.scss";
 // import { generateDatesArray } from "./dateFunctions";
 
-export const WeekPlanner = () => {
+export const WeekPlannerTest2 = ({ onWeekChange, selectedWeek }) => {
     const date = new Date();
-    const [week, setWeek] = useState(getISOWeek(date));
+    const [week, setWeek] = useState(selectedWeek);
     const [datesArray, setDatesArray] = useState(
         generateDatesArray(date, week)
     );
@@ -13,6 +13,7 @@ export const WeekPlanner = () => {
     const handleWeekChange = (newWeek) => {
         setWeek(newWeek);
         setDatesArray(generateDatesArray(date, newWeek));
+        onWeekChange(newWeek); // Notify the parent component about the week change
     };
 
     return (
@@ -42,13 +43,13 @@ export const WeekPlanner = () => {
             <div className="week">
                 <div className="week__day-list">
                     <div className="row">
-                        {datesArray.map(([day, date]) => (
-                            <div className="col week__day-container">
+                        {datesArray.map(([day, formattedDate]) => (
+                            <div key={day} className="col week__day-container">
                                 <div className="week__day text-center">
                                     {day}
                                 </div>
                                 <div className="week__date text-center">
-                                    {date}
+                                    {formattedDate}
                                 </div>
                             </div>
                         ))}
@@ -57,6 +58,16 @@ export const WeekPlanner = () => {
             </div>
         </>
     );
+};
+
+// Function to format the date as "YYYY-MM-DD"
+export const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}-${month < 10 ? "0" + month : month}-${
+        day < 10 ? "0" + day : day
+    }`;
 };
 
 // Function to generate the array of dates based on the week number
@@ -74,14 +85,4 @@ export const generateDatesArray = (currentDate, currentWeek) => {
         day.setDate(weekStartDate + i);
         return [weekDayNames[i], formatDate(day)];
     });
-};
-
-// Function to format the date as "YYYY-MM-DD"
-export const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${year}-${month < 10 ? "0" + month : month}-${
-        day < 10 ? "0" + day : day
-    }`;
 };

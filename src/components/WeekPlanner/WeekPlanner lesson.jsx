@@ -8,30 +8,18 @@ export const WeekPlanner = () => {
     const weekNumber = getISOWeek(date);
 
     const [week, setWeek] = useState(weekNumber);
-
+    S
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    const currentDate = date.getDate();
-    const weekDayNumber = date.getDay();
+    const currentDate = date.getDate(); // день місяця
+    const weekDayNumber = date.getDay(); // день тижня
 
     const monthStart = 1;
     const monthEnd = new Date(year, month, 0).getDate();
 
     const weekDayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-    const weekStartDate = currentDate - weekDayNumber + 1;
-
-    const datesArray = Array.from(
-        { length: 7 },
-        (_, i) =>
-            `${year}-${month}-${
-                i + weekStartDate < 10
-                    ? "" + i + weekStartDate
-                    : i + weekStartDate
-            }`
-    ).map((d, i) => [weekDayNames[i], d]);
-
-    console.log(datesArray, "thisis dates array");
+    const weekStartDate = currentDate - weekDayNumber + 
 
     return (
         <>

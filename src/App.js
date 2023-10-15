@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import PlanScreen from "./screens/PlanScreen";
+import PlanScreenTest from "./screens/PlanScreenTest";
+import PlanScreenTest2 from "./screens/PlanScreenTest2";
 import StartScreen from "./screens/StartScreen";
 import TaskScreen from "./screens/TaskScreen";
 import TasksScreen from "./screens/TasksScreen";
@@ -18,6 +20,11 @@ function App() {
                     <Routes>
                         <Route path="/" element={<StartScreen />} />
                         <Route path="/plan" element={<PlanScreen />} />
+                        <Route path="/plan-test" element={<PlanScreenTest />} />
+                        <Route
+                            path="/plan-test2"
+                            element={<PlanScreenTest2 />}
+                        />
                         <Route
                             index
                             path="/tasks/:id"

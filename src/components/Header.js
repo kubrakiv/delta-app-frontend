@@ -22,6 +22,12 @@ function Header() {
                             <LinkContainer to="/plan">
                                 <Nav.Link>Planning</Nav.Link>
                             </LinkContainer>
+                            <LinkContainer to="/plan-test">
+                                <Nav.Link>Plan testing</Nav.Link>
+                            </LinkContainer>
+                            <LinkContainer to="/plan-test2">
+                                <Nav.Link>Plan testing 2</Nav.Link>
+                            </LinkContainer>
                             <LinkContainer to="/orders">
                                 <Nav.Link>Orders</Nav.Link>
                             </LinkContainer>

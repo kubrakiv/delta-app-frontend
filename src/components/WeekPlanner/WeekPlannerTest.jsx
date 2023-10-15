@@ -1,11 +1,10 @@
 import { getISOWeek } from "date-fns";
-import { useState } from "react";
+import React, { useState } from "react";
 import "./WeekPlanner.scss";
-// import { generateDatesArray } from "./dateFunctions";
 
-export const WeekPlanner = () => {
+export const WeekPlannerTest = ({ onWeekChange, selectedWeek }) => {
     const date = new Date();
-    const [week, setWeek] = useState(getISOWeek(date));
+    const [week, setWeek] = useState(selectedWeek);
     const [datesArray, setDatesArray] = useState(
         generateDatesArray(date, week)
     );
@@ -13,6 +12,7 @@ export const WeekPlanner = () => {
     const handleWeekChange = (newWeek) => {
         setWeek(newWeek);
         setDatesArray(generateDatesArray(date, newWeek));
+        onWeekChange(newWeek); // Notify the parent component about the week change
     };
 
     return (
@@ -42,13 +42,13 @@ export const WeekPlanner = () => {
             <div className="week">
                 <div className="week__day-list">
                     <div className="row">
-                        {datesArray.map(([day, date]) => (
-                            <div className="col week__day-container">
+                        {datesArray.map(([day, formattedDate]) => (
+                            <div key={day} className="col week__day-container">
                                 <div className="week__day text-center">
                                     {day}
                                 </div>
                                 <div className="week__date text-center">
-                                    {date}
+                                    {String(formattedDate)}
                                 </div>
                             </div>
                         ))}
