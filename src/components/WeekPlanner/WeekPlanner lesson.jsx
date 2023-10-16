@@ -8,7 +8,7 @@ export const WeekPlanner = () => {
     const weekNumber = getISOWeek(date);
 
     const [week, setWeek] = useState(weekNumber);
-    S
+
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const currentDate = date.getDate(); // день місяця
@@ -19,7 +19,19 @@ export const WeekPlanner = () => {
 
     const weekDayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-    const weekStartDate = currentDate - weekDayNumber + 
+    const weekStartDate = currentDate - weekDayNumber + 1;
+
+    const datesArray = Array.from(
+        { length: 7 },
+        (_, i) =>
+            `${year}-${month}-${
+                i + weekStartDate < 10
+                    ? "" + i + weekStartDate
+                    : i + weekStartDate
+            }`
+    ).map((d, i) => [weekDayNames[i], d]);
+
+    console.log(datesArray, "This is dates array");
 
     return (
         <>

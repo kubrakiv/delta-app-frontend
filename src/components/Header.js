@@ -20,7 +20,7 @@ function Header() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <LinkContainer to="/plan">
-                                <Nav.Link>Planning</Nav.Link>
+                                <Nav.Link>Week Planner</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/plan-test">
                                 <Nav.Link>Plan testing</Nav.Link>

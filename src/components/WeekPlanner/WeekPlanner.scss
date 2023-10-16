@@ -1,4 +1,8 @@
 .week-number {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+
     &__container {
         display: flex;
         gap: 16px;
@@ -6,8 +10,7 @@
 
     &__btn {
         border: none;
-        background-color: burlywood;
-
+        background-color: #7b8a8b;
         height: 30px;
         width: 30px;
         border-radius: 12px;
@@ -17,12 +20,77 @@
 .week {
     &__day-container {
         padding: 8px 0;
-        background-color: beige;
+        background-color: rgb(197, 229, 233);
         border-radius: 12px;
-        border: #eee;
-        margin: 0 10px;
+        border-width: 2px;
+        border-color: rgb(70, 13, 13);
+        margin: 0 1px;
+    }
+}
+
+.day {
+    &__header {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+        background-color: rgb(9, 9, 9);
+        border-radius: 12px;
+        // gap: 10px;
+        color: #fff;
     }
 
-    &__day {
+    &__name {
+        margin-bottom: 0;
+    }
+
+    &__date {
+        margin-top: 0;
+    }
+}
+
+.task {
+    &__container {
+        margin: 10px 0 10px 0;
+        padding: 10px 0;
+        background-color: rgb(237, 243, 75);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        // gap: 10px;
+        color: rgb(5, 5, 5);
+    }
+    &__title {
+        text-align: center;
+    }
+    &__truck {
+        text-align: center;
+    }
+}
+
+.truck {
+    &__header {
+        margin: 10px 0 10px 0;
+        padding: 10px 0;
+        background-color: rgb(0, 0, 0);
+        color: rgb(255, 255, 255);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        min-width: 50px;
+    }
+    &__container {
+        margin: 10px 0 10px 0;
+        padding: 10px 0;
+        background-color: rgb(23, 32, 116);
+        color: rgb(255, 255, 255);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        // gap: 10px;
+    }
+    &__plates {
+        text-align: center;
     }
 }

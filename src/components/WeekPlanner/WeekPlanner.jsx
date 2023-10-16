@@ -1,14 +1,34 @@
+import axios from "axios";
 import { getISOWeek } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Row, Col } from "react-bootstrap";
 import "./WeekPlanner.scss";
 // import { generateDatesArray } from "./dateFunctions";
 
 export const WeekPlanner = () => {
     const date = new Date();
+    const [tasks, setTasks] = useState([]);
+    const [trucks, setTrucks] = useState([]);
     const [week, setWeek] = useState(getISOWeek(date));
     const [datesArray, setDatesArray] = useState(
         generateDatesArray(date, week)
     );
+
+    useEffect(() => {
+        async function fetchTasks() {
+            const { data } = await axios.get("/api/tasks/");
+            setTasks(data);
+        }
+        fetchTasks();
+    }, []);
+
+    useEffect(() => {
+        async function fetchTrucks() {
+            const { data } = await axios.get("/api/trucks/");
+            setTrucks(data);
+        }
+        fetchTrucks();
+    }, []);
 
     const handleWeekChange = (newWeek) => {
         setWeek(newWeek);
@@ -17,8 +37,7 @@ export const WeekPlanner = () => {
 
     return (
         <>
-            <h1>Week planner</h1>
-
+            {/* <h1>Week planner</h1> */}
             <div className="week-number">
                 <div className="week-number__container">
                     <button
@@ -38,21 +57,63 @@ export const WeekPlanner = () => {
                     </button>
                 </div>
             </div>
+            <hr />
 
             <div className="week">
                 <div className="week__day-list">
-                    <div className="row">
-                        {datesArray.map(([day, date]) => (
-                            <div className="col week__day-container">
-                                <div className="week__day text-center">
-                                    {day}
-                                </div>
-                                <div className="week__date text-center">
-                                    {date}
-                                </div>
+                    {/* <div className="row"> */}
+                    <Row>
+                        <Col className="col-lg-2">
+                            <div className="truck__header">
+                                Truck <br />
+                                Plates
                             </div>
-                        ))}
-                    </div>
+                            {trucks.map((truck) => {
+                                return (
+                                    <div>
+                                        <div className="truck__container">
+                                            <div className="truck__plates">
+                                                {truck.plates}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </Col>
+
+                        {datesArray.map(([day, date]) => {
+                            console.log(date);
+                            const dayTasks = tasks.filter(
+                                (task) =>
+                                    task.start_date_time.split("T")[0] === date
+                            );
+
+                            console.log(dayTasks);
+                            return (
+                                <Col className="col week__day-container day">
+                                    <div className="day__header">
+                                        <div className="day__name text-center">
+                                            {day}
+                                        </div>
+                                        <div className="day__date text-center">
+                                            {date}
+                                        </div>
+                                    </div>
+
+                                    {dayTasks.map((task) => (
+                                        <div className="task__container">
+                                            <div className="task__title">
+                                                {task.title}
+                                            </div>
+                                            <div className="task__truck">
+                                                {task.truck}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </Col>
+                            );
+                        })}
+                    </Row>
                 </div>
             </div>
         </>
@@ -85,3 +146,15 @@ export const formatDate = (date) => {
         day < 10 ? "0" + day : day
     }`;
 };
+
+/* tasks
+
+1. Slice current week's tasks;
+2. Unique cars array => map(
+  car => (
+    <Row>
+      weekTasks.filter(task =>taskcar === car)
+      .map(task => task.date === date)
+    </Row>
+  )
+) */
