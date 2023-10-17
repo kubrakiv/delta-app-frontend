@@ -1,6 +1,6 @@
 {
     "name": "frontend",
-    "proxy": "https://212.86.102.45",
+    "proxy": "http://212.86.102.45",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
