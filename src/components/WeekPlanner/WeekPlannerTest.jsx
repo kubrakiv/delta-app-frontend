@@ -1,24 +1,43 @@
+import axios from "axios";
 import { getISOWeek } from "date-fns";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { Row, Col } from "react-bootstrap";
+import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
+import { generateDatesArray } from "./dateFunctions";
 
-export const WeekPlannerTest = ({ onWeekChange, selectedWeek }) => {
+export const WeekPlannerTest = () => {
     const date = new Date();
-    const [week, setWeek] = useState(selectedWeek);
+    const [tasks, setTasks] = useState([]);
+    const [trucks, setTrucks] = useState([]);
+    const [week, setWeek] = useState(getISOWeek(date));
     const [datesArray, setDatesArray] = useState(
         generateDatesArray(date, week)
     );
 
+    useEffect(() => {
+        async function fetchTasks() {
+            const { data } = await axios.get("/api/tasks/");
+            setTasks(data);
+        }
+        fetchTasks();
+    }, []);
+
+    useEffect(() => {
+        async function fetchTrucks() {
+            const { data } = await axios.get("/api/trucks/");
+            setTrucks(data);
+        }
+        fetchTrucks();
+    }, []);
+
     const handleWeekChange = (newWeek) => {
         setWeek(newWeek);
         setDatesArray(generateDatesArray(date, newWeek));
-        onWeekChange(newWeek); // Notify the parent component about the week change
     };
 
     return (
         <>
-            <h1>Week planner</h1>
-
             <div className="week-number">
                 <div className="week-number__container">
                     <button
@@ -38,50 +57,55 @@ export const WeekPlannerTest = ({ onWeekChange, selectedWeek }) => {
                     </button>
                 </div>
             </div>
+            <hr />
 
             <div className="week">
                 <div className="week__day-list">
-                    <div className="row">
-                        {datesArray.map(([day, formattedDate]) => (
-                            <div key={day} className="col week__day-container">
-                                <div className="week__day text-center">
-                                    {day}
-                                </div>
-                                <div className="week__date text-center">
-                                    {String(formattedDate)}
-                                </div>
+                    <Row>
+                        <Col className="col-lg-2">
+                            <div className="truck__header">
+                                Truck <br />
+                                Plates
                             </div>
-                        ))}
-                    </div>
+                            {trucks.map((truck) => {
+                                return (
+                                    <div>
+                                        <div className="truck__container">
+                                            <div className="truck__plates">
+                                                {truck.plates}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </Col>
+
+                        {datesArray.map(([day, date]) => {
+                            const dayTasks = tasks.filter(
+                                (task) =>
+                                    task.start_date_time.split("T")[0] === date
+                            );
+
+                            return (
+                                <div className="col week__day-container day">
+                                    <DateComponent day={day} date={date} />
+
+                                    {dayTasks.map((task) => (
+                                        <div className="task__container">
+                                            <div className="task__title">
+                                                {task.title}
+                                            </div>
+                                            <div className="task__truck">
+                                                {task.truck}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })}
+                    </Row>
                 </div>
             </div>
         </>
     );
-};
-
-// Function to generate the array of dates based on the week number
-export const generateDatesArray = (currentDate, currentWeek) => {
-    const weekDayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-    const weekStartDate =
-        currentDate.getDate() -
-        currentDate.getDay() +
-        1 +
-        (currentWeek - getISOWeek(currentDate)) * 7;
-
-    return Array.from({ length: 7 }, (_, i) => {
-        const day = new Date(currentDate);
-        day.setDate(weekStartDate + i);
-        return [weekDayNames[i], formatDate(day)];
-    });
-};
-
-// Function to format the date as "YYYY-MM-DD"
-export const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${year}-${month < 10 ? "0" + month : month}-${
-        day < 10 ? "0" + day : day
-    }`;
 };

@@ -37,10 +37,14 @@ function TasksScreen() {
                             </td>
                             <td className="text-center">{task.title}</td>
                             <td className="text-center">
-                                {task.start_date_time}
+                                {new Date(
+                                    task.start_date_time
+                                ).toLocaleDateString()}
                             </td>
                             <td className="text-center">
-                                {task.start_date_time}
+                                {new Date(task.start_date_time)
+                                    .toLocaleTimeString()
+                                    .substring(0, 5)}
                             </td>
                             <td className="text-center">{task.truck}</td>
                             <td className="text-center">{task.driver}</td>
