@@ -19,10 +19,7 @@ function AddTaskScreen() {
         };
 
         try {
-            const response = await axios.post(
-                "http://127.0.0.1:8000/api/tasks/create/",
-                data
-            );
+            const response = await axios.post("/api/tasks/create/", data);
             console.log("Task created successfully:", response.data);
         } catch (error) {
             console.error("Error creating task:", error.message);
