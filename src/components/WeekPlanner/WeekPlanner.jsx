@@ -2,6 +2,8 @@ import axios from "axios";
 import { getISOWeek } from "date-fns";
 import { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
+import TaskComponent from "../TaskComponent";
+import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
 // import { generateDatesArray } from "./dateFunctions";
 
@@ -91,24 +93,10 @@ export const WeekPlanner = () => {
                             console.log(dayTasks);
                             return (
                                 <Col className="col week__day-container day">
-                                    <div className="day__header">
-                                        <div className="day__name text-center">
-                                            {day}
-                                        </div>
-                                        <div className="day__date text-center">
-                                            {date}
-                                        </div>
-                                    </div>
+                                    <DateComponent day={day} date={date} />
 
                                     {dayTasks.map((task) => (
-                                        <div className="task__container">
-                                            <div className="task__title">
-                                                {task.title}
-                                            </div>
-                                            <div className="task__truck">
-                                                {task.truck}
-                                            </div>
-                                        </div>
+                                        <TaskComponent task={task} />
                                     ))}
                                 </Col>
                             );
