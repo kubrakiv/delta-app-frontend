@@ -14,18 +14,21 @@
         color: #fff;
         height: 30px;
         width: 30px;
-        border-radius: 12px;
+        border-radius: 4px;
     }
 }
 
 .week {
     &__day-container {
-        padding: 8px 0;
+        padding: 4px 0;
         background-color: rgb(197, 229, 233);
-        border-radius: 12px;
-        border-width: 2px;
-        border-color: rgb(70, 13, 13);
+        border-radius: 4px;
         margin: 0 1px;
+        transition: background-color 0.5s ease;
+        &:hover {
+            background-color: rgb(158, 172, 173);
+            cursor: pointer;
+        }
     }
 }
 
@@ -33,9 +36,9 @@
     &__header {
         display: flex;
         flex-direction: column;
-        padding: 10px 0;
+        padding: 4px 0;
         background-color: rgb(9, 9, 9);
-        border-radius: 12px;
+        border-radius: 4px;
         // gap: 10px;
         color: #fff;
     }
@@ -51,14 +54,24 @@
 
 .task {
     &__container {
-        margin: 10px 0 10px 0;
-        padding: 10px 0;
-        background-color: rgb(237, 243, 75);
-        border-radius: 12px;
+        margin: 4px 0 4px 0;
+        padding: 4px 0;
+        background-color: rgb(193, 200, 166);
+        border-radius: 4px;
+        // border-style: solid;
+        // border-width: 1px;
         display: flex;
         flex-direction: column;
         // gap: 10px;
         color: rgb(5, 5, 5);
+        transition: all 0.5s ease;
+        &:hover {
+            background-color: rgb(229, 238, 69);
+            // border-style: solid;
+            // border-width: 1px;
+            border-color: rgb(23, 116, 25);
+            cursor: pointer;
+        }
     }
     &__time {
         text-align: center;
@@ -73,11 +86,11 @@
 
 .truck {
     &__header {
-        margin: 10px 0 10px 0;
-        padding: 10px 0;
+        margin: 4px 0 4px 0;
+        padding: 4px 0;
         background-color: rgb(0, 0, 0);
         color: rgb(255, 255, 255);
-        border-radius: 12px;
+        border-radius: 4px;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -85,11 +98,11 @@
         min-width: 50px;
     }
     &__container {
-        margin: 10px 0 10px 0;
-        padding: 10px 0;
+        margin: 4px 0 10px 0;
+        padding: 4px 0;
         background-color: rgb(23, 32, 116);
         color: rgb(255, 255, 255);
-        border-radius: 12px;
+        border-radius: 4px;
         display: flex;
         flex-direction: column;
         // gap: 10px;

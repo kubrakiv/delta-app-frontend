@@ -96,7 +96,10 @@ export const WeekPlanner = () => {
                                     <DateComponent day={day} date={date} />
 
                                     {dayTasks.map((task) => (
-                                        <TaskComponent task={task} />
+                                        <TaskComponent
+                                            key={task.id}
+                                            task={task}
+                                        />
                                     ))}
                                 </Col>
                             );

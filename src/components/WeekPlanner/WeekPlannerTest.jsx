@@ -5,6 +5,8 @@ import { Row, Col } from "react-bootstrap";
 import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
 import { generateDatesArray } from "./dateFunctions";
+import TaskComponent from "../TaskComponent";
+import ModalTaskComponent from "../ModalTaskComponent";
 
 export const WeekPlannerTest = () => {
     const date = new Date();
@@ -69,7 +71,7 @@ export const WeekPlannerTest = () => {
                             </div>
                             {trucks.map((truck) => {
                                 return (
-                                    <div>
+                                    <div key={truck.id}>
                                         <div className="truck__container">
                                             <div className="truck__plates">
                                                 {truck.plates}
@@ -91,14 +93,10 @@ export const WeekPlannerTest = () => {
                                     <DateComponent day={day} date={date} />
 
                                     {dayTasks.map((task) => (
-                                        <div className="task__container">
-                                            <div className="task__title">
-                                                {task.title}
-                                            </div>
-                                            <div className="task__truck">
-                                                {task.truck}
-                                            </div>
-                                        </div>
+                                        <ModalTaskComponent
+                                            key={task.id}
+                                            task={task}
+                                        />
                                     ))}
                                 </div>
                             );

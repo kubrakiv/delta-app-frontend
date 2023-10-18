@@ -3,7 +3,7 @@ import { Row, Container } from "react-bootstrap";
 
 import { WeekPlannerTest } from "../components/WeekPlanner/WeekPlannerTest";
 
-function PlanScreenTest2() {
+function PlanScreenTest() {
     return (
         <Container>
             <Row>
@@ -13,4 +13,4 @@ function PlanScreenTest2() {
     );
 }
 
-export default PlanScreenTest2;
+export default PlanScreenTest;
