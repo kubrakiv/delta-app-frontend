@@ -10,7 +10,6 @@ function Header() {
                 bg="dark"
                 variant="dark"
                 expand="lg"
-                // className="bg-body-tertiary"
                 collapseOnSelect
             >
                 <Container>

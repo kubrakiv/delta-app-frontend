@@ -5,8 +5,8 @@ import { Row, Col } from "react-bootstrap";
 import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
 import { generateDatesArray } from "./dateFunctions";
-import TaskComponent from "../TaskComponent";
-import ModalTaskComponent from "../ModalTaskComponent";
+import TaskComponent from "../Tasks/TaskComponent";
+import ModalTaskComponent from "../Tasks/ModalTaskComponent";
 
 export const WeekPlannerTest = () => {
     const date = new Date();
@@ -21,6 +21,7 @@ export const WeekPlannerTest = () => {
         async function fetchTasks() {
             const { data } = await axios.get("/api/tasks/");
             setTasks(data);
+            // setTasks();
         }
         fetchTasks();
     }, []);

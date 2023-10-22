@@ -2,10 +2,10 @@ import axios from "axios";
 import { getISOWeek } from "date-fns";
 import { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
-import TaskComponent from "../TaskComponent";
+import TaskComponent from "../Tasks/TaskComponent";
 import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
-// import { generateDatesArray } from "./dateFunctions";
+import { generateDatesArray } from "./dateFunctions";
 
 export const WeekPlanner = () => {
     const date = new Date();
@@ -39,7 +39,7 @@ export const WeekPlanner = () => {
 
     return (
         <>
-            {/* <h1>Week planner</h1> */}
+            {/* week number handler */}
             <div className="week-number">
                 <div className="week-number__container">
                     <button
@@ -65,87 +65,66 @@ export const WeekPlanner = () => {
                 <div className="week__day-list">
                     {/* <div className="row"> */}
                     <Row>
-                        <Col className="col-lg-2">
-                            <div className="truck__header">
+                        <Col className="week__day-container day">
+                            <div className="truck__header ">
                                 Truck <br />
                                 Plates
                             </div>
-                            {trucks.map((truck) => {
-                                return (
-                                    <div>
-                                        <div className="truck__container">
-                                            <div className="truck__plates">
-                                                {truck.plates}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
                         </Col>
-
                         {datesArray.map(([day, date]) => {
-                            console.log(date);
-                            const dayTasks = tasks.filter(
-                                (task) =>
-                                    task.start_date_time.split("T")[0] === date
-                            );
-
-                            console.log(dayTasks);
                             return (
-                                <Col className="col week__day-container day">
+                                <Col className="week__day-container day">
                                     <DateComponent day={day} date={date} />
-
-                                    {dayTasks.map((task) => (
-                                        <TaskComponent
-                                            key={task.id}
-                                            task={task}
-                                        />
-                                    ))}
                                 </Col>
                             );
                         })}
                     </Row>
+
+                    {/* rows with trucks */}
+                    {trucks.map((truck) => {
+                        /* console.log(truck, "this is truck"); */
+                        const result = datesArray.map((date) => {
+                            console.log(date[1], "this is date");
+
+                            return tasks.filter((t) => {
+                                /*                                     console.log(
+                                        t.start_date_time.split("T")[0],
+                                        date[1],
+                                        "task"
+                                    ); */
+                                return (
+                                    t.start_date_time.split("T")[0] ===
+                                        date[1] && truck.plates === t.truck
+                                );
+                            });
+                        });
+                        console.log(result, "result");
+
+                        const dayTasks = tasks.filter(
+                            (task) =>
+                                task.start_date_time.split("T")[0] === date &&
+                                task.truck === truck.plates
+                        );
+                        // const test = [null, null, null, null, null, null, null];
+                        console.log(dayTasks);
+                        return (
+                            <Row className="truck__week-container">
+                                <Col className="truck__container">
+                                    <div className="truck__plates">
+                                        {truck.plates}
+                                    </div>
+                                </Col>
+
+                                {result.map((task) => (
+                                    <Col key={task?.id}>
+                                        <TaskComponent task={task} />
+                                    </Col>
+                                ))}
+                            </Row>
+                        );
+                    })}
                 </div>
             </div>
         </>
     );
 };
-
-// Function to generate the array of dates based on the week number
-export const generateDatesArray = (currentDate, currentWeek) => {
-    const weekDayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-    const weekStartDate =
-        currentDate.getDate() -
-        currentDate.getDay() +
-        1 +
-        (currentWeek - getISOWeek(currentDate)) * 7;
-
-    return Array.from({ length: 7 }, (_, i) => {
-        const day = new Date(currentDate);
-        day.setDate(weekStartDate + i);
-        return [weekDayNames[i], formatDate(day)];
-    });
-};
-
-// Function to format the date as "YYYY-MM-DD"
-export const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${year}-${month < 10 ? "0" + month : month}-${
-        day < 10 ? "0" + day : day
-    }`;
-};
-
-/* tasks
-
-1. Slice current week's tasks;
-2. Unique cars array => map(
-  car => (
-    <Row>
-      weekTasks.filter(task =>taskcar === car)
-      .map(task => task.date === date)
-    </Row>
-  )
-) */

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Table } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 // import tasks from "../tasks";
 import axios from "axios";
 
@@ -27,11 +27,19 @@ function TasksScreen() {
                         <th className="text-center">Time</th>
                         <th className="text-center">Truck</th>
                         <th className="text-center">Driver</th>
+                        <th className="text-center">Buttons</th>
                     </tr>
                 </thead>
                 <tbody data-link="row" className="rowlink">
                     {tasks.map((task, index) => (
-                        <tr key={index} className="table-light">
+                        <tr
+                            key={index}
+                            className="table-light"
+                            style={{
+                                marginBottom: "2px !important",
+                                borderRadius: "4px",
+                            }}
+                        >
                             <td className="text-center">
                                 <Link to={`${task.id}`}>{task.id}</Link>
                             </td>
@@ -48,6 +56,9 @@ function TasksScreen() {
                             </td>
                             <td className="text-center">{task.truck}</td>
                             <td className="text-center">{task.driver}</td>
+                            <td className="text-center">
+                                <Button>Tap</Button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
