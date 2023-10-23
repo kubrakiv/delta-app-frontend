@@ -2,7 +2,7 @@ import axios from "axios";
 import { getISOWeek } from "date-fns";
 import { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
-import TaskComponent from "../Tasks/TaskComponent";
+import TasksComponent from "../Tasks/TasksComponent";
 import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
 import { generateDatesArray } from "./dateFunctions";
@@ -117,7 +117,7 @@ export const WeekPlanner = () => {
 
                                 {result.map((task) => (
                                     <Col key={task?.id}>
-                                        <TaskComponent task={task} />
+                                        <TasksComponent task={task} />
                                     </Col>
                                 ))}
                             </Row>

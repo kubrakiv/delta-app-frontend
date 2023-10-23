@@ -5,7 +5,7 @@ import { Row, Col } from "react-bootstrap";
 import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
 import { generateDatesArray } from "./dateFunctions";
-import TaskComponent from "../Tasks/TaskComponent";
+import TaskComponent from "../Tasks/TasksComponent";
 import ModalTaskComponent from "../Tasks/ModalTaskComponent";
 
 export const WeekPlannerTest = () => {
@@ -64,45 +64,64 @@ export const WeekPlannerTest = () => {
 
             <div className="week">
                 <div className="week__day-list">
+                    {/* <div className="row"> */}
                     <Row>
-                        <Col className="col-lg-2">
-                            <div className="truck__header">
+                        <Col className="week__day-container day">
+                            <div className="truck__header ">
                                 Truck <br />
                                 Plates
                             </div>
-                            {trucks.map((truck) => {
-                                return (
-                                    <div key={truck.id}>
-                                        <div className="truck__container">
-                                            <div className="truck__plates">
-                                                {truck.plates}
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
                         </Col>
-
                         {datesArray.map(([day, date]) => {
-                            const dayTasks = tasks.filter(
-                                (task) =>
-                                    task.start_date_time.split("T")[0] === date
-                            );
-
                             return (
-                                <div className="col week__day-container day">
+                                <Col
+                                    className="week__day-container day"
+                                    key={date}
+                                >
                                     <DateComponent day={day} date={date} />
-
-                                    {dayTasks.map((task) => (
-                                        <ModalTaskComponent
-                                            key={task.id}
-                                            task={task}
-                                        />
-                                    ))}
-                                </div>
+                                </Col>
                             );
                         })}
                     </Row>
+
+                    {/* rows with trucks */}
+                    {trucks.map((truck) => {
+                        /* console.log(truck, "this is truck"); */
+                        const result = datesArray.map((date) => {
+                            console.log(date[1], "this is date");
+
+                            return tasks.filter((t) => {
+                                return (
+                                    t.start_date_time.split("T")[0] ===
+                                        date[1] && truck.plates === t.truck
+                                );
+                            });
+                        });
+                        console.log(result, "result");
+
+                        const dayTasks = tasks.filter(
+                            (task) =>
+                                task.start_date_time.split("T")[0] === date &&
+                                task.truck === truck.plates
+                        );
+                        // const test = [null, null, null, null, null, null, null];
+                        console.log(dayTasks);
+                        return (
+                            <Row className="truck__week-container">
+                                <Col className="truck__container">
+                                    <div className="truck__plates">
+                                        {truck.plates}
+                                    </div>
+                                </Col>
+
+                                {result.map((task) => (
+                                    <Col key={task?.id}>
+                                        <ModalTaskComponent task={task} />
+                                    </Col>
+                                ))}
+                            </Row>
+                        );
+                    })}
                 </div>
             </div>
         </>

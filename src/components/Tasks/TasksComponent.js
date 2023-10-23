@@ -6,7 +6,7 @@ function TaskComponent({ task }) {
     // Extracting date and time separately
     const hasData = task.length > 0;
     console.log(task, hasData, "this is task in a task component");
-    const dateTime = hasData ? new Date(task?.start_date_time) : null;
+    // const dateTime = hasData ? new Date(task?.start_date_time) : null;
 
     if (hasData) {
         return (
