@@ -5,8 +5,9 @@ import { Row, Col } from "react-bootstrap";
 import DateComponent from "../DateComponent";
 import "./WeekPlanner.scss";
 import { generateDatesArray } from "./dateFunctions";
-import TaskComponent from "../Tasks/TasksComponent";
-import ModalTaskComponent from "../Tasks/ModalTaskComponent";
+
+import DayTasks from "../Tasks/DayTasks";
+import { ModalItem } from "../ModalItem/ModalItem";
 
 export const WeekPlannerTest = () => {
     const date = new Date();
@@ -16,6 +17,19 @@ export const WeekPlannerTest = () => {
     const [datesArray, setDatesArray] = useState(
         generateDatesArray(date, week)
     );
+    const [showModal, setShowModal] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [selectedTask, setSelectedTask] = useState({});
+
+    const handleModalShow = () => {
+        setShowModal(true);
+        console.log("Open modal");
+    };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+        console.log("Close modal");
+    };
 
     useEffect(() => {
         async function fetchTasks() {
@@ -31,12 +45,24 @@ export const WeekPlannerTest = () => {
             const { data } = await axios.get("/api/trucks/");
             setTrucks(data);
         }
+
         fetchTrucks();
     }, []);
 
     const handleWeekChange = (newWeek) => {
         setWeek(newWeek);
         setDatesArray(generateDatesArray(date, newWeek));
+    };
+
+    const handleSelectTask = (task, editMode) => {
+        setSelectedTask({});
+        setEditMode(editMode);
+
+        if (editMode) {
+            setEditMode(true);
+            setSelectedTask(task);
+        }
+        setShowModal(true);
     };
 
     return (
@@ -60,11 +86,11 @@ export const WeekPlannerTest = () => {
                     </button>
                 </div>
             </div>
+
             <hr />
 
             <div className="week">
                 <div className="week__day-list">
-                    {/* <div className="row"> */}
                     <Row>
                         <Col className="week__day-container day">
                             <div className="truck__header ">
@@ -86,10 +112,7 @@ export const WeekPlannerTest = () => {
 
                     {/* rows with trucks */}
                     {trucks.map((truck) => {
-                        /* console.log(truck, "this is truck"); */
-                        const result = datesArray.map((date) => {
-                            console.log(date[1], "this is date");
-
+                        const weeklyTasks = datesArray.map((date) => {
                             return tasks.filter((t) => {
                                 return (
                                     t.start_date_time.split("T")[0] ===
@@ -97,15 +120,7 @@ export const WeekPlannerTest = () => {
                                 );
                             });
                         });
-                        console.log(result, "result");
 
-                        const dayTasks = tasks.filter(
-                            (task) =>
-                                task.start_date_time.split("T")[0] === date &&
-                                task.truck === truck.plates
-                        );
-                        // const test = [null, null, null, null, null, null, null];
-                        console.log(dayTasks);
                         return (
                             <Row className="truck__week-container">
                                 <Col className="truck__container">
@@ -114,15 +129,25 @@ export const WeekPlannerTest = () => {
                                     </div>
                                 </Col>
 
-                                {result.map((task) => (
-                                    <Col key={task?.id}>
-                                        <ModalTaskComponent task={task} />
+                                {weeklyTasks.map((dayTasks) => (
+                                    <Col key={dayTasks?.id}>
+                                        <DayTasks
+                                            tasks={dayTasks}
+                                            onSelect={handleSelectTask}
+                                        />
                                     </Col>
                                 ))}
                             </Row>
                         );
                     })}
                 </div>
+
+                <ModalItem
+                    showModal={showModal}
+                    onCloseModal={handleModalClose}
+                    editMode={editMode}
+                    data={selectedTask}
+                />
             </div>
         </>
     );

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
+import AddTaskScreen from "../../screens/AddTaskScreen";
+import EditTaskComponent from "./EditTaskComponent";
 
-function OffCanvasExample({ name, ...props }) {
+function ModalTaskLeftSideComponent({ name, task, ...props }) {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
     return (
         <>
             <Button variant="primary" onClick={handleShow} className="me-2">
@@ -18,12 +19,11 @@ function OffCanvasExample({ name, ...props }) {
                     <Offcanvas.Title>Offcanvas</Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
-                    Some text as placeholder. In real life you can have the
-                    elements you have chosen. Like, text, images, lists, etc.
+                    <EditTaskComponent task={task} />
                 </Offcanvas.Body>
             </Offcanvas>
         </>
     );
 }
 
-export default OffCanvasExample;
+export default ModalTaskLeftSideComponent;

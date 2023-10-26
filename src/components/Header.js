@@ -4,13 +4,13 @@ import { LinkContainer } from "react-router-bootstrap";
 
 function Header() {
     return (
-        <header>
+        <header className="main-header">
             <Navbar
-                // fixed="top"
+                fixed="top"
                 bg="dark"
                 variant="dark"
                 expand="lg"
-                collapseOnSelect
+                // collapseOnSelect
             >
                 <Container>
                     <LinkContainer to="/">
@@ -19,7 +19,7 @@ function Header() {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <LinkContainer to="/plan">
+                            {/* <LinkContainer to="/plan">
                                 <Nav.Link>Week Planner</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/plan-test">
@@ -33,8 +33,8 @@ function Header() {
                             </LinkContainer>
                             <LinkContainer to="/tasks/add">
                                 <Nav.Link>Add Task</Nav.Link>
-                            </LinkContainer>
-                            <LinkContainer to="/login">
+                            </LinkContainer> */}
+                            <LinkContainer to="/login" className="me-3">
                                 <Nav.Link>Login</Nav.Link>
                             </LinkContainer>
                         </Nav>

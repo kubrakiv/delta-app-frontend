@@ -29,6 +29,8 @@ function EditTaskComponent({ task }) {
             driver: driver,
         };
 
+        console.log(data, "this is data edit");
+
         try {
             const response = await axios.put(
                 `/api/tasks/edit/${task.id}`,

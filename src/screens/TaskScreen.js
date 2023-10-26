@@ -19,7 +19,7 @@ function TaskScreen() {
 
     return (
         <div>
-            <Link to="/" className="btn btn-light my-3">
+            <Link to="/tasks" className="btn btn-light my-3">
                 Return
             </Link>
             <Row md={6} className="mt-3">

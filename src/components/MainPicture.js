@@ -14,7 +14,7 @@ function MainPicture() {
                                 key={index}
                                 src={image.logo}
                                 rounded
-                                className="mt 5"
+                                // className="mt 5"
                             />
                         ))}
                     </Col>

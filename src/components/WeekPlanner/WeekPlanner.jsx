@@ -84,14 +84,7 @@ export const WeekPlanner = () => {
                     {trucks.map((truck) => {
                         /* console.log(truck, "this is truck"); */
                         const result = datesArray.map((date) => {
-                            console.log(date[1], "this is date");
-
                             return tasks.filter((t) => {
-                                /*                                     console.log(
-                                        t.start_date_time.split("T")[0],
-                                        date[1],
-                                        "task"
-                                    ); */
                                 return (
                                     t.start_date_time.split("T")[0] ===
                                         date[1] && truck.plates === t.truck

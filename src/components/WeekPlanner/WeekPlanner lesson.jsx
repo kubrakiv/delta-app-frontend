@@ -31,8 +31,6 @@ export const WeekPlanner = () => {
             }`
     ).map((d, i) => [weekDayNames[i], d]);
 
-    console.log(datesArray, "This is dates array");
-
     return (
         <>
             <h1>Week planner</h1>
