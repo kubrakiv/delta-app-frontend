@@ -3,6 +3,7 @@ import {
     FaTh,
     FaBars,
     FaCalendarWeek,
+    FaCalendarAlt,
     FaTruckMoving,
     FaUserAlt,
     FaRegChartBar,
@@ -35,7 +36,7 @@ const Sidebar = ({ children }) => {
         {
             path: "/plan-test",
             name: "Weekly Planner (test)",
-            icon: <FaCalendarWeek />,
+            icon: <FaCalendarAlt />,
         },
         {
             path: "/orders",

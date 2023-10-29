@@ -7,17 +7,16 @@ function MainPicture() {
         <div className="carousel-main">
             <Container id="img_container">
                 <Row>
-                    <Col>
-                        {images.map((image, index) => (
+                    {images.map((image, index) => (
+                        <Col>
                             <Image
                                 as="img"
                                 key={index}
                                 src={image.logo}
                                 rounded
-                                // className="mt 5"
                             />
-                        ))}
-                    </Col>
+                        </Col>
+                    ))}
                 </Row>
             </Container>
         </div>

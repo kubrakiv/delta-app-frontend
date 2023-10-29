@@ -35,7 +35,6 @@ export const WeekPlannerTest = () => {
         async function fetchTasks() {
             const { data } = await axios.get("/api/tasks/");
             setTasks(data);
-            // setTasks();
         }
         fetchTasks();
     }, []);
@@ -62,7 +61,8 @@ export const WeekPlannerTest = () => {
             setEditMode(true);
             setSelectedTask(task);
         }
-        setShowModal(true);
+        handleModalShow();
+        // setShowModal(true);
     };
 
     return (

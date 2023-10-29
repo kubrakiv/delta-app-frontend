@@ -1,5 +1,9 @@
+* {
+  box-sizing: border-box;
+}
+
 .navbar {
-  background: #3a4746 !important;
+  background: #045b62 !important;
 }
 
 .navbar-dark:hover {
@@ -20,55 +24,55 @@
 .table-container {
   margin: 0;
   padding: 0;
-  /* Adjust the max height as needed */
-  max-height: 500px;
+  /* max-height: 500px;
   width: 100%;
-  overflow-y: auto;
+  overflow-y: auto; */
 }
 
 table {
-  margin-top: 0;
-  padding: 0 5px 0 5px;
-  border-collapse: separate;
-  border-spacing: 0 4px;
+  display: block;
+  table-layout: auto;
   width: 100%;
-  border-radius: 4px;
-  outline: 1px solid gray;
+  padding: 0 5px 0 5px;
+  /* border-collapse: separate; */
+  /* border-spacing: 0 4px; */
+  max-height: 500px;
+  overflow-y: auto;
+  text-indent: initial;
 }
 
 thead {
+  display: block;
+  table-layout: auto;
+  width: 100%;
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: #3a4746;
-  color: #fff;
+  z-index: 2;
 }
 
-th {
-  /* display: flex; */
-  /* flex-direction: column;
-  align-items: center; */
-
-
-}
-
-/* td,
-th {
-  white-space: nowrap;
-} */
 
 tr {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .14), 0 2px 2px rgba(0, 0, 0, .12);
-  border-radius: 4px !important;
-  /* overflow: hidden !important; */
-  /* transition: all 0.5s ease; */
+  border-radius: 6px;
+  overflow-wrap: break-word;
+  height: 4px;
+}
+
+.table {
+  margin: 1px !important;
 }
 
 td {
   border-radius: 4px;
+  overflow: hidden;
 }
 
-tr:hover {
-  box-shadow: -2px 2px 2px 2px rgba(0, 0, 0, .14),
-    -4px 4px 4px 4px rgba(0, 0, 0, .12);
+tr.table:hover {
+  box-shadow: 0 8px 10px rgba(0, 0, 0, .14), 0 3px 14px rgba(0, 0, 0, .12), 0 5px 5px rgba(0, 0, 0, .2);
+  cursor: pointer;
+  z-index: 1;
+  position: relative;
 }

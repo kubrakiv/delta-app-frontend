@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Table, Button } from "react-bootstrap";
 // import tasks from "../tasks";
 import axios from "axios";
 import ModalTaskLeftSideComponent from "../components/Tasks/ModalTaskLeftSideComponent";
+import Task from "../components/Tasks/Task";
 
 function TasksScreen() {
     const [tasks, setTasks] = useState([]);
+    const [selectedTask, setSelectedTask] = useState({});
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchTasks() {
@@ -16,10 +20,23 @@ function TasksScreen() {
         fetchTasks();
     }, []);
 
+    const handleRowClick = (task) => {
+        setSelectedTask(task);
+        navigate(`/tasks/${task.id}`);
+    };
+
+    const handleButtonClick = (event, task) => {
+        // Prevent the button click from propagating to the row click
+        event.stopPropagation();
+        // Handle button click logic here
+        console.log("Button clicked for task:", task);
+    };
+
     return (
-        <div className="table-container">
-            {/* <h2 className="p-3">Таблиця завдань</h2> */}
-            <Table bordered hover variant="dark">
+        <>
+            {/* <div className="table-container"> */}
+            <h2 className="p-3 table-name">Таблиця завдань</h2>
+            <Table bordered variant="dark" className="table">
                 <thead>
                     <tr>
                         <th className="text-center">ID</th>
@@ -33,12 +50,12 @@ function TasksScreen() {
                 </thead>
                 <tbody data-link="row" className="rowlink">
                     {tasks.map((task, index) => (
-                        <tr key={index} className="table">
-                            <td className="text-center">
-                                <Link key={index} to={`${task.id}`}>
-                                    {task.id}
-                                </Link>
-                            </td>
+                        <tr
+                            key={index}
+                            className="table"
+                            onClick={() => handleRowClick(task)}
+                        >
+                            <td className="text-center">{task.id}</td>
                             <td className="text-center">{task.title}</td>
                             <td className="text-center">
                                 {new Date(
@@ -57,14 +74,17 @@ function TasksScreen() {
                                     name={"Task"}
                                     placement={"end"}
                                     task={task}
+                                    onClick={(event) =>
+                                        handleButtonClick(event, task)
+                                    }
                                 />
-                                {/* <Button>Tap</Button> */}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
-        </div>
+            {/* </div> */}
+        </>
     );
 }
 
