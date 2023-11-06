@@ -1,10 +1,15 @@
 import React from "react";
 
 const DateComponent = ({ day, date }) => {
+    const [year, month, d] = date.split("-");
     return (
-        <div className="day__header">
-            <div className="day__name text-center">{day}</div>
-            <div className="day__date text-center">{date}</div>
+        <div className="week-header__day-container_date-item">
+            <div className="week-header__day-container_date-item__name">
+                {day}
+            </div>
+            <div className="week-header__day-container_date-item__date">
+                {d}.{month}.{year}
+            </div>
         </div>
     );
 };

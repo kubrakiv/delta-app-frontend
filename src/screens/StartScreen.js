@@ -1,13 +1,11 @@
 import React from "react";
-import ControlledCarousel from "../components/Carousel";
-import MainPicture from "../components/MainPicture";
+import MainSlider from "../components/Slider/MainSlider";
 
 function StartScreen() {
     return (
-        <div>
-            <MainPicture />
-            {/* <ControlledCarousel /> */}
-        </div>
+        <>
+            <MainSlider />
+        </>
     );
 }
 

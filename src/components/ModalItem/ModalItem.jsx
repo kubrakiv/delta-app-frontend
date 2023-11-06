@@ -1,14 +1,18 @@
 import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import EditTaskComponent from "../Tasks/EditTaskComponent";
+import AddTaskComponent from "../AddTask/AddTaskComponent";
 
 export const ModalItem = ({
     showModal,
     onCloseModal,
     editMode = false,
     data,
+    onTaskUpdate,
+    onTaskCreate,
+    selectedDate,
+    selectedTruck,
 }) => {
-    console.log(data, "this is data for modal");
+    console.log(data, selectedDate, selectedTruck, "this is data for modal");
     return (
         <Modal show={showModal} onHide={onCloseModal}>
             <Modal.Header closeButton>
@@ -18,13 +22,21 @@ export const ModalItem = ({
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <EditTaskComponent task={data} />
+                {editMode ? (
+                    <EditTaskComponent
+                        task={data}
+                        onTaskUpdate={onTaskUpdate}
+                        onCloseModal={onCloseModal}
+                    />
+                ) : (
+                    <AddTaskComponent
+                        selectedDate={selectedDate}
+                        selectedTruck={selectedTruck}
+                        onCloseModal={onCloseModal}
+                        onTaskCreate={onTaskCreate}
+                    />
+                )}
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={onCloseModal}>
-                    Close
-                </Button>
-            </Modal.Footer>
         </Modal>
     );
 };

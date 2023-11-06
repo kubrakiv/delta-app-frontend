@@ -1,0 +1,56 @@
+@import "../../styles/utils/vars";
+
+.header {
+    // position: fixed;
+    // display: block;
+    // position: relative;
+    // width: 100%;
+    background: $headerColor;
+    padding: 5px 10px 5px;
+}
+
+.header-navbar {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    padding: 0 10px 0 10px;
+
+    &__title {
+        font-size: 25px;
+        color: #fff;
+        margin-left: 30px;
+        padding: 10px;
+        border-radius: 4px;
+        a {
+            text-decoration: none;
+            color: #fff;
+            &:hover {
+                color: rgb(158, 172, 173);
+                transition: background-color 0.5s ease;
+            }
+        }
+        &:hover {
+            // background-color: rgb(158, 172, 173);
+            cursor: pointer;
+            transition: background-color 0.5s ease;
+        }
+    }
+    &__login {
+        margin-left: auto;
+        margin-right: 50px;
+        padding: 10px;
+        border-radius: 4px;
+        a {
+            text-decoration: none;
+            color: #fff;
+            &:hover {
+                color: rgb(158, 172, 173);
+                transition: background-color 0.5s ease;
+            }
+        }
+        &:hover {
+            cursor: pointer;
+            transition: background-color 0.5s ease;
+        }
+    }
+}

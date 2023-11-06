@@ -1,19 +1,19 @@
 import React from "react";
-import "./App.css";
-import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
 import PlanScreen from "./screens/PlanScreen";
 import PlanScreenTest from "./screens/PlanScreenTest";
 import StartScreen from "./screens/StartScreen";
-import TaskScreen from "./screens/TaskScreen";
-import TasksScreen from "./screens/TasksScreen";
-import AddTaskScreen from "./screens/AddTaskScreen";
+import TaskPage from "./screens/TaskPage/TaskPage";
+import TaskTablePage from "./screens/TaskTablePage";
 import Sidebar from "./components/Sidebar/Sidebar";
-import Orders from "./screens/Orders";
-import Dashboard from "./screens/Dashboard";
+import Orders from "./components/Orders/Orders";
+import OrderPage from "./screens/OrderPage/OrderPage";
+import Dashboard from "./screens/Dashboard/Dashboard";
+import AddTaskPage from "./screens/AddTaskPage";
+import OrdersList from "./components/Orders/OrdersList";
 
 function App() {
     return (
@@ -26,9 +26,11 @@ function App() {
                     <Route path="/plan" element={<PlanScreen />} />
                     <Route path="/plan-test" element={<PlanScreenTest />} />
                     <Route path="/orders" element={<Orders />} />
-                    <Route index path="/tasks/:id" element={<TaskScreen />} />
-                    <Route path="/tasks" element={<TasksScreen />} />
-                    <Route path="/tasks/add" element={<AddTaskScreen />} />
+                    <Route index path="/orders/:id" element={<OrderPage />} />
+                    <Route path="/orders-list" element={<OrdersList />} />
+                    <Route index path="/tasks/:id" element={<TaskPage />} />
+                    <Route path="/tasks" element={<TaskTablePage />} />
+                    <Route path="/tasks/add" element={<AddTaskPage />} />
                 </Routes>
             </Sidebar>
             <Footer />

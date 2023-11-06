@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Offcanvas from "react-bootstrap/Offcanvas";
-import AddTaskScreen from "../../screens/AddTaskScreen";
 import EditTaskComponent from "./EditTaskComponent";
 
 function ModalTaskLeftSideComponent({ name, task, ...props }) {
@@ -11,9 +10,13 @@ function ModalTaskLeftSideComponent({ name, task, ...props }) {
     const handleShow = () => setShow(true);
     return (
         <>
-            <Button variant="primary" onClick={handleShow} className="me-2">
+            <button
+                variant="primary"
+                onClick={handleShow}
+                className="task-button button"
+            >
                 {name}
-            </Button>
+            </button>
             <Offcanvas show={show} onHide={handleClose} {...props}>
                 <Offcanvas.Header closeButton>
                     <Offcanvas.Title>Offcanvas</Offcanvas.Title>

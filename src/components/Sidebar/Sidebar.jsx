@@ -1,59 +1,12 @@
 import React, { useState } from "react";
-import {
-    FaTh,
-    FaBars,
-    FaCalendarWeek,
-    FaCalendarAlt,
-    FaTruckMoving,
-    FaUserAlt,
-    FaRegChartBar,
-    FaCommentAlt,
-    FaTasks,
-    FaThList,
-    FaPlus,
-} from "react-icons/fa";
+import menuItems from "./menuItems";
 import { NavLink } from "react-router-dom";
+import { FaBars } from "react-icons/fa";
+import "./Sidebar.scss";
 
 const Sidebar = ({ children }) => {
     const [isOpen, setIsOpen] = useState(false);
     const toggle = () => setIsOpen(!isOpen);
-    const menuItems = [
-        {
-            path: "/",
-            name: "My Company",
-            icon: <FaTruckMoving />,
-        },
-        {
-            path: "/dashboard",
-            name: "Dashboard",
-            icon: <FaTh />,
-        },
-        {
-            path: "/plan",
-            name: "Weekly Planner",
-            icon: <FaCalendarWeek />,
-        },
-        {
-            path: "/plan-test",
-            name: "Weekly Planner (test)",
-            icon: <FaCalendarAlt />,
-        },
-        {
-            path: "/orders",
-            name: "Orders",
-            icon: <FaThList />,
-        },
-        {
-            path: "/tasks",
-            name: "Tasks",
-            icon: <FaTasks />,
-        },
-        {
-            path: "/tasks/add",
-            name: "Add Task",
-            icon: <FaPlus />,
-        },
-    ];
 
     return (
         <div className="container-sidebar">
@@ -75,24 +28,39 @@ const Sidebar = ({ children }) => {
                         <FaBars onClick={toggle} />
                     </div>
                 </div>
-                {menuItems.map((item, index) => (
-                    <NavLink
-                        to={item.path}
-                        key={index}
-                        className="link"
-                        activeClassName="active-sidebar"
-                    >
-                        <div className="icon">{item.icon}</div>
-                        <div
-                            style={{ display: isOpen ? "block" : "none" }}
-                            className="link_text"
-                        >
-                            {item.name}
+                {menuItems.map((item, index) =>
+                    item.children ? (
+                        <div className="dropdown" key={index}>
+                            <div className="icon">{item.icon}</div>
+                            <div className="link_text">{item.name}</div>
+                            <div className="dropdown-content">
+                                {item.children.map((child, childIndex) => (
+                                    <NavLink
+                                        to={child.path}
+                                        key={childIndex}
+                                        className="link"
+                                    >
+                                        {child.name}
+                                    </NavLink>
+                                ))}
+                            </div>
                         </div>
-                    </NavLink>
-                ))}
+                    ) : (
+                        <NavLink to={item.path} key={index} className="link">
+                            <div className="icon">{item.icon}</div>
+                            <div
+                                style={{
+                                    display: isOpen ? "block" : "none",
+                                }}
+                                className="link_text"
+                            >
+                                {item.name}
+                            </div>
+                        </NavLink>
+                    )
+                )}
             </div>
-            <main>{children}</main>
+            <main className="page__main">{children}</main>
         </div>
     );
 };

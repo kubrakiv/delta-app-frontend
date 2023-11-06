@@ -1,20 +1,35 @@
-import { Button } from "react-bootstrap";
-import Task from "./Task";
+import Task from "../Task/Task";
+import { FaPlus } from "react-icons/fa";
 
-function DayTasks({ tasks, onSelect }) {
+function DayTasks({ tasks, onSelect, dayNumber, truckId }) {
     const hasTasks = tasks.length > 0;
 
     return (
         <>
             {hasTasks &&
-                tasks.map((t) => <Task task={t} onSelect={onSelect} />)}
-            <Button
+                tasks.map((t) => (
+                    <Task
+                        task={t}
+                        onSelect={onSelect}
+                        // dayNumber={dayNumber}
+                        // truckId={truckId}
+                    />
+                ))}
+            <button
                 type="button"
-                className="btn btn-light"
-                onClick={() => onSelect(null, false)}
+                className="planner-button"
+                onClick={() =>
+                    onSelect({
+                        task: null,
+                        editMode: false,
+                        dayNumber,
+                        truckId,
+                    })
+                }
             >
-                +
-            </Button>
+                &#10010;
+                {/* <FaPlus /> */}
+            </button>
         </>
     );
 }
