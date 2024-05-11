@@ -1,0 +1,27 @@
+.box {
+  position: relative;
+  display: flex;
+  background-color: teal;
+  color: #fff;
+  width: max-content;
+}
+
+.orders__list {
+  display: block;
+  position: absolute;
+  width: max-content;
+  left: 100%;
+  background-color: darkblue;
+
+}
+
+.orders__item {
+  background-color: #fff;
+  margin: 5px;
+  gap: 10px;
+
+}
+
+/* .box:hover {
+  display: block;
+} */

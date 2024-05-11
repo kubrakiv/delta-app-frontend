@@ -3,13 +3,23 @@ import delta_dog from "../../img/delta_dog.jpg";
 import delta_dog_1 from "../../img/delta_dog_1.jpg";
 import delta_dog_2 from "../../img/delta_dog_2.jpg";
 import delta_dog_3 from "../../img/delta_dog_3.jpg";
+import delta_1 from "../../img/delta_1.jpg";
+import delta_2 from "../../img/delta_2.jpg";
 import trucks from "../../img/trucks.jpg";
 import "./MainSlider.scss";
 
 function MainSlider() {
     const [slideIndex, setSlideIndex] = useState(1);
 
-    const slider = [delta_dog, delta_dog_1, delta_dog_2, delta_dog_3, trucks];
+    const slider = [
+        delta_1,
+        delta_2,
+        delta_dog,
+        delta_dog_1,
+        delta_dog_2,
+        delta_dog_3,
+        trucks,
+    ];
 
     useEffect(() => {
         showSlides(slideIndex);
@@ -32,7 +42,6 @@ function MainSlider() {
     }
 
     function showSlides(n) {
-        // let i;
         const slides = document.getElementsByClassName("mySlides");
         const dots = document.getElementsByClassName("dot");
         if (n > slides.length) {
@@ -79,19 +88,17 @@ function MainSlider() {
                 <button className="next" onClick={() => plusSlides(1)}>
                     ❯
                 </button>
-            </div>
-            <br />
-
-            <div id="dots">
-                {slider.map((_, index) => (
-                    <span
-                        key={index}
-                        className={`dot ${
-                            index + 1 === slideIndex ? "visible" : ""
-                        }`}
-                        onClick={() => currentSlide(index + 1)}
-                    ></span>
-                ))}
+                <div id="dots">
+                    {slider.map((_, index) => (
+                        <span
+                            key={index}
+                            className={`dot ${
+                                index + 1 === slideIndex ? "visible" : ""
+                            }`}
+                            onClick={() => currentSlide(index + 1)}
+                        ></span>
+                    ))}
+                </div>
             </div>
         </div>
     );

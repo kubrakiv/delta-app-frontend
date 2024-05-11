@@ -12,10 +12,7 @@ function EditTaskComponent({ task, onTaskUpdate, onCloseModal }) {
     const [driver, setDriver] = useState("");
     const [type, setTaskType] = useState("");
     const [order, setOrder] = useState("");
-
     const [trucks, setTrucks] = useState("");
-
-    console.log(task, "THIS IS A TASK FOR EDITING");
 
     useEffect(() => {
         async function fetchTrucks() {
@@ -61,11 +58,11 @@ function EditTaskComponent({ task, onTaskUpdate, onCloseModal }) {
             order: order,
         };
 
-        console.log(data, "this is data edit");
+        console.log(data, "this is TASK EDIT DATA");
 
         try {
             const response = await axios.put(
-                `/api/tasks/edit/${task.id}`,
+                `/api/tasks/edit/${task.id}/`,
                 data,
                 {
                     headers: {

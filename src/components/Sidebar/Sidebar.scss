@@ -1,75 +1,12 @@
 @import "../../styles/utils/vars";
 
 .sidebar {
-    // background: #5b6e6c;
-    // background-color: #0f747b;
-    background-color: $colorGray;
-    // color: $headerColor;
+    background-color: $sidebarcolor;
     color: white;
-    height: 100vh;
-    width: 200px;
-    transition: all 0.5s;
-    /* border: 1px solid rgb(185, 171, 171) */
-}
-
-.top_section {
-    display: flex;
-    align-items: center;
-    padding: 20px 15px;
-}
-
-.logo {
-    font-size: 30px;
-}
-
-.bars {
-    display: flex;
-    font-size: 25px;
-    margin-left: 50px;
-}
-
-.link {
-    display: flex;
-    color: white;
-    padding: 10px 15px;
-    gap: 15px;
-    transition: all 0.5s;
-    text-decoration: none;
-}
-
-.link:hover {
-    background: #7b8a8b;
-    color: #000;
-    transition: all 0.5s;
-}
-
-.active {
-    background: #9ea7a8;
-    color: #000;
-}
-
-.icon,
-.link_text {
-    font-size: 20px;
-}
-
-.dropdown {
-    /* position: relative; */
-    /* display: inline-block; */
-    display: flex;
-    padding: 10px 15px;
-    gap: 15px;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
+    height: calc(100vh - 40px - 24px);
+    transition: all 0.3s;
+    flex-shrink: 0;
+    top: 40px;
+    position: sticky;
+    z-index: 97;
 }

@@ -1,0 +1,12 @@
+.page {
+    &__body {
+        // width: 100vw;
+        // height: 100vh;
+        // overflow: hidden;
+    }
+
+    &__main {
+        width: calc(100% - 50px);
+        background-color: $backgroundcolor;
+    }
+}

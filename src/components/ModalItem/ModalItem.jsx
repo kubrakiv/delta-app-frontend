@@ -1,3 +1,4 @@
+import React from "react";
 import Modal from "react-bootstrap/Modal";
 import EditTaskComponent from "../Tasks/EditTaskComponent";
 import AddTaskComponent from "../AddTask/AddTaskComponent";
@@ -5,14 +6,13 @@ import AddTaskComponent from "../AddTask/AddTaskComponent";
 export const ModalItem = ({
     showModal,
     onCloseModal,
-    editMode = false,
+    editMode,
     data,
     onTaskUpdate,
     onTaskCreate,
     selectedDate,
     selectedTruck,
 }) => {
-    console.log(data, selectedDate, selectedTruck, "this is data for modal");
     return (
         <Modal show={showModal} onHide={onCloseModal}>
             <Modal.Header closeButton>

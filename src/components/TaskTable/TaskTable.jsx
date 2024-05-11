@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ModalTaskLeftSideComponent from "../Tasks/ModalTaskLeftSideComponent";
 import "./TaskTable.scss";
@@ -23,17 +23,11 @@ function TaskTable() {
         navigate(`/tasks/${task.id}`);
     };
 
-    // const handleButtonClick = (event, task) => {
-    //     event.stopPropagation();
-    //     console.log("Button clicked for task:", task);
-    // };
-
     return (
         <>
+            <h2 className="table__name">Таблиця завдань</h2>
             <div className="table__container">
-                <h2 className="table__name">Таблиця завдань</h2>
                 <table className="task-table">
-                    {/* <caption className="table__name">Таблиця завдань</caption> */}
                     <thead className="task-table__head">
                         <tr className="task-table__head-row">
                             <th className="task-table__head-th">ID</th>

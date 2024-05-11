@@ -3,9 +3,9 @@ import TaskTable from "../components/TaskTable/TaskTable";
 
 function TaskTablePage() {
     return (
-        <div>
+        <>
             <TaskTable />
-        </div>
+        </>
     );
 }
 

@@ -1,0 +1,36 @@
+@import "../../../styles/utils/vars";
+
+.driver-search-container {
+    display: flex;
+    gap: 10px;
+    width: 600px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.driver-search-title {
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.input-driver-search {
+    width: 70%;
+    align-items: center;
+    border-radius: 4px;
+    padding-left: 10px;
+    height: 36px;
+}
+
+.driver-search-close-btn {
+    // width: 100%;
+    // color: darkred;
+    opacity: 0.8;
+    transition: all 0.5s ease;
+    font-size: 1rem;
+    &:hover {
+        cursor: pointer;
+        transform: scale(1.5);
+        opacity: 1;
+    }
+}

@@ -10,7 +10,7 @@ function TaskScreen() {
 
     useEffect(() => {
         async function fetchTask() {
-            const { data } = await axios.get(`/api/tasks/${id}`);
+            const { data } = await axios.get(`/api/tasks/${id}/`);
             setTask(data);
         }
         fetchTask();
