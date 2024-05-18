@@ -643,11 +643,6 @@ const OrderPage = ({ order }) => {
                                 </div>
                                 <div className="order-details__content-row">
                                     <CargoComponent
-                                        dispatch={dispatch}
-                                        cargoName={cargoName}
-                                        cargoWeight={cargoWeight}
-                                        cargoLoadingType={cargoLoadingType}
-                                        trailerType={trailerType}
                                         setCargoName={setCargoName}
                                         setCargoWeight={setCargoWeight}
                                         setCargoLoadingType={

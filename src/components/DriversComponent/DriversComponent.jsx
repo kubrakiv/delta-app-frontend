@@ -5,6 +5,9 @@ import DriverSearchComponent from "./DriverSearchComponent/DriverSearchComponent
 import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import DriverModalComponent from "./DriverModalComponent/DriverModalComponent";
 import driverImagePlaceholder from "../../img/driver_placeholder.jpg";
+import cn from "classnames";
+
+const { REACT_APP_PROXY: proxyUrl } = process.env;
 
 const DriversComponent = () => {
     const [drivers, setDrivers] = useState([]);
@@ -17,6 +20,10 @@ const DriversComponent = () => {
 
     // All edit mode hooks
     const [editDriverProfileMode, setEditDriverProfileMode] = useState(false);
+    const [activeDriver, setActiveDriver] = useState({});
+
+    // const proxyUrl = process.env.REACT_APP_PROXY;
+    console.log("PROXY URL", proxyUrl);
 
     const BASE_URL = "http://localhost:8000";
 
@@ -41,7 +48,19 @@ const DriversComponent = () => {
 
     const handleEditProfileMode = (e) => {
         e.preventDefault();
-        setEditDriverProfileMode(true);
+
+        if (selectedDrivers.length === 0) {
+            window.alert("Виберіть водія для редагування");
+        } else if (selectedDrivers.length > 1) {
+            window.alert("Виберіть лише одного водія для редагування");
+        }
+        if (selectedDrivers.length === 1) {
+            setSelectedDriver(
+                drivers.find((driver) => driver.user === selectedDrivers[0])
+            );
+            setEditDriverProfileMode(true);
+            setShowDriverModal(true);
+        }
     };
 
     const handleRowDoubleClick = (e, driver) => {
@@ -64,12 +83,12 @@ const DriversComponent = () => {
 
     // };
 
-    const handleEditModeButton = (e, driver) => {
-        e.stopPropagation();
-        setShowDriverModal(true);
-        setSelectedDriver(driver);
-        setEditDriverProfileMode(true);
-    };
+    // const handleEditModeButton = (e, driver) => {
+    //     e.stopPropagation();
+    //     setShowDriverModal(true);
+    //     setSelectedDriver(driver);
+    //     setEditDriverProfileMode(true);
+    // };
 
     const handleDeleteSelectedDrivers = async () => {
         console.log("Delete selected drivers", selectedDrivers);
@@ -107,8 +126,8 @@ const DriversComponent = () => {
                 showDriverModal={showDriverModal}
                 setShowDriverModal={setShowDriverModal}
                 selectedDriver={selectedDriver}
-                editDriverProfileMode={editDriverProfileMode}
                 setSelectedDriver={setSelectedDriver}
+                editDriverProfileMode={editDriverProfileMode}
                 setEditDriverProfileMode={setEditDriverProfileMode}
                 handleEditProfileMode={handleEditProfileMode}
                 handleRemoveSelectedDriver={handleRemoveSelectedDriver}
@@ -183,7 +202,15 @@ const DriversComponent = () => {
                                     .map((driver, index) => (
                                         <tr
                                             key={driver.user}
-                                            className="drivers-table__body-row"
+                                            className={cn(
+                                                "drivers-table__body-row",
+                                                {
+                                                    "drivers-table__body-row_active":
+                                                        selectedDrivers.includes(
+                                                            driver.user
+                                                        ),
+                                                }
+                                            )}
                                             onDoubleClick={(e) =>
                                                 handleRowDoubleClick(e, driver)
                                             }
@@ -221,11 +248,11 @@ const DriversComponent = () => {
                                                     checked={selectedDrivers.includes(
                                                         driver.user
                                                     )}
-                                                    onChange={() =>
+                                                    onChange={() => {
                                                         handleCheckboxChange(
                                                             driver.user
-                                                        )
-                                                    }
+                                                        );
+                                                    }}
                                                 />
                                             </td>
                                             {/* <td className="drivers-table__body-td">

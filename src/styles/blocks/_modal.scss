@@ -78,6 +78,16 @@
 
 .driver-modal {
     margin: 0 auto;
+    padding: 2px;
+    background-color: $backgroundcolor;
+    width: 50%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.generic-modal {
+    margin: 0 auto;
+    padding: 2px;
     background-color: $backgroundcolor;
     width: 50%;
     height: auto;

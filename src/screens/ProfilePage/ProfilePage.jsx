@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserDetails, updateUserProfile } from "../../actions/userActions";
-import { USER_UPDATE_PROFILE_RESET } from "../../constants/userConstants";
+import {
+    getUserDetails,
+    updateUserProfile,
+    USER_UPDATE_PROFILE_RESET,
+} from "../../actions/userActions";
 import "./ProfilePage.scss";
 import MessageComponent from "../../components/MessageComponent/MessageComponent";
 

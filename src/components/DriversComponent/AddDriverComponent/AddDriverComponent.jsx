@@ -9,6 +9,7 @@ import { register } from "../../../actions/userActions";
 import "./AddDriverComponent.scss";
 import driverImagePlaceholder from "../../../img/driver_placeholder.jpg";
 import cn from "classnames";
+import { transformDateFormat } from "../../../utils/formatDate";
 
 const AddDriverComponent = ({
     showDriverModal,
@@ -427,9 +428,10 @@ const AddDriverComponent = ({
                                                     />
                                                 ) : (
                                                     <span>
-                                                        {
-                                                            selectedDriver.birth_date
-                                                        }
+                                                        {selectedDriver.birth_date &&
+                                                            transformDateFormat(
+                                                                selectedDriver.birth_date
+                                                            )}
                                                     </span>
                                                 )}
                                             </div>
@@ -457,9 +459,10 @@ const AddDriverComponent = ({
                                                     />
                                                 ) : (
                                                     <span>
-                                                        {
-                                                            selectedDriver.work_start
-                                                        }
+                                                        {selectedDriver.work_start &&
+                                                            transformDateFormat(
+                                                                selectedDriver.work_start
+                                                            )}
                                                     </span>
                                                 )}
                                             </div>
@@ -488,9 +491,10 @@ const AddDriverComponent = ({
                                                     />
                                                 ) : (
                                                     <span>
-                                                        {
-                                                            selectedDriver.work_end
-                                                        }
+                                                        {selectedDriver.work_end &&
+                                                            transformDateFormat(
+                                                                selectedDriver.work_end
+                                                            )}
                                                     </span>
                                                 )}
                                             </div>
