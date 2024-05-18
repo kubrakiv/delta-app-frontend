@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
 import "./FormButtonComponent.scss";
 import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
+import { useDispatch } from "react-redux";
 
-function FormButtonComponent({
-    setEditModeOrder,
-    handleFormSubmit,
-    onField,
-    dispatch,
-}) {
+function FormButtonComponent({ setEditModeOrder, handleFormSubmit, onField }) {
+    const dispatch = useDispatch();
+
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.keyCode === 27) {

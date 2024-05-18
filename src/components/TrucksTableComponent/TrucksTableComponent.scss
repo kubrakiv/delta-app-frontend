@@ -1,6 +1,6 @@
 @import "../../styles/utils/vars";
 
-.drivers-table {
+.trucks-table {
     border-collapse: separate;
     border-spacing: 0 3px;
     margin-bottom: 5px;
@@ -128,7 +128,7 @@
     }
 }
 
-.drivers-header-block {
+.trucks-header-block {
     display: flex;
     align-items: center;
     justify-content: space-between;

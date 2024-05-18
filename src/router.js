@@ -22,6 +22,7 @@ import OrderScreen from "./screens/OrderScreen";
 import RegisterPage from "./screens/RegisterPage/RegisterPage";
 import { RestrictedRoute } from "./RestrictedRoute";
 import DriverListPage from "./screens/DriverListPage/DriverListPage";
+import TrucksPage from "./screens/TrucksPage/TrucksPage";
 
 const router = createBrowserRouter([
     {
@@ -117,6 +118,10 @@ const router = createBrowserRouter([
             {
                 path: "/drivers",
                 element: <DriverListPage />,
+            },
+            {
+                path: "/vehicles",
+                element: <TrucksPage />,
             },
         ],
     },

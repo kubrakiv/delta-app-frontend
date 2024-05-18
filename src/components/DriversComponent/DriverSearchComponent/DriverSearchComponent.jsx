@@ -17,7 +17,7 @@ const DriverSearchComponent = ({ search, setSearch }) => {
                 className="driver-search-close-btn"
                 onClick={() => setSearch("")}
             >
-                <FaRegWindowClose />
+                ✖️
             </div>
         </div>
     );

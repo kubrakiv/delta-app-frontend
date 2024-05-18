@@ -5,7 +5,7 @@ import {
     ORDER_DETAILS_REQUEST,
     ORDER_DETAILS_SUCCESS,
     ORDER_DETAILS_FAIL,
-} from "../constants/orderConstants";
+} from "../actions/orderActions";
 
 export const orderListReducer = (state = { orders: [] }, action) => {
     switch (action.type) {

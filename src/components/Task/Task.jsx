@@ -8,6 +8,8 @@ import {
     FaRoute,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { DELIVERY_CONSTANTS } from "../../constants/global";
+const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
 function Task({
     task,
@@ -25,13 +27,13 @@ function Task({
     useEffect(() => {
         // Function to set loading and unloading statuses
         const setStatus = () => {
-            if (task.type === "Завантаження") {
+            if (task.type === LOADING) {
                 if (task.end_date && task.end_time) {
                     setLoadingStatus(true);
                 } else {
                     setLoadingStatus(false);
                 }
-            } else if (task.type === "Розвантаження") {
+            } else if (task.type === UNLOADING) {
                 if (task.end_date && task.end_time) {
                     setUnloadingStatus(true);
                 } else {
@@ -52,14 +54,14 @@ function Task({
 
     const getTaskColor = (taskType, endDate, endTime) => {
         switch (taskType) {
-            case "Завантаження":
+            case LOADING:
                 if (!endDate || !endTime) {
                     return "rgb(255, 255, 0)"; //yellow color
                 } else {
                     return "rgba(0, 0, 255, 0.8)"; //blue color
                 }
 
-            case "Розвантаження":
+            case UNLOADING:
                 if (!endDate || !endTime) {
                     return "rgb(255, 0, 255)"; //pink color
                 } else {

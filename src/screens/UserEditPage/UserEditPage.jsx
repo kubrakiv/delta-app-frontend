@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserDetails, updateUser } from "../../actions/userActions";
+import {
+    getUserDetails,
+    updateUser,
+    USER_UPDATE_RESET,
+} from "../../actions/userActions";
 import "./UserEditPage.scss";
 import MessageComponent from "../../components/MessageComponent/MessageComponent";
 import axios from "axios";
-import { USER_UPDATE_RESET } from "../../constants/userConstants";
+// import { USER_UPDATE_RESET } from "../../constants/userConstants";
 import toast, { Toaster } from "react-hot-toast";
 
 const UserEditPage = () => {

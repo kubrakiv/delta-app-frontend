@@ -1,26 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import "./CargoComponent.scss";
 import FormButtonComponent from "../FormButtonComponent/FormButtonComponent";
+import { useSelector } from "react-redux";
+
+const CARGO_CONSTANTS = {
+    CARGO_NAME: "cargo_name",
+    CARGO_WEIGHT: "cargo_weight",
+    CARGO_LOADING_TYPE: "loading_type",
+    TRAILER_TYPE: "trailer_type",
+};
 
 function CargoComponent({
     editModeCargo,
-    setEditModeCargo,
     editModeOrder,
     setEditModeOrder,
-    cargoName,
-    setCargoName,
-    cargoWeight,
-    setCargoWeight,
-    cargoLoadingType,
-    setCargoLoadingType,
-    trailerType,
-    setTrailerType,
     handleFormSubmit,
     handleDoubleClick,
     onField = "cargo",
-    dispatch,
 }) {
+    const order = useSelector((state) => state.orderDetails.order);
+
+    const [cargoFields, setCargoFields] = useState({
+        ...Object.keys(CARGO_CONSTANTS).map((item) => ({ [item]: "" })),
+    });
+
+    useEffect(() => {
+        if (order) {
+            const defaultValues = Object.values(CARGO_CONSTANTS).reduce(
+                (acc, item) => {
+                    acc[item] = order?.[item] || "";
+                    return acc;
+                },
+                {}
+            );
+            console.log("defaultValues", defaultValues);
+            setCargoFields(defaultValues);
+        }
+    }, [order]);
+
+    console.log("Order", order);
+
+    const formFields = [
+        [
+            {
+                id: CARGO_CONSTANTS.CARGO_NAME,
+                placeholder: "Вантаж",
+            },
+            {
+                id: CARGO_CONSTANTS.CARGO_WEIGHT,
+                placeholder: "Вага",
+            },
+        ],
+        [
+            {
+                id: CARGO_CONSTANTS.TRAILER_TYPE,
+                placeholder: "Тип кузова",
+            },
+            {
+                id: CARGO_CONSTANTS.CARGO_LOADING_TYPE,
+                placeholder: "Тип завант",
+            },
+        ],
+    ];
+
+    const handleCargoChange = (e) => {
+        const { name, value } = e.target;
+        setCargoFields((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
     return (
         <>
             <div
@@ -33,55 +84,27 @@ function CargoComponent({
                 {editModeCargo || editModeOrder ? (
                     <Form>
                         <div className="order-details__cargo-form-container">
-                            <div className="order-details__form-col">
-                                <Form.Control
-                                    className="order-details__cargo-form-container__form-input"
-                                    id="weight"
-                                    name="weight"
-                                    placeholder="Вага"
-                                    value={cargoWeight}
-                                    onChange={(e) =>
-                                        setCargoWeight(e.target.value)
-                                    }
-                                ></Form.Control>
-                                <Form.Control
-                                    id="cargoName"
-                                    name="cargoName"
-                                    placeholder="Назва вантажу"
-                                    className="order-details__cargo-form-container__form-input"
-                                    value={cargoName}
-                                    onChange={(e) =>
-                                        setCargoName(e.target.value)
-                                    }
-                                ></Form.Control>
-                            </div>
-                            <div className="order-details__form-col">
-                                <Form.Control
-                                    id="bodyType"
-                                    name="bodyType"
-                                    placeholder="Тип кузова"
-                                    className="order-details__cargo-form-container__form-input"
-                                    value={trailerType}
-                                    onChange={(e) =>
-                                        setTrailerType(e.target.value)
-                                    }
-                                ></Form.Control>
-                                <Form.Control
-                                    id="loadingType"
-                                    name="loadingType"
-                                    placeholder="Тип завант"
-                                    className="order-details__cargo-form-container__form-input"
-                                    value={cargoLoadingType}
-                                    onChange={(e) =>
-                                        setCargoLoadingType(e.target.value)
-                                    }
-                                ></Form.Control>
-                            </div>
+                            {formFields.map((item) => (
+                                <div className="order-details__form-col">
+                                    {item.map((field) => (
+                                        <Form.Control
+                                            key={field.id}
+                                            className="order-details__cargo-form-container__form-input"
+                                            id={field.id}
+                                            name={field.id}
+                                            placeholder={field.placeholder}
+                                            value={cargoFields[field.id]}
+                                            onChange={(e) =>
+                                                handleCargoChange(e)
+                                            }
+                                        ></Form.Control>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                         {editModeCargo && (
                             <FormButtonComponent
                                 onField={onField}
-                                dispatch={dispatch}
                                 handleFormSubmit={handleFormSubmit}
                                 setEditModeOrder={setEditModeOrder}
                             />
@@ -89,18 +112,13 @@ function CargoComponent({
                     </Form>
                 ) : (
                     <div className="order-details__content-row-block-value-cargo">
-                        <div className="order-details__content-row-block-value-cargo-blocks">
-                            Вага: {cargoWeight} т
-                        </div>
-                        <div className="order-details__content-row-block-value-cargo-blocks">
-                            Тип кузова: {trailerType}
-                        </div>
-                        <div className="order-details__content-row-block-value-cargo-blocks">
-                            Вантаж: {cargoName}
-                        </div>
-                        <div className="order-details__content-row-block-value-cargo-blocks">
-                            Тип завант: {cargoLoadingType}
-                        </div>
+                        {formFields.flatMap((item) =>
+                            item.map((field) => (
+                                <div className="order-details__content-row-block-value-cargo-blocks">
+                                    {field.placeholder}:{cargoFields[field.id]}
+                                </div>
+                            ))
+                        )}
                     </div>
                 )}
             </div>

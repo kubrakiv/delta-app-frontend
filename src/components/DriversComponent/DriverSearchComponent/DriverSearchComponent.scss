@@ -1,5 +1,10 @@
 @import "../../../styles/utils/vars";
 
+// :not(.default)::-webkit-search-cancel-button {
+//     -webkit-appearance: none;
+//     appearance: none;
+// }
+
 .driver-search-container {
     display: flex;
     gap: 10px;
@@ -20,17 +25,51 @@
     border-radius: 4px;
     padding-left: 10px;
     height: 36px;
+    border: none;
+    position: relative;
+    &:focus {
+        border: 1px solid $colorBlue;
+        outline: none;
+        // background-color: ghostwhite;
+    }
 }
 
+// .input-driver-search {
+//     width: 70%;
+//     align-items: center;
+//     border-radius: 4px;
+//     padding-left: 10px;
+//     height: 36px;
+//     border: none;
+//     position: relative;
+//     &:focus {
+//         border: 1px solid $colorBlue;
+//         outline: none;
+//         background-color: whitesmoke;
+//     }
+
+//     /* Hide the default cancel button */
+//     &::-webkit-search-cancel-button {
+//         -webkit-appearance: none;
+//         appearance: none;
+//         display: none;
+//     }
+//     /* Create custom cancel button */
+//     &:after {
+//         content: "✖️";
+//         position: absolute;
+//         top: 50%;
+//         right: 10px;
+//         transform: translateY(-50%);
+//         color: $textColor;
+//         font-size: 16px;
+//     }
+// }
+
 .driver-search-close-btn {
-    // width: 100%;
-    // color: darkred;
-    opacity: 0.8;
-    transition: all 0.5s ease;
     font-size: 1rem;
     &:hover {
         cursor: pointer;
-        transform: scale(1.5);
-        opacity: 1;
+        transform: scale(1.1);
     }
 }
