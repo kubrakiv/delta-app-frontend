@@ -26,13 +26,14 @@ function TaskComponent({
         <>
             {sortedTasks &&
                 sortedTasks.map((task) => (
-                    <TaskOrder
-                        key={task.id}
-                        task={task}
-                        handleShowPointOnMap={handleShowPointOnMap}
-                        handleEditModeTask={handleEditModeTask}
-                        handleDeleteTask={handleDeleteTask}
-                    />
+                    <div key={task.id}>
+                        <TaskOrder
+                            task={task}
+                            handleShowPointOnMap={handleShowPointOnMap}
+                            handleEditModeTask={handleEditModeTask}
+                            handleDeleteTask={handleDeleteTask}
+                        />
+                    </div>
                 ))}
         </>
     );

@@ -1,18 +1,15 @@
 import React, { useEffect } from "react";
 import "./FormButtonComponent.scss";
-import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
 import { useDispatch } from "react-redux";
+import { setEditModeOrder } from "../../../actions/orderActions";
 
-function FormButtonComponent({ setEditModeOrder, handleFormSubmit, onField }) {
+function FormButtonComponent({ onSave, onClose }) {
     const dispatch = useDispatch();
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.keyCode === 27) {
-                dispatch({
-                    type: "TOGGLE_EDIT_MODE",
-                    field: `editMode${capitalizeFirstLetter(onField)}`,
-                });
+                dispatch(setEditModeOrder(false));
             }
         };
         document.addEventListener("keydown", handleKeyDown);
@@ -21,28 +18,32 @@ function FormButtonComponent({ setEditModeOrder, handleFormSubmit, onField }) {
         };
     });
 
+    const handleEditModeClose = () => {
+        onClose(false);
+        dispatch(setEditModeOrder(false));
+    };
+
+    const handleSave = () => {
+        onSave();
+        handleEditModeClose();
+    };
+
     return (
         <>
             <div className="form-footer form-footer_number">
                 <button
                     type="button"
                     className="form-footer-btn form-footer-btn_save"
-                    onClick={(e) => handleFormSubmit(e, onField)}
+                    onClick={handleSave}
                 >
-                    Save
+                    Зберегти
                 </button>
                 <button
+                    type="button"
                     className="form-footer-btn form-footer-btn_close"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        dispatch({
-                            type: "TOGGLE_EDIT_MODE",
-                            field: `editMode${capitalizeFirstLetter(onField)}`,
-                        });
-                        setEditModeOrder(false);
-                    }}
+                    onClick={handleEditModeClose}
                 >
-                    Exit
+                    Закрити
                 </button>
             </div>
         </>

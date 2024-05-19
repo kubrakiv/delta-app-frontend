@@ -1,37 +1,39 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setEditModeOrder } from "../../../actions/orderActions";
 
-const FooterComponent = ({ setEditModeOrder }) => {
+const FooterComponent = ({ onClose }) => {
+    const dispatch = useDispatch();
+    const editModeOrder = useSelector((state) => state.ordersInfo.editMode);
+
+    const toggleEditMode = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dispatch(setEditModeOrder(!editModeOrder));
+    };
+
     return (
         <>
             <div className="order-details__footer">
                 <button
                     title="Edit Order"
                     className="order-details__footer-btn order-details__footer-btn_edit"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setEditModeOrder(true);
-                    }}
+                    onClick={toggleEditMode}
                 >
-                    Редагувати
+                    {!editModeOrder ? "Редагувати" : "Завершити редагування"}
                 </button>
                 <button
                     title="Save Order"
                     className="order-details__footer-btn order-details__footer-btn_save"
-                    type="submit"
                 >
                     Записати
                 </button>
                 <button
                     title="Close Order"
                     className="order-details__footer-btn order-details__footer-btn_close"
-                    onClick={(e) => {
-                        e.preventDefault();
-                    }}
+                    onClick={onClose}
                 >
-                    <Link to="/orders-list">
-                        <div>Закрити</div>
-                    </Link>
+                    Закрити
                 </button>
             </div>
         </>

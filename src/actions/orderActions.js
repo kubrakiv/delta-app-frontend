@@ -1,39 +1,73 @@
 import axios from "axios";
+import {
+    setOrderDetailsData,
+    setOrderListData,
+} from "../reducers/orderReducers";
 
-export const ORDER_LIST_REQUEST = "ORDER_LIST_REQUEST";
-export const ORDER_LIST_SUCCESS = "ORDER_LIST_SUCCESS";
-export const ORDER_LIST_FAIL = "ORDER_LIST_FAIL";
-
-export const ORDER_DETAILS_REQUEST = "ORDER_DETAILS_REQUEST";
-export const ORDER_DETAILS_SUCCESS = "ORDER_DETAILS_SUCCESS";
-export const ORDER_DETAILS_FAIL = "ORDER_DETAILS_FAIL";
+export const SET_EDIT_MODE_ORDER = "SET_EDIT_MODE_ORDER";
+export const SET_ORDER_LIST_DATA = "SET_ORDER_LIST_DATA";
+export const SET_ORDER_DETAILS_DATA = "SET_ORDER_DETAILS_DATA";
 
 export const listOrders = () => async (dispatch) => {
     try {
-        dispatch({ type: ORDER_LIST_REQUEST });
+        dispatch(setOrderListData({ loading: true }));
 
         const { data } = await axios.get("/api/orders/");
-
-        dispatch({ type: ORDER_LIST_SUCCESS, payload: data });
+        dispatch(setOrderListData({ data }));
     } catch (error) {
-        dispatch({ type: ORDER_LIST_FAIL, payload: error.message });
+        dispatch(setOrderListData({ error: error.message }));
+    } finally {
+        dispatch(setOrderListData({ loading: false }));
     }
 };
 
 export const listOrderDetails = (id) => async (dispatch) => {
     try {
-        dispatch({ type: ORDER_DETAILS_REQUEST });
+        dispatch(setOrderDetailsData({ loading: true }));
 
         const { data } = await axios.get(`/api/orders/${id}/`);
 
-        dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data });
+        dispatch(setOrderDetailsData({ data }));
     } catch (error) {
-        dispatch({
-            type: ORDER_DETAILS_FAIL,
-            payload:
-                error.response && error.response.data.detail
-                    ? error.response.data.detail
-                    : error.message,
-        });
+        dispatch(setOrderDetailsData({ error: error.message }));
+    } finally {
+        dispatch(setOrderDetailsData({ loading: false }));
     }
 };
+
+export const updateOrder =
+    (dataToUpdate, orderId) => async (dispatch, getState) => {
+        try {
+            dispatch(setOrderDetailsData({ loading: true }));
+
+            const {
+                userLogin: { userInfo },
+            } = getState();
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            };
+
+            const { data } = await axios.put(
+                `/api/orders/edit/${orderId}/`,
+                dataToUpdate,
+                config
+            );
+
+            console.log("DATA FROM UPDATE ORDER", data);
+
+            dispatch(setOrderDetailsData({ data }));
+        } catch (error) {
+            dispatch(setOrderDetailsData({ error: error.message }));
+        } finally {
+            dispatch(setOrderDetailsData({ loading: false }));
+        }
+    };
+
+export const setEditModeOrder = (editModeOrder) => ({
+    type: SET_EDIT_MODE_ORDER,
+    payload: editModeOrder,
+});
