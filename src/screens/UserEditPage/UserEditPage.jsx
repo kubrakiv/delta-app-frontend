@@ -9,7 +9,6 @@ import {
 import "./UserEditPage.scss";
 import MessageComponent from "../../components/MessageComponent/MessageComponent";
 import axios from "axios";
-// import { USER_UPDATE_RESET } from "../../constants/userConstants";
 import toast, { Toaster } from "react-hot-toast";
 
 const UserEditPage = () => {

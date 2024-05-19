@@ -14,9 +14,10 @@ import {
     PiArrowFatUpFill,
 } from "react-icons/pi";
 import { formattedTime } from "../../utils/formattedTime";
+import { DELIVERY_CONSTANTS } from "../../constants/global";
+const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
 function TaskOrder({
-    key,
     task,
     handleShowPointOnMap,
     handleEditModeTask,
@@ -29,13 +30,13 @@ function TaskOrder({
     useEffect(() => {
         // Function to set loading and unloading statuses
         const setStatus = () => {
-            if (task.type === "Завантаження") {
+            if (task.type === LOADING) {
                 if (task.end_date && task.end_time) {
                     setLoadingStatus(true);
                 } else {
                     setLoadingStatus(false);
                 }
-            } else if (task.type === "Розвантаження") {
+            } else if (task.type === UNLOADING) {
                 if (task.end_date && task.end_time) {
                     setUnloadingStatus(true);
                 } else {
@@ -56,13 +57,13 @@ function TaskOrder({
 
     const getIconComponent = () => {
         switch (task.type) {
-            case "Завантаження":
+            case LOADING:
                 return loadingStatus ? (
                     <PiArrowFatDownFill style={iconStyle} />
                 ) : (
                     <PiArrowFatDownBold style={iconStyle} />
                 );
-            case "Розвантаження":
+            case UNLOADING:
                 return unloadingStatus ? (
                     <PiArrowFatUpFill style={iconStyle} />
                 ) : (
@@ -75,7 +76,7 @@ function TaskOrder({
 
     const getTimeComponent = () => {
         switch (task.type) {
-            case "Завантаження":
+            case LOADING:
                 return !loadingStatus ? (
                     <>
                         <div className="task-order__date">
@@ -95,7 +96,7 @@ function TaskOrder({
                         </div>
                     </>
                 );
-            case "Розвантаження":
+            case UNLOADING:
                 return !unloadingStatus ? (
                     <>
                         <div className="task-order__date">
@@ -121,12 +122,12 @@ function TaskOrder({
     };
 
     const iconStyle = {
-        color: task.type === "Завантаження" ? "green" : "red",
+        color: task.type === LOADING ? "green" : "red",
     };
 
     const taskStyle = {
         backgroundColor: isHovered
-            ? task.type === "Завантаження"
+            ? task.type === LOADING
                 ? "rgba(63, 177, 40, 0.6)"
                 : "rgba(226, 97, 85, 0.6)"
             : "rgba(140, 177, 186, 0.3)",
@@ -136,7 +137,6 @@ function TaskOrder({
         <>
             {task && (
                 <div
-                    key={key}
                     className="task-order"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}

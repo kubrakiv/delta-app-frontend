@@ -1,8 +1,14 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import {
-    orderDetailsReducer,
-    orderListReducer,
+    // orderDetailsReducer,
+    // orderListReducer,
+    // orderUpdateReducer,
+    // setEditModeOrderReducer,
+    orderReducer,
 } from "./reducers/orderReducers";
+
+import { truckListReducer } from "./reducers/truckReducers";
+import { driverListReducer } from "./reducers/driverReducers";
 import {
     userLoginReducer,
     userRegisterReducer,
@@ -15,8 +21,7 @@ import {
 import { mapDefaultCenter } from "./reducers/mapReducers";
 
 const reducer = combineReducers({
-    orderList: orderListReducer,
-    orderDetails: orderDetailsReducer,
+    ordersInfo: orderReducer,
 
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
@@ -26,6 +31,10 @@ const reducer = combineReducers({
     userDelete: userDeleteReducer,
     userUpdate: userUpdateReducer,
     map: mapDefaultCenter,
+
+    truckList: truckListReducer,
+
+    driverList: driverListReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem("userInfo")

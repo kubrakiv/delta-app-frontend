@@ -1,11 +1,12 @@
 import React, {
     useState,
     useEffect,
-    useContext,
     useMemo,
     useCallback,
     useReducer,
 } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useJsApiLoader, DirectionsService } from "@react-google-maps/api";
 import "./OrderPage.scss";
@@ -33,8 +34,13 @@ import { formatDuration } from "../../utils/formatDuration";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { editModeReducer } from "./editModeReducer";
 import UploadDocumentsModalComponent from "../../components/UploadDocumentsComponent/UploadDocumentsModalComponent/UploadDocumentsModalComponent";
+import { setEditModeOrder } from "../../actions/orderActions";
+import { listTrucks } from "../../actions/truckActions";
+import { listDrivers } from "../../actions/driverActions";
 
 const { REACT_APP_API_KEY: API_KEY } = process.env;
+
+const libraries = ["places", "geometry"];
 
 const initialEditModeState = {
     editMode: false,
@@ -49,17 +55,19 @@ const initialEditModeState = {
 };
 
 const OrderPage = ({ order }) => {
-    const { editModeOrder, setEditModeOrder, libraries, defaultCenter } =
-        useContext(OpenContext);
+    const navigate = useNavigate();
+    const dispatchRedux = useDispatch();
 
-    console.log("OrderPage", order);
+    const defaultCenter = useSelector((state) => state.map.defaultCenter);
+    const editModeOrder = useSelector((state) => state.ordersInfo.editMode);
+    const trucks = useSelector((state) => state.truckList.trucks);
+    const drivers = useSelector((state) => state.driverList.drivers);
 
     const [editModeState, dispatch] = useReducer(
         editModeReducer,
         initialEditModeState
     );
 
-    const [csrfToken, setCsrfToken] = useState("");
     const [origin, setOrigin] = useState();
     const [destination, setDestination] = useState();
     const [directionsResponse, setDirectionsResponse] = useState(null);
@@ -68,14 +76,13 @@ const OrderPage = ({ order }) => {
     const [center, setCenter] = useState(defaultCenter);
 
     // All edit mode hooks
-    const [editMode, setEditMode] = useState(false);
     const [editModeTask, setEditModeTask] = useState(false);
 
     // Hooks for data from useEffect functions
     const [user, setUser] = useState({});
     const [tasks, setTasks] = useState([]);
-    const [trucks, setTrucks] = useState([]);
-    const [drivers, setDrivers] = useState([]);
+    // const [trucks, setTrucks] = useState([]);
+    // const [drivers, setDrivers] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [customerManagersList, setCustomerManagersList] = useState([]);
     const [platforms, setPlatforms] = useState([]);
@@ -86,7 +93,6 @@ const OrderPage = ({ order }) => {
 
     // Hooks to show modal components
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-    const [showModal, setShowModal] = useState(false);
 
     // Hooks for variables from the order
     const [selectedTask, setSelectedTask] = useState({});
@@ -104,12 +110,6 @@ const OrderPage = ({ order }) => {
     const [paymentDays, setPaymentDays] = useState("");
     const [paymentTypes, setPaymentTypes] = useState([]);
     const [selectedPaymentType, setSelectedPaymentType] = useState("");
-
-    // Hooks for cargo details
-    const [cargoName, setCargoName] = useState("");
-    const [cargoWeight, setCargoWeight] = useState("");
-    const [cargoLoadingType, setCargoLoadingType] = useState("");
-    const [trailerType, setTrailerType] = useState("");
 
     // Hooks for document upload
     const [documents, setDocuments] = useState([]);
@@ -191,10 +191,7 @@ const OrderPage = ({ order }) => {
         setDistance(order.distance);
         setSelectedCustomer(order.customer);
         setOrderNumber(order.order_number);
-        setCargoName(order.cargo_name);
-        setCargoWeight(order.cargo_weight);
-        setCargoLoadingType(order.loading_type);
-        setTrailerType(order.trailer_type);
+
         setSelectedCustomerManagerName(order.customer_manager);
         setTasks(order.tasks);
         setUser(order.user);
@@ -342,14 +339,7 @@ const OrderPage = ({ order }) => {
                     customer_manager: selectedCustomerManagerName,
                 };
                 break;
-            case "cargo":
-                dataToUpdate = {
-                    cargo_name: cargoName,
-                    cargo_weight: cargoWeight,
-                    loading_type: cargoLoadingType,
-                    trailer_type: trailerType,
-                };
-                break;
+
             case "orderNumber":
                 dataToUpdate = { order_number: orderNumber };
                 break;
@@ -375,23 +365,24 @@ const OrderPage = ({ order }) => {
         }
     };
 
-    const handleFormSubmitGlobal = (e) => {
+    const handleOrderFormClose = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Global Form Submit!!!");
-        setEditModeOrder(false);
+        // setEditModeOrder(false);
+    };
+
+    const handleOrderClose = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigate("/orders");
     };
 
     useEffect(() => {
-        (async () => {
-            const { data } = await axios.get("/api/trucks/");
-            setTrucks(data);
-        })();
-
-        (async () => {
-            const { data } = await axios.get("/api/drivers/");
-            setDrivers(data);
-        })();
+        dispatchRedux(listTrucks());
+        dispatchRedux(listDrivers());
+        // dispatchRedux(listCustomers());
+        // dispatchRedux(listPaymentTypes());
+        // dispatchRedux(listPlatforms());
 
         (async () => {
             const { data } = await axios.get("/api/customers/");
@@ -407,7 +398,7 @@ const OrderPage = ({ order }) => {
             const { data } = await axios.get("/api/platforms/");
             setPlatforms(data);
         })();
-    }, []);
+    }, [dispatchRedux]);
 
     const handleShowPointOnMap = (task) => {
         if (task && task.point_details) {
@@ -488,70 +479,62 @@ const OrderPage = ({ order }) => {
                 documents={documents}
             />
 
-            <form onSubmit={handleFormSubmitGlobal}>
-                <div className="order-container">
-                    <div className="order-details">
-                        <HeaderComponent
-                            dispatch={dispatch}
-                            order={order}
-                            tasks={tasks}
-                            orderNumber={orderNumber}
-                            setOrderNumber={setOrderNumber}
-                            editModeOrderNumber={
-                                editModeState.editModeOrderNumber
-                            }
-                            editModeOrder={editModeOrder}
-                            setEditModeOrder={setEditModeOrder}
-                            handleDoubleClick={handleDoubleClick}
-                            handleFormSubmit={handleFieldFormSubmit}
-                        />
-                        <ActionsComponent
-                            handleAddTaskButtonClick={handleAddTaskButtonClick}
-                            handleUploadDocumentsButtonClick={
-                                handleUploadDocumentsButtonClick
-                            }
-                        />
-                        <div className="order-details__content">
-                            <div className="order-details__content-block">
-                                <div className="order-details__content-row">
-                                    <CarrierComponent />
-                                    <CarrierManagerComponent user={user} />
-                                </div>
-                                <div className="order-details__content-row">
-                                    <TruckComponent
-                                        dispatch={dispatch}
-                                        trucks={trucks}
-                                        handleDoubleClick={handleDoubleClick}
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        editModeTruck={
-                                            editModeState.editModeTruck
-                                        }
-                                        selectedTruck={selectedTruck}
-                                        setSelectedTruck={setSelectedTruck}
-                                        handleFormSubmit={handleFieldFormSubmit}
+            <div className="order-container">
+                <div className="order-details">
+                    <HeaderComponent
+                        dispatch={dispatch}
+                        order={order}
+                        tasks={tasks}
+                        orderNumber={orderNumber}
+                        setOrderNumber={setOrderNumber}
+                        editModeOrderNumber={editModeState.editModeOrderNumber}
+                        editModeOrder={editModeOrder}
+                        handleDoubleClick={handleDoubleClick}
+                        handleFormSubmit={handleFieldFormSubmit}
+                    />
+                    <ActionsComponent
+                        handleAddTaskButtonClick={handleAddTaskButtonClick}
+                        handleUploadDocumentsButtonClick={
+                            handleUploadDocumentsButtonClick
+                        }
+                    />
+                    <div className="order-details__content">
+                        <div className="order-details__content-block">
+                            <div className="order-details__content-row">
+                                <CarrierComponent />
+                                <CarrierManagerComponent user={user} />
+                            </div>
+                            <div className="order-details__content-row">
+                                <TruckComponent
+                                    dispatch={dispatch}
+                                    trucks={trucks}
+                                    handleDoubleClick={handleDoubleClick}
+                                    editModeOrder={editModeOrder}
+                                    editModeTruck={editModeState.editModeTruck}
+                                    selectedTruck={selectedTruck}
+                                    setSelectedTruck={setSelectedTruck}
+                                    handleFormSubmit={handleFieldFormSubmit}
+                                />
+                                <DriverComponent
+                                    dispatch={dispatch}
+                                    handleDoubleClick={handleDoubleClick}
+                                    drivers={drivers}
+                                    editModeOrder={editModeOrder}
+                                    editModeDriver={
+                                        editModeState.editModeDriver
+                                    }
+                                    selectedDriver={selectedDriver}
+                                    setSelectedDriver={setSelectedDriver}
+                                    handleFormSubmit={handleFieldFormSubmit}
+                                />
+                            </div>
+                            <div className="order-details__content-row">
+                                <div className="order-details__content-row-block order-details__content-row-block_tasks">
+                                    <RouteComponent
+                                        distance={distance}
+                                        duration={duration}
                                     />
-                                    <DriverComponent
-                                        dispatch={dispatch}
-                                        handleDoubleClick={handleDoubleClick}
-                                        drivers={drivers}
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        editModeDriver={
-                                            editModeState.editModeDriver
-                                        }
-                                        selectedDriver={selectedDriver}
-                                        setSelectedDriver={setSelectedDriver}
-                                        handleFormSubmit={handleFieldFormSubmit}
-                                    />
-                                </div>
-                                <div className="order-details__content-row">
-                                    <div className="order-details__content-row-block order-details__content-row-block_tasks">
-                                        <RouteComponent
-                                            distance={distance}
-                                            duration={duration}
-                                        />
-                                        {/* <DragAndDropTaskOrderComponent
+                                    {/* <DragAndDropTaskOrderComponent
                                             tasks={tasks}
                                             setTasks={setTasks}
                                             handleShowPointOnMap={
@@ -563,157 +546,132 @@ const OrderPage = ({ order }) => {
                                             handleDeleteTask={handleDeleteTask}
                                         /> */}
 
-                                        <TaskComponent
-                                            tasks={tasks}
-                                            setTasks={setTasks}
-                                            handleShowPointOnMap={
-                                                handleShowPointOnMap
-                                            }
-                                            handleEditModeTask={
-                                                handleEditModeTask
-                                            }
-                                            handleDeleteTask={handleDeleteTask}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="order-details__content-block">
-                                <div className="order-details__content-row">
-                                    <PriceComponent
-                                        dispatch={dispatch}
-                                        distance={distance}
-                                        order={order}
-                                        price={price}
-                                        setPrice={setPrice}
-                                        paymentDays={paymentDays}
-                                        setPaymentDays={setPaymentDays}
-                                        paymentTypes={paymentTypes}
-                                        setSelectedPaymentType={
-                                            setSelectedPaymentType
+                                    <TaskComponent
+                                        tasks={tasks}
+                                        setTasks={setTasks}
+                                        handleShowPointOnMap={
+                                            handleShowPointOnMap
                                         }
-                                        selectedPaymentType={
-                                            selectedPaymentType
-                                        }
-                                        marketPrice={marketPrice}
-                                        setMarketPrice={setMarketPrice}
-                                        editModePrice={
-                                            editModeState.editModePrice
-                                        }
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        handleFormSubmit={handleFieldFormSubmit}
-                                        handleDoubleClick={handleDoubleClick}
+                                        handleEditModeTask={handleEditModeTask}
+                                        handleDeleteTask={handleDeleteTask}
                                     />
-                                    <MarketPriceComponent
-                                        selectedCustomer={selectedCustomer}
-                                        dispatch={dispatch}
-                                        order={order}
-                                        marketPrice={marketPrice}
-                                        distance={distance}
-                                        setMarketPrice={setMarketPrice}
-                                        editModeMarketPrice={
-                                            editModeState.editModeMarketPrice
-                                        }
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        handleFormSubmit={handleFieldFormSubmit}
-                                        handleDoubleClick={handleDoubleClick}
-                                    />
-                                    <CustomerComponent
-                                        order={order}
-                                        dispatch={dispatch}
-                                        customers={customers}
-                                        platforms={platforms}
-                                        selectedPlatform={selectedPlatform}
-                                        setSelectedPlatform={
-                                            setSelectedPlatform
-                                        }
-                                        selectedCustomer={selectedCustomer}
-                                        setSelectedCustomer={
-                                            setSelectedCustomer
-                                        }
-                                        editModeCustomer={
-                                            editModeState.editModeCustomer
-                                        }
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        handleFormSubmit={handleFieldFormSubmit}
-                                        handleDoubleClick={handleDoubleClick}
-                                    />
-                                </div>
-                                <div className="order-details__content-row">
-                                    <CargoComponent
-                                        setCargoName={setCargoName}
-                                        setCargoWeight={setCargoWeight}
-                                        setCargoLoadingType={
-                                            setCargoLoadingType
-                                        }
-                                        setTrailerType={setTrailerType}
-                                        editModeCargo={
-                                            editModeState.editModeCargo
-                                        }
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        handleFormSubmit={handleFieldFormSubmit}
-                                        handleDoubleClick={handleDoubleClick}
-                                    />
-
-                                    <CustomerManagerComponent
-                                        dispatch={dispatch}
-                                        selectedCustomer={selectedCustomer}
-                                        customerManagersList={
-                                            customerManagersList
-                                        }
-                                        selectedCustomerManagerObject={
-                                            selectedCustomerManagerObject
-                                        }
-                                        order={order}
-                                        selectedCustomerManagerName={
-                                            selectedCustomerManagerName
-                                        }
-                                        setSelectedCustomerManagerName={
-                                            setSelectedCustomerManagerName
-                                        }
-                                        editModeCustomerManager={
-                                            editModeState.editModeCustomerManager
-                                        }
-                                        editModeOrder={editModeOrder}
-                                        setEditModeOrder={setEditModeOrder}
-                                        handleFormSubmit={handleFieldFormSubmit}
-                                        handleDoubleClick={handleDoubleClick}
-                                    />
-                                </div>
-                                <div className="order-details__content-row">
-                                    <div className="order-details__content-row-block order-details__content-row-block-map">
-                                        {isLoaded ? (
-                                            <>
-                                                <DirectionsService
-                                                    options={
-                                                        directionsServiceOptions
-                                                    }
-                                                    callback={
-                                                        directionsCallback
-                                                    }
-                                                />
-                                                <Map
-                                                    tasks={tasks}
-                                                    center={center}
-                                                    directionsResponse={
-                                                        directionsResponse
-                                                    }
-                                                />
-                                            </>
-                                        ) : (
-                                            <h2>Loading...</h2>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <FooterComponent setEditModeOrder={setEditModeOrder} />
+                        <div className="order-details__content-block">
+                            <div className="order-details__content-row">
+                                <PriceComponent
+                                    dispatch={dispatch}
+                                    distance={distance}
+                                    order={order}
+                                    price={price}
+                                    setPrice={setPrice}
+                                    paymentDays={paymentDays}
+                                    setPaymentDays={setPaymentDays}
+                                    paymentTypes={paymentTypes}
+                                    setSelectedPaymentType={
+                                        setSelectedPaymentType
+                                    }
+                                    selectedPaymentType={selectedPaymentType}
+                                    marketPrice={marketPrice}
+                                    setMarketPrice={setMarketPrice}
+                                    editModePrice={editModeState.editModePrice}
+                                    editModeOrder={editModeOrder}
+                                    handleFormSubmit={handleFieldFormSubmit}
+                                    handleDoubleClick={handleDoubleClick}
+                                />
+                                <MarketPriceComponent
+                                    selectedCustomer={selectedCustomer}
+                                    dispatch={dispatch}
+                                    order={order}
+                                    marketPrice={marketPrice}
+                                    distance={distance}
+                                    setMarketPrice={setMarketPrice}
+                                    editModeMarketPrice={
+                                        editModeState.editModeMarketPrice
+                                    }
+                                    editModeOrder={editModeOrder}
+                                    handleFormSubmit={handleFieldFormSubmit}
+                                    handleDoubleClick={handleDoubleClick}
+                                />
+                                <CustomerComponent
+                                    order={order}
+                                    dispatch={dispatch}
+                                    customers={customers}
+                                    platforms={platforms}
+                                    selectedPlatform={selectedPlatform}
+                                    setSelectedPlatform={setSelectedPlatform}
+                                    selectedCustomer={selectedCustomer}
+                                    setSelectedCustomer={setSelectedCustomer}
+                                    editModeCustomer={
+                                        editModeState.editModeCustomer
+                                    }
+                                    editModeOrder={editModeOrder}
+                                    handleFormSubmit={handleFieldFormSubmit}
+                                    handleDoubleClick={handleDoubleClick}
+                                />
+                            </div>
+                            <div className="order-details__content-row">
+                                <CargoComponent
+                                    editModeCargo={editModeState.editModeCargo}
+                                    editModeOrder={editModeOrder}
+                                    handleDoubleClick={handleDoubleClick}
+                                    dispatch={dispatch}
+                                />
+
+                                <CustomerManagerComponent
+                                    dispatch={dispatch}
+                                    selectedCustomer={selectedCustomer}
+                                    customerManagersList={customerManagersList}
+                                    selectedCustomerManagerObject={
+                                        selectedCustomerManagerObject
+                                    }
+                                    order={order}
+                                    selectedCustomerManagerName={
+                                        selectedCustomerManagerName
+                                    }
+                                    setSelectedCustomerManagerName={
+                                        setSelectedCustomerManagerName
+                                    }
+                                    editModeCustomerManager={
+                                        editModeState.editModeCustomerManager
+                                    }
+                                    editModeOrder={editModeOrder}
+                                    handleFormSubmit={handleFieldFormSubmit}
+                                    handleDoubleClick={handleDoubleClick}
+                                />
+                            </div>
+                            <div className="order-details__content-row">
+                                <div className="order-details__content-row-block order-details__content-row-block-map">
+                                    {isLoaded ? (
+                                        <>
+                                            <DirectionsService
+                                                options={
+                                                    directionsServiceOptions
+                                                }
+                                                callback={directionsCallback}
+                                            />
+                                            <Map
+                                                tasks={tasks}
+                                                center={center}
+                                                directionsResponse={
+                                                    directionsResponse
+                                                }
+                                            />
+                                        </>
+                                    ) : (
+                                        <h2>Loading...</h2>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <FooterComponent
+                        handleOrderFormClose={handleOrderFormClose}
+                        onClose={handleOrderClose}
+                    />
                 </div>
-            </form>
+            </div>
         </>
     );
 };

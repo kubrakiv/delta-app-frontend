@@ -2,7 +2,6 @@ import React from "react";
 import "./RouteComponent.scss";
 
 const RouteComponent = ({ distance, duration, calculateRoute }) => {
-    console.log("Route Component Renders");
     return (
         <div>
             <div

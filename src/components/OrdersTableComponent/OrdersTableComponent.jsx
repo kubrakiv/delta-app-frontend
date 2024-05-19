@@ -37,8 +37,8 @@ function OrdersTableComponent() {
     const [unloadingStartDate, setUnloadingStartDate] = useState("");
     const [unloadingStartTime, setUnloadingStartTime] = useState("");
 
-    const orderList = useSelector((state) => state.orderList);
-    const { loading, orders, error } = orderList;
+    const orderList = useSelector((state) => state.ordersInfo.orders);
+    const { loading, data: ordersData, error } = orderList;
 
     const { setEditModeOrder } = useContext(OpenContext);
 
@@ -231,7 +231,7 @@ function OrdersTableComponent() {
                                 </tr>
                             </thead>
                             <tbody className="orders-table__body">
-                                {orders.map((order) => (
+                                {ordersData.map((order) => (
                                     <tr
                                         key={order.id}
                                         className="orders-table__body-row"
