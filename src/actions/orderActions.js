@@ -4,10 +4,6 @@ import {
     setOrderListData,
 } from "../reducers/orderReducers";
 
-// export const ORDER_UPDATE_REQUEST = "ORDER_UPDATE_REQUEST";
-// export const ORDER_UPDATE_SUCCESS = "ORDER_UPDATE_SUCCESS";
-// export const ORDER_UPDATE_FAIL = "ORDER_UPDATE_FAIL";
-
 export const SET_EDIT_MODE_ORDER = "SET_EDIT_MODE_ORDER";
 export const SET_ORDER_LIST_DATA = "SET_ORDER_LIST_DATA";
 export const SET_ORDER_DETAILS_DATA = "SET_ORDER_DETAILS_DATA";

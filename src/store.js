@@ -1,11 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import {
-    // orderDetailsReducer,
-    // orderListReducer,
-    // orderUpdateReducer,
-    // setEditModeOrderReducer,
-    orderReducer,
-} from "./reducers/orderReducers";
+import { orderReducer } from "./reducers/orderReducers";
 
 import { truckListReducer } from "./reducers/truckReducers";
 import { driverListReducer } from "./reducers/driverReducers";

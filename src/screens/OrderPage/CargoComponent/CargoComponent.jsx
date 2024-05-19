@@ -19,7 +19,7 @@ const { CARGO_NAME, CARGO_WEIGHT, CARGO_LOADING_TYPE, TRAILER_TYPE } =
 const CargoComponent = () => {
     const order = useSelector((state) => state.ordersInfo.order.data);
 
-    const dispatchRedux = useDispatch();
+    const dispatch = useDispatch();
 
     const [cargoFields, setCargoFields] = useState(
         Object.values(CARGO_CONSTANTS).reduce((acc, item) => {
@@ -82,7 +82,7 @@ const CargoComponent = () => {
             dataToUpdate[key] = cargoFields[key];
         });
 
-        dispatchRedux(updateOrder(dataToUpdate, order.id));
+        dispatch(updateOrder(dataToUpdate, order.id));
     };
 
     return (

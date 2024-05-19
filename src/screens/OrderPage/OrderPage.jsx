@@ -25,7 +25,6 @@ import CarrierComponent from "./CarrierComponent/CarrierComponent";
 import CarrierManagerComponent from "./CarrierManagerComponent/CarrierManagerComponent";
 import FooterComponent from "./FooterComponent/FooterComponent";
 
-import OpenContext from "../../components/OpenContext";
 import AddTaskModalComponent from "../../components/AddTask/AddTaskModalComponent/AddTaskModalComponent";
 import DragAndDropTaskOrderComponent from "../../components/DragAndDropTaskOrderComponent/DragAndDropTaskOrderComponent";
 import MarketPriceComponent from "./MarketPriceComponent/MarketPriceComponent";
