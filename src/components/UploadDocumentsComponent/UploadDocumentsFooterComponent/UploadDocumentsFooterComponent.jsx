@@ -1,7 +1,18 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./UploadDocumentsFooterComponent.scss";
+import { setEditModeDocument } from "../../../reducers/documentReducers";
 
-const UploadDocumentsFooterComponent = ({ setShowUploadDocumentsModal }) => {
+const UploadDocumentsFooterComponent = () => {
+    const dispatch = useDispatch();
+    const editModeDocument = useSelector(
+        (state) => state.documentsInfo.editMode
+    );
+
+    const handleCloseDocumentModal = () => {
+        dispatch(setEditModeDocument(!editModeDocument));
+    };
+
     return (
         <>
             <div className="upload-documents__footer">
@@ -15,10 +26,7 @@ const UploadDocumentsFooterComponent = ({ setShowUploadDocumentsModal }) => {
                 <button
                     title="Close Window"
                     className="upload-documents__footer-btn upload-documents__footer-btn_close"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setShowUploadDocumentsModal(false);
-                    }}
+                    onClick={handleCloseDocumentModal}
                 >
                     Закрити
                 </button>

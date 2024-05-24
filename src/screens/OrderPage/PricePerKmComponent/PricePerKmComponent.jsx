@@ -1,8 +1,21 @@
 import React from "react";
 import "./PricePerKmComponent.scss";
+import { getPricePerKm } from "../../../utils/pricePerKm";
 
-const PricePerKmComponent = ({ order, price, round, type }) => {
-    const pricePerKm = round(parseInt(price) / order.distance, 2).toFixed(2);
+const PricePerKmComponent = ({ type, price, distance }) => {
+    let pricePerKm = 0;
+
+    switch (type) {
+        case "price":
+        case "table":
+            pricePerKm = getPricePerKm(parseInt(price), distance);
+            break;
+        case "market-price":
+            pricePerKm = getPricePerKm(parseInt(price), distance);
+            break;
+        default:
+            break;
+    }
 
     const getBackgroundColor = () => {
         if (pricePerKm < 1) {
@@ -30,33 +43,22 @@ const PricePerKmComponent = ({ order, price, round, type }) => {
 
     return (
         <>
-            {type === "price" && (
-                <div
-                    className="order-details__priceperkm"
-                    style={{
-                        backgroundColor: getBackgroundColor(),
-                        color: getTextColor(),
-                    }}
-                >
-                    <span className="order-details__priceperkm_text">
-                        {pricePerKm} Eur/km
-                    </span>
-                </div>
-            )}
-            {type === "table" && (
-                <div
-                    className="order-details__priceperkm"
-                    style={{
-                        backgroundColor: getBackgroundColor(),
-                        color: getTextColor(),
-                    }}
-                >
-                    <span className="order-details__priceperkm_text">
-                        {pricePerKm}
-                    </span>
-                </div>
-            )}
-            {/* {type === "table" && <div>{pricePerKm}</div>} */}
+            <div
+                className="order-details__priceperkm"
+                style={{
+                    backgroundColor: getBackgroundColor(),
+                    color: getTextColor(),
+                }}
+            >
+                <span className="order-details__priceperkm_text">
+                    {pricePerKm}
+                    {type === "price" || type === "market-price"
+                        ? " Eur/km"
+                        : type === "table"
+                        ? ""
+                        : null}
+                </span>
+            </div>
         </>
     );
 };

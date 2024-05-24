@@ -1,18 +1,28 @@
-import {
-    TRUCK_LIST_REQUEST,
-    TRUCK_LIST_SUCCESS,
-    TRUCK_LIST_FAIL,
-} from "../actions/truckActions";
+import { SET_TRUCK_LIST_DATA } from "../actions/truckActions";
 
-export const truckListReducer = (state = { trucks: [] }, action) => {
+const initialState = {
+    trucks: {
+        data: [],
+    },
+};
+
+export const truckReducer = (state = initialState, action) => {
     switch (action.type) {
-        case TRUCK_LIST_REQUEST:
-            return { loading: true, trucks: [] };
-        case TRUCK_LIST_SUCCESS:
-            return { loading: false, trucks: action.payload };
-        case TRUCK_LIST_FAIL:
-            return { loading: false, error: action.payload };
+        case SET_TRUCK_LIST_DATA:
+            return {
+                ...state,
+                trucks: {
+                    ...state.trucks,
+                    data: action.data,
+                },
+            };
+
         default:
             return state;
     }
 };
+
+export const setTruckListData = (data) => ({
+    type: SET_TRUCK_LIST_DATA,
+    data,
+});

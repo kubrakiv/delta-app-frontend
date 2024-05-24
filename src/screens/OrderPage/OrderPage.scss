@@ -2,13 +2,27 @@
 
 .order-details {
     padding-right: 0px;
-    // margin-bottom: 20px;
     &__header {
         position: sticky;
         display: flex;
+        justify-content: space-between;
+        align-items: center;
         background-color: $tableHeaderColor;
         border-radius: 4px;
         top: 0;
+        &-block {
+            background-color: $colorGray;
+            color: white;
+            border-radius: 4px;
+            margin: 5px 10px;
+            padding: 5px 10px;
+            align-items: center;
+            &:last-child {
+                display: flex;
+                gap: 10px;
+                margin-left: auto;
+            }
+        }
     }
     &__platform {
         display: flex;
@@ -26,17 +40,18 @@
     }
 
     &__return-button {
-        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
         background-color: rgba(249, 4, 4, 0.8);
         color: white;
         margin: 5px;
-        line-height: 30px;
+        // line-height: 30px;
         border-radius: 5px;
         text-align: center;
-        vertical-align: center;
         &:hover {
             background-color: rgba(249, 4, 4, 0.5);
-            // transition: all 0.5s;
             box-shadow: 0 8px 10px rgba(0, 0, 0, 0.14);
             cursor: pointer;
         }
@@ -47,25 +62,7 @@
             text-decoration: none;
         }
     }
-    // &__return-button:hover {
-    //     background-color: rgb(249, 4, 4, 0.9);
-    //     // transition: all 0.5s;
-    //     box-shadow: 0 8px 10px rgba(0, 0, 0, 0.14);
-    //     cursor: pointer;
-    // }
-    &__header-block {
-        background-color: $colorGray;
-        color: white;
-        border-radius: 4px;
-        margin: 5px 10px;
-        padding: 5px 10px;
-        align-items: center;
-        &:nth-child(4) {
-            display: flex;
-            gap: 10px;
-            margin-left: auto;
-        }
-    }
+
     &__actions {
         display: flex;
         background-color: $tableHeaderColor;
@@ -84,6 +81,7 @@
         }
         &-add-task-btn {
             background-color: green;
+            font-size: 16px;
             border-radius: 4px;
             z-index: 3;
             padding: 5px;
@@ -97,6 +95,7 @@
         }
         &-add-documents-btn {
             background-color: rgba(6, 67, 66, 0.9);
+            font-size: 16px;
             border-radius: 4px;
             z-index: 3;
             padding: 5px;
@@ -166,10 +165,6 @@
             width: 100%;
             border-radius: 4px;
         }
-
-        &_tasks {
-            // height: 97%;
-        }
     }
     &__content-row-block-title {
         font-weight: bold;
@@ -182,10 +177,16 @@
         &-cargo {
             display: flex;
             flex-wrap: wrap;
+
             padding-left: 20px;
             &-blocks {
+                display: flex;
+                justify-content: space-between;
                 font-size: 14px;
                 width: 50%;
+                &_right-span {
+                    margin-right: 20px;
+                }
             }
         }
         &-price {
@@ -283,4 +284,8 @@
 
 .form-select-mb10 {
     margin-bottom: 10px;
+}
+
+.form-select-mb5 {
+    margin-bottom: 5px;
 }

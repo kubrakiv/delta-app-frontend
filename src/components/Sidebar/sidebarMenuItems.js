@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    FaTh,
     FaCalendarWeek,
     FaTruckMoving,
     FaTasks,
@@ -9,7 +8,7 @@ import {
     FaMapMarkedAlt,
     FaMapMarkerAlt,
 } from "react-icons/fa";
-import { RiDragDropLine } from "react-icons/ri";
+import { MdDashboard } from "react-icons/md";
 
 const menuItems = [
     {
@@ -38,13 +37,8 @@ const menuItems = [
 
     {
         path: "/dashboard",
-        title: "Drag and Drop",
-        icon: <RiDragDropLine />,
-    },
-    {
-        path: "/modal-page",
-        title: "Модалка",
-        icon: <FaTh />,
+        title: "Dashboard",
+        icon: <MdDashboard />,
     },
     {
         path: "/planner",

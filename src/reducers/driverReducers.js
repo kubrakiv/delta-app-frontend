@@ -1,18 +1,28 @@
-import {
-    DRIVER_LIST_FAIL,
-    DRIVER_LIST_REQUEST,
-    DRIVER_LIST_SUCCESS,
-} from "../actions/driverActions";
+import { SET_DRIVER_LIST_DATA } from "../actions/driverActions";
 
-export const driverListReducer = (state = { drivers: [] }, action) => {
+const initialState = {
+    drivers: {
+        data: [],
+    },
+};
+
+export const driverReducer = (state = initialState, action) => {
     switch (action.type) {
-        case DRIVER_LIST_REQUEST:
-            return { loading: true, drivers: [] };
-        case DRIVER_LIST_SUCCESS:
-            return { loading: false, drivers: action.payload };
-        case DRIVER_LIST_FAIL:
-            return { loading: false, error: action.payload };
+        case SET_DRIVER_LIST_DATA:
+            return {
+                ...state,
+                drivers: {
+                    ...state.drivers,
+                    data: action.data,
+                },
+            };
+
         default:
             return state;
     }
 };
+
+export const setDriverListData = (data) => ({
+    type: SET_DRIVER_LIST_DATA,
+    data,
+});

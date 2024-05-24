@@ -1,17 +1,13 @@
 import axios from "axios";
+import { setTruckListData } from "../reducers/truckReducers";
 
-export const TRUCK_LIST_REQUEST = "TRUCK_LIST_REQUEST";
-export const TRUCK_LIST_SUCCESS = "TRUCK_LIST_SUCCESS";
-export const TRUCK_LIST_FAIL = "TRUCK_LIST_FAIL";
+export const SET_TRUCK_LIST_DATA = "SET_TRUCK_LIST_DATA";
 
 export const listTrucks = () => async (dispatch) => {
     try {
-        dispatch({ type: TRUCK_LIST_REQUEST });
-
         const { data } = await axios.get("/api/trucks/");
-
-        dispatch({ type: TRUCK_LIST_SUCCESS, payload: data });
+        dispatch(setTruckListData(data));
     } catch (error) {
-        dispatch({ type: TRUCK_LIST_FAIL, payload: error.message });
+        console.error(error);
     }
 };

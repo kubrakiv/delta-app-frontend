@@ -1,22 +1,20 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import OrderNumberComponent from "../OrderNumberComponent/OrderNumberComponent";
 import "./HeaderComponent.scss";
 import { FaArrowLeft } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-const HeaderComponent = ({
-    order,
-    tasks,
-    orderNumber,
-    setOrderNumber,
-    editModeOrderNumber,
-    editModeOrder,
-    setEditModeOrder,
-    handleDoubleClick,
-    handleFormSubmit,
-    dispatch,
-}) => {
+const HeaderComponent = () => {
     const navigate = useNavigate();
+
+    const order = useSelector((state) => state.ordersInfo.order.data);
+
+    const [tasks, setTasks] = useState([]);
+
+    useEffect(() => {
+        setTasks(order.tasks);
+    }, [order]);
 
     const handleGoBack = () => {
         navigate(-1);
@@ -43,20 +41,10 @@ const HeaderComponent = ({
                             .join(" - ")}
                     </div>
                 )}
-                <div
-                    className="order-details__header-block order-details__header-block_order-number"
-                    onDoubleClick={() => handleDoubleClick("orderNumber")}
-                >
-                    <OrderNumberComponent
-                        dispatch={dispatch}
-                        orderNumber={orderNumber}
-                        setOrderNumber={setOrderNumber}
-                        editModeOrderNumber={editModeOrderNumber}
-                        editModeOrder={editModeOrder}
-                        setEditModeOrder={setEditModeOrder}
-                        handleFormSubmit={handleFormSubmit}
-                    />
+                <div className="order-details__header-block">
+                    Заявка {order.order_number}
                 </div>
+                {/* <OrderNumberComponent /> */}
             </div>
         </>
     );

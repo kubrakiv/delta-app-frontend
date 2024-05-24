@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
 import "./CargoComponent.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { getCsrfToken } from "../../../utils/getCsrfToken";
 import { updateOrder } from "../../../actions/orderActions";
 import FormWrapper from "../../../components/FormWrapper";
+import InputComponent from "../../../globalComponents/InputComponent";
 
 const CARGO_CONSTANTS = {
     CARGO_NAME: "cargo_name",
@@ -94,33 +94,46 @@ const CargoComponent = () => {
                     <div className="order-details__content-row-block-value-cargo">
                         {formFields.flatMap((item) =>
                             item.map((field) => (
-                                <div className="order-details__content-row-block-value-cargo-blocks">
-                                    {field.placeholder}: {cargoFields[field.id]}
+                                <div
+                                    key={field.id}
+                                    className="order-details__content-row-block-value-cargo-blocks"
+                                >
+                                    <span>{field.placeholder}:</span>
+                                    <span className="order-details__content-row-block-value-cargo-blocks_right-span">
+                                        {cargoFields[field.id]}
+                                    </span>
                                 </div>
                             ))
                         )}
                     </div>
                 }
             >
-                <Form>
+                <form>
                     <div className="order-details__cargo-form-container">
-                        {formFields.map((item) => (
-                            <div className="order-details__form-col">
-                                {item.map((field) => (
-                                    <Form.Control
-                                        key={field.id}
-                                        className="order-details__cargo-form-container__form-input"
-                                        id={field.id}
-                                        name={field.id}
-                                        placeholder={field.placeholder}
-                                        value={cargoFields[field.id]}
-                                        onChange={(e) => handleCargoChange(e)}
-                                    ></Form.Control>
-                                ))}
+                        {formFields.map((fields, index) => (
+                            <div
+                                key={index}
+                                className="order-details__form-col"
+                            >
+                                {fields.map((field) => {
+                                    return (
+                                        <InputComponent
+                                            key={field.id}
+                                            id={field.id}
+                                            name={field.id}
+                                            placeholder={field.placeholder} // FIXME: placeholder is not rendering
+                                            value={cargoFields[field.id]}
+                                            onChange={(e) =>
+                                                handleCargoChange(e)
+                                            }
+                                            autoFocus
+                                        />
+                                    );
+                                })}
                             </div>
                         ))}
                     </div>
-                </Form>
+                </form>
             </FormWrapper>
         </>
     );

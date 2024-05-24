@@ -21,10 +21,26 @@ const initialState = {
 export const orderReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_ORDER_LIST_DATA:
-            return { ...state, orders: { ...state.orders, ...action.data } };
+            return {
+                ...state,
+                orders: {
+                    ...state.orders,
+                    ...action.data,
+                    loading: action.data.loading,
+                    error: action.data.error,
+                },
+            };
 
         case SET_ORDER_DETAILS_DATA:
-            return { ...state, order: { ...state.order, ...action.data } };
+            return {
+                ...state,
+                order: {
+                    ...state.order,
+                    ...action.data,
+                    loading: action.data.loading,
+                    error: action.data.error,
+                },
+            };
 
         case SET_EDIT_MODE_ORDER:
             return { ...state, editMode: action.payload };
@@ -42,4 +58,9 @@ export const setOrderListData = (data) => ({
 export const setOrderDetailsData = (data) => ({
     type: SET_ORDER_DETAILS_DATA,
     data,
+});
+
+export const setEditModeOrder = (editModeOrder) => ({
+    type: SET_EDIT_MODE_ORDER,
+    payload: editModeOrder,
 });

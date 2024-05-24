@@ -6,33 +6,13 @@ import axios from "axios";
 import ModalTaskLeftSideComponent from "../Tasks/ModalTaskLeftSideComponent";
 import Task from "../Task/Task";
 import TasksInOrder from "../Tasks/TasksInOrder";
+import { useSelector } from "react-redux";
 
 function Orders() {
-    const [orders, setOrders] = useState([]);
-    const [selectedTask, setSelectedTask] = useState({});
-    // const [tasks, setTasks] = useState([]);
+    const orderList = useSelector((state) => state.ordersInfo.orders);
+    const { data: ordersData, loading, error } = orderList;
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        async function fetchOrders() {
-            const { data } = await axios.get("/api/orders/");
-            setOrders(data);
-            // setTasks(data.tasks);
-            // console.log(tasks, "this is orders tasks");
-        }
-        fetchOrders();
-    }, []);
-
-    // const handleRowClick = (task) => {
-    //     setSelectedTask(task);
-    //     navigate(`/tasks/${task.id}`);
-    // };
-
-    const handleButtonClick = (event, task) => {
-        event.stopPropagation();
-        console.log("Button clicked for task:", task);
-    };
 
     return (
         <>
@@ -51,7 +31,7 @@ function Orders() {
                         </tr>
                     </thead>
                     <tbody className="orders-table__body">
-                        {orders.map((order, index) => (
+                        {ordersData.map((order, index) => (
                             <tr
                                 key={index}
                                 className="orders-table__body-row"
@@ -67,17 +47,9 @@ function Orders() {
                                     {order.rout}
                                 </td>
                                 <td className="orders-table__body-td">
-                                    {order.tasks.map((task, index) => (
+                                    {order.tasks.map((task) => (
                                         <>
                                             <TasksInOrder task={task} />
-                                            {/* <ModalTaskLeftSideComponent
-                                            name={"Task"}
-                                            placement={"end"}
-                                            task={task}
-                                            onClick={(event) =>
-                                                handleButtonClick(event, task)
-                                            }
-                                        /> */}
                                         </>
                                     ))}
                                 </td>

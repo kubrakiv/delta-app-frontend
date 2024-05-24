@@ -10,28 +10,24 @@ export const SET_ORDER_DETAILS_DATA = "SET_ORDER_DETAILS_DATA";
 
 export const listOrders = () => async (dispatch) => {
     try {
-        dispatch(setOrderListData({ loading: true }));
+        dispatch(setOrderListData({ loading: true, error: null }));
 
         const { data } = await axios.get("/api/orders/");
-        dispatch(setOrderListData({ data }));
+        dispatch(setOrderListData({ data, loading: false }));
     } catch (error) {
-        dispatch(setOrderListData({ error: error.message }));
-    } finally {
-        dispatch(setOrderListData({ loading: false }));
+        dispatch(setOrderListData({ error: error.message, loading: false }));
     }
 };
 
 export const listOrderDetails = (id) => async (dispatch) => {
     try {
-        dispatch(setOrderDetailsData({ loading: true }));
+        dispatch(setOrderDetailsData({ loading: true, error: null }));
 
         const { data } = await axios.get(`/api/orders/${id}/`);
 
-        dispatch(setOrderDetailsData({ data }));
+        dispatch(setOrderDetailsData({ data, loading: false }));
     } catch (error) {
-        dispatch(setOrderDetailsData({ error: error.message }));
-    } finally {
-        dispatch(setOrderDetailsData({ loading: false }));
+        dispatch(setOrderDetailsData({ error: error.message, loading: false }));
     }
 };
 
@@ -57,8 +53,6 @@ export const updateOrder =
                 config
             );
 
-            console.log("DATA FROM UPDATE ORDER", data);
-
             dispatch(setOrderDetailsData({ data }));
         } catch (error) {
             dispatch(setOrderDetailsData({ error: error.message }));
@@ -66,8 +60,3 @@ export const updateOrder =
             dispatch(setOrderDetailsData({ loading: false }));
         }
     };
-
-export const setEditModeOrder = (editModeOrder) => ({
-    type: SET_EDIT_MODE_ORDER,
-    payload: editModeOrder,
-});

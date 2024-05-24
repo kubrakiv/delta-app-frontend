@@ -7,8 +7,8 @@ import { listOrderDetails } from "../actions/orderActions";
 const OrderScreen = () => {
     const dispatch = useDispatch();
 
-    const orderDetails = useSelector((state) => state.ordersInfo.order);
-    const { loading, data, error } = orderDetails;
+    const orderList = useSelector((state) => state.ordersInfo.order);
+    const { loading, data, error } = orderList;
 
     const { id } = useParams();
 
@@ -19,11 +19,13 @@ const OrderScreen = () => {
     return (
         <>
             {loading ? (
-                <h4>Loading</h4>
+                <h4>Loading...</h4>
             ) : error ? (
                 <h4>{error}</h4>
+            ) : data ? (
+                <OrderPage order={data} />
             ) : (
-                data && <OrderPage order={data} />
+                <h4>No order found!</h4>
             )}
         </>
     );

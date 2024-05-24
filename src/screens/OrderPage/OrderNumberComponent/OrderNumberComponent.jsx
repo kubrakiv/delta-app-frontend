@@ -1,48 +1,49 @@
-import React from "react";
-import { Form } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import "./OrderNumberComponent.scss";
-import FormButtonComponent from "../FormButtonComponent/FormButtonComponent";
+import FormWrapper from "../../../components/FormWrapper";
+import InputComponent from "../../../globalComponents/InputComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { updateOrder } from "../../../actions/orderActions";
 
-function OrderNumberComponent({
-    orderNumber,
-    setOrderNumber,
-    editModeOrderNumber,
-    editModeOrder,
-    setEditModeOrder,
-    handleFormSubmit,
-    onField = "orderNumber",
-    dispatch,
-}) {
+function OrderNumberComponent() {
+    const dispatch = useDispatch();
+    const order = useSelector((state) => state.ordersInfo.order.data);
+
+    const [orderNumber, setOrderNumber] = useState("");
+
+    useEffect(() => {
+        setOrderNumber(order.order_number);
+    }, [order]);
+
+    const handleFormSubmit = () => {
+        let dataToUpdate = {};
+        dataToUpdate = { order_number: orderNumber };
+        dispatch(updateOrder(dataToUpdate, order.id));
+    };
+
     return (
         <>
-            <div className="order-details__order-number-title">Заявка</div>
-            {editModeOrderNumber || editModeOrder ? (
+            <FormWrapper
+                title="Заявка"
+                content={
+                    <div className="order-details__order-number-value">
+                        {order.order_number}
+                    </div>
+                }
+                handleFormSubmit={handleFormSubmit}
+            >
                 <div className="order-details__order-number-form">
-                    <Form>
-                        <Form.Control
+                    <form>
+                        <InputComponent
                             id="orderNumber"
                             name="orderNumber"
-                            value={orderNumber}
+                            value={order.order_number}
                             onChange={(e) => setOrderNumber(e.target.value)}
                             autoFocus
-                        ></Form.Control>
-                        {editModeOrderNumber && (
-                            <FormButtonComponent
-                                onField={onField}
-                                dispatch={dispatch}
-                                handleFormSubmit={handleFormSubmit}
-                                setEditModeOrder={setEditModeOrder}
-                            />
-                        )}
-                    </Form>
+                        ></InputComponent>
+                    </form>
                 </div>
-            ) : (
-                <>
-                    <div className="order-details__order-number-value">
-                        {orderNumber}
-                    </div>
-                </>
-            )}
+            </FormWrapper>
         </>
     );
 }

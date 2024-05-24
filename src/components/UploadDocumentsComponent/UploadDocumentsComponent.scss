@@ -1,6 +1,9 @@
 @import "../../styles/utils/vars";
 
 .upload-documents {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     width: 100%;
     margin: 0 auto;
     background-color: $backgroundcolor;
