@@ -1,105 +1,66 @@
-import React from "react";
-import { Form } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import "./CustomerComponent.scss";
-import FormButtonComponent from "../FormButtonComponent/FormButtonComponent";
 import PlatformComponent from "../../../components/PlatformComponent/PlatformComponent";
+import { useDispatch, useSelector } from "react-redux";
+import FormWrapper from "../../../components/FormWrapper";
+import { getCsrfToken } from "../../../utils/getCsrfToken";
+import { updateOrder } from "../../../actions/orderActions";
+import { listCustomers } from "../../../actions/customerActions";
+import SelectComponent from "../../../globalComponents/SelectComponent";
 
-function CustomerComponent({
-    order,
-    customers,
-    selectedCustomer,
-    setSelectedCustomer,
-    platforms,
-    selectedPlatform,
-    setSelectedPlatform,
-    editModeCustomer,
-    setEditModeCustomer,
-    handleFormSubmit,
-    handleDoubleClick,
-    editModeOrder,
-    setEditModeOrder,
-    onField = "customer",
-    dispatch,
-}) {
+function CustomerComponent() {
+    const dispatch = useDispatch();
+
+    const order = useSelector((state) => state.ordersInfo.order.data);
+    const customers = useSelector(
+        (state) => state.customersInfo.customers.data
+    );
+
+    const [selectedCustomer, setSelectedCustomer] = useState("");
+
+    useEffect(() => {
+        setSelectedCustomer(order.customer);
+        dispatch(listCustomers());
+    }, [dispatch, order]);
+
+    useEffect(() => {
+        getCsrfToken();
+    });
+
+    const handleFormSubmit = () => {
+        let dataToUpdate = {};
+
+        dispatch(updateOrder(dataToUpdate, order.id));
+    };
+
     return (
         <>
-            <div
-                className="order-details__content-row-block"
-                onDoubleClick={() => handleDoubleClick("customer")}
+            <FormWrapper
+                title="Замовник"
+                content={
+                    <div className="order-details__content-row-block-value">
+                        {order.customer}
+                    </div>
+                }
+                secondTitle={<PlatformComponent platform={order.platform} />}
+                handleFormSubmit={handleFormSubmit}
             >
-                <div className="order-details__content-row-block_platform">
-                    <div className="order-details__content-row-block-title">
-                        Замовник
-                    </div>
-                    <div className="order-details__content-row-block-title">
-                        <PlatformComponent
-                            order={order}
-                            selectedPlatform={selectedPlatform}
-                        />
-                    </div>
-                </div>
-                {editModeCustomer || editModeOrder ? (
-                    <Form>
-                        <Form.Select
-                            id="customer"
-                            name="customer"
-                            value={selectedCustomer}
-                            onChange={(e) =>
-                                setSelectedCustomer(e.target.value)
-                            }
-                            className="form-select-mb10"
-                            autoFocus
-                        >
-                            {Array.isArray(customers) &&
-                                customers.map((customer) => (
-                                    <option
-                                        key={customer.id}
-                                        value={customer.name}
-                                    >
-                                        {customer.name}
-                                    </option>
-                                ))}
-                        </Form.Select>
-
-                        <Form.Select
-                            id="platform"
-                            name="platform"
-                            value={selectedPlatform}
-                            onChange={(e) =>
-                                setSelectedPlatform(e.target.value)
-                            }
-                        >
-                            <option
-                                value={null}
-                                selected
-                                // disabled
-                            >
-                                Select platform
+                <form>
+                    <SelectComponent
+                        title="Виберіть замовника"
+                        id="customer"
+                        name="customer"
+                        value={selectedCustomer}
+                        onChange={(e) => setSelectedCustomer(e.target.value)}
+                        autoFocus
+                        options={customers.map((customer) => (
+                            <option key={customer.id} value={customer.name}>
+                                {customer.name}
                             </option>
-                            {platforms.map((platform) => (
-                                <option key={platform.id}>
-                                    {platform.name}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        {editModeCustomer && (
-                            <FormButtonComponent
-                                onField={onField}
-                                dispatch={dispatch}
-                                handleFormSubmit={handleFormSubmit}
-                                setEditModeOrder={setEditModeOrder}
-                            />
-                        )}
-                    </Form>
-                ) : (
-                    <>
-                        <div className="order-details__content-row-block-value">
-                            {selectedCustomer}
-                            {/* FIXME: move order.customer to customer hook and render the hook on the page */}
-                        </div>
-                    </>
-                )}
-            </div>
+                        ))}
+                    ></SelectComponent>
+                </form>
+            </FormWrapper>
         </>
     );
 }

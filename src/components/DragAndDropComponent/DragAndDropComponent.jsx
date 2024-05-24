@@ -127,3 +127,17 @@ const DragAndDropComponent = ({ orders, handleOrders }) => {
 };
 
 export default DragAndDropComponent;
+
+{
+    /* <DragAndDropTaskOrderComponent
+                                            tasks={tasks}
+                                            setTasks={setTasks}
+                                            handleShowPointOnMap={
+                                                handleShowPointOnMap
+                                            }
+                                            handleEditModeTask={
+                                                handleEditModeTask
+                                            }
+                                            handleDeleteTask={handleDeleteTask}
+                                        /> */
+}

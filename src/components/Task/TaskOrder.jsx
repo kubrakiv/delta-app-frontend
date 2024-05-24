@@ -17,15 +17,27 @@ import { formattedTime } from "../../utils/formattedTime";
 import { DELIVERY_CONSTANTS } from "../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
-function TaskOrder({
-    task,
-    handleShowPointOnMap,
-    handleEditModeTask,
-    handleDeleteTask,
-}) {
+function TaskOrder({ task, handleDeleteTask, handleEditModeTask }) {
+    const [center, setCenter] = useState();
     const [isHovered, setHovered] = useState(false);
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [unloadingStatus, setUnloadingStatus] = useState(false);
+
+    const handleShowPointOnMap = (task) => {
+        if (task && task.point_details) {
+            const { gps_latitude, gps_longitude } = task.point_details;
+            if (gps_latitude !== undefined && gps_longitude !== undefined) {
+                setCenter({
+                    lat: parseFloat(gps_latitude),
+                    lng: parseFloat(gps_longitude),
+                });
+            } else {
+                console.error("Latitude or longitude is undefined");
+            }
+        } else {
+            console.error("Invalid order or missing details");
+        }
+    };
 
     useEffect(() => {
         // Function to set loading and unloading statuses

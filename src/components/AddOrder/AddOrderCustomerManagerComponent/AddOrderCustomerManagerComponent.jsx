@@ -13,14 +13,14 @@ const AddOrderCustomerManagerComponent = ({
                     Менеджер замовника
                 </div>
                 <select
-                    id="customerManager"
-                    name="customerManager"
+                    id="form-field__select"
+                    name="form-field__select"
+                    className="form-field__select"
                     value={selectedCustomerManager}
                     onChange={(e) => setSelectedCustomerManager(e.target.value)}
-                    // autoFocus
                 >
-                    <option value={null} selected /* disabled */>
-                        Select manager
+                    <option value={null} selected>
+                        Вибрати менеджера
                     </option>
                     {customerManagersList.map((manager) => (
                         <option key={manager.email}>{manager.full_name}</option>

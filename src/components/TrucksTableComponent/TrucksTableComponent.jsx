@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./TrucksTableComponent.scss";
 import { set } from "date-fns";
 import axios from "axios";
-import GenericModalComponent from "../GenericModalComponent/GenericModalComponent";
+import GenericModalComponent from "../../globalComponents/GenericModalComponent";
 import TruckFormComponent from "../TruckFormComponent/TruckFormComponent";
 import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import cn from "classnames";

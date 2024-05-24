@@ -12,7 +12,6 @@ import PlanScreen from "./screens/PlanScreen";
 import TaskPage from "./screens/TaskPage/TaskPage";
 import TaskTablePage from "./screens/TaskTablePage";
 import Dashboard from "./screens/Dashboard/Dashboard";
-import ModalPage from "./screens/ModalPage/ModalPage";
 import AddTaskPage from "./screens/AddTaskPage";
 import AddOrder from "./components/AddOrder/AddOrder";
 import MapPage from "./screens/MapPage/MapPage";
@@ -82,10 +81,6 @@ const router = createBrowserRouter([
             {
                 path: "/dashboard",
                 element: <Dashboard />,
-            },
-            {
-                path: "/modal-page",
-                element: <ModalPage />,
             },
             {
                 path: "/planner",

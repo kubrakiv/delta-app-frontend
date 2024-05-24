@@ -1,12 +1,15 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
-const PlatformComponent = ({ selectedPlatform }) => {
+const PlatformComponent = () => {
+    const order = useSelector((state) => state.ordersInfo.order.data);
+
     return (
         <>
-            {selectedPlatform && (
+            {order.platform && (
                 <div className="order-details__platform">
                     <span className="order-details__platform_text">
-                        {selectedPlatform}
+                        {order.platform}
                     </span>
                 </div>
             )}

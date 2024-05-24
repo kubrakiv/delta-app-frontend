@@ -1,28 +1,32 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { listOrders } from "../../actions/orderActions";
-import axios from "axios";
+import { listOrderDetails, listOrders } from "../../actions/orderActions";
 import "./OrdersTableComponent.scss";
 import tableHead from "./tableHead.json";
 import chroma from "chroma-js";
-
-import OpenContext from "../OpenContext";
 import PricePerKmComponent from "../../screens/OrderPage/PricePerKmComponent/PricePerKmComponent";
 import { round } from "../../utils/round";
-import { set } from "date-fns";
 import { formattedTime } from "../../utils/formattedTime";
+import { set } from "date-fns";
 
 function OrdersTableComponent() {
     const dispatch = useDispatch();
 
+    const orderList = useSelector((state) => state.ordersInfo.orders);
+    const { loading, data: ordersData, error } = orderList;
+
+    const editModeOrder = useSelector((state) => state.ordersInfo.editMode);
+
     const [hoveredOrder, setHoveredOrder] = useState(null);
+    const [orderId, setOrderId] = useState(null);
+
     let hoverTimer;
 
     const handleMouseEnter = (order) => {
         hoverTimer = setTimeout(() => {
             setHoveredOrder(order);
-        }, 500); // Adjust the delay time as needed (in milliseconds)
+        }, 500);
     };
 
     const handleMouseLeave = () => {
@@ -30,57 +34,21 @@ function OrdersTableComponent() {
         setHoveredOrder(null);
     };
 
-    const [loadingStatus, setLoadingStatus] = useState(false);
-    const [unloadingStatus, setUnloadingStatus] = useState(false);
-    const [loadingStartDate, setLoadingStartDate] = useState("");
-    const [loadingStartTime, setLoadingStartTime] = useState("");
-    const [unloadingStartDate, setUnloadingStartDate] = useState("");
-    const [unloadingStartTime, setUnloadingStartTime] = useState("");
-
-    const orderList = useSelector((state) => state.ordersInfo.orders);
-    const { loading, data: ordersData, error } = orderList;
-
-    const { setEditModeOrder } = useContext(OpenContext);
-
     const [hovered, setHovered] = useState(false);
 
-    const [csrfToken, setCsrfToken] = useState("");
-    const [selectedOrder, setSelectedOrder] = useState({});
     const [selectedOrders, setSelectedOrders] = useState([]);
 
-    const [edit, setEdit] = useState({ id: null, key: null });
-
-    const handleDoubleClick = (id, key) => {
-        setEdit({ id, key });
-    };
-
-    // const handleChange = (e, id, key) => {
-    //     const updatedOrders = orders.map((order) => {
-    //         if (order.id === id) {
-    //             return { ...order, [key]: e.target.value };
-    //         }
-    //         return order;
-    //     });
-    //     setOrders(updatedOrders);
-    // };
-
     const navigate = useNavigate();
-
-    useEffect(() => {
-        (async () => {
-            const { data } = await axios.get(`/api/csrf-token/`);
-            setCsrfToken(data.csrfToken);
-        })();
-    }, []);
 
     useEffect(() => {
         dispatch(listOrders());
     }, [dispatch]);
 
     const handleRowDoubleClick = (order) => {
-        setSelectedOrder(order);
         navigate(`/orders/${order.id}`);
     };
+
+    // useEffect(() => {}, [dispatch, order]);
 
     // const handleAddOrderButtonClick = async (e) => {
     //     e.preventDefault();
@@ -398,10 +366,9 @@ function OrdersTableComponent() {
                                         </td>
                                         <td className="orders-table__body-td">
                                             <PricePerKmComponent
-                                                order={order}
-                                                price={order.price}
-                                                round={round}
                                                 type={"table"}
+                                                price={order.price}
+                                                distance={order.distance}
                                             />
                                         </td>
                                         <td className="orders-table__body-td">

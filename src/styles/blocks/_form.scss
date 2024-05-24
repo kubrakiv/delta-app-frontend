@@ -1,56 +1,14 @@
 .form-container {
     width: 90%;
     margin: 0 auto;
-    // height: 300px;
-    // background-color: #7b8a8b;
-    // border: 1px solid black;
     border-radius: 4px;
 }
 
-// .form-name {
-//     padding: 5px;
-//     text-align: center;
-//     color: white;
-// }
-
-// .form__button:first-of-type {
-//     display: block;
-//     color: red;
-//     height: 35px;
-//     width: 100px;
-//     margin: 10px auto;
-// }
-
 .add-task-form {
     &__group {
-        // margin: 5px 5px;
-        // border-radius: 4px;
-        // display: flex;
-        // flex-direction: column;
-        // align-items: center;
-        // &:last-child {
-        //     border: none;
-        // }
-
-        // &:hover {
-        //     background-color: rgb(158, 172, 173);
-        //     transition: all 0.5s;
-        // }
     }
-    // &__title {
-    //     margin: 10px 10px;
-    //     // text-align: center;
-    //     font-size: 18px;
-    // }
-    // &__input {
-    //     margin: 10px 10px;
-    //     border-radius: 4px;
-    //     text-align: center;
-    //     height: 30px;
-    // }
+
     &__button {
-        // display: block;
-        // position: relative;
         margin: 10px auto;
         width: 100%;
         &:hover {

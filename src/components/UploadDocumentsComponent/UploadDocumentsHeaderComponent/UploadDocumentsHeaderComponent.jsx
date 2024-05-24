@@ -1,6 +1,9 @@
 import React from "react";
+import { useSelector } from "react-redux";
 
-const UploadDocumentsHeaderComponent = ({ order }) => {
+const UploadDocumentsHeaderComponent = () => {
+    const order = useSelector((state) => state.ordersInfo.order.data);
+
     return (
         <>
             <div className="upload-documents__header">

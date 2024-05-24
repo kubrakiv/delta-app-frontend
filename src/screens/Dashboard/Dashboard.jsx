@@ -1,25 +1,14 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import "./Dashboard.scss";
-import DragAndDropComponent from "../../components/DragAndDropComponent/DragAndDropComponent";
+// import DragAndDropComponent from "../../components/DragAndDropComponent/DragAndDropComponent";
 
 const Dashboard = () => {
-    const [orders, setOrders] = useState([]);
-
-    const handleOrders = (reorderedOrder) => {
-        setOrders(reorderedOrder);
-    };
-
-    useEffect(() => {
-        (async () => {
-            const { data } = await axios.get("/api/orders/");
-            setOrders(data);
-        })();
-    }, []);
-
     return (
         <>
-            <DragAndDropComponent orders={orders} handleOrders={handleOrders} />
+            <div className="dashboard-container">
+                <h1>Dashboard</h1>
+            </div>
+            {/* <DragAndDropComponent orders={orders} handleOrders={handleOrders} /> */}
         </>
     );
 };

@@ -10,6 +10,7 @@ const FormWrapper = ({
     content,
     handleFormSubmit,
     hiddenContent = null,
+    secondTitle = null,
 }) => {
     const [editMode, setEditMode] = useState(false);
     const [isShowHiddenContent, setIsShowHiddenContent] = useState(false);
@@ -26,16 +27,23 @@ const FormWrapper = ({
                     disableEditMode ? null : () => setEditMode((prev) => !prev)
                 }
             >
-                <div
-                    className="order-details__content-row-block-title"
-                    onClick={
-                        hiddenContent
-                            ? () => setIsShowHiddenContent((prev) => !prev)
-                            : null
-                    }
-                >
-                    {title}
-                    {hiddenContent ? arrowBlock : null}
+                <div className="order-details__content-row-block_price">
+                    <div
+                        className="order-details__content-row-block-title"
+                        onClick={
+                            hiddenContent
+                                ? () => setIsShowHiddenContent((prev) => !prev)
+                                : null
+                        }
+                    >
+                        {title}
+                        {hiddenContent ? arrowBlock : null}
+                    </div>
+                    {secondTitle && (
+                        <div className="order-details__content-row-block-title">
+                            {secondTitle}
+                        </div>
+                    )}
                 </div>
                 {editMode || editModeOrder ? (
                     <>

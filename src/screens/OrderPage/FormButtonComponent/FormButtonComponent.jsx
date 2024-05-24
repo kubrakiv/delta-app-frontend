@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./FormButtonComponent.scss";
 import { useDispatch } from "react-redux";
-import { setEditModeOrder } from "../../../actions/orderActions";
+import { setEditModeOrder } from "../../../reducers/orderReducers";
 
 function FormButtonComponent({ onSave, onClose }) {
     const dispatch = useDispatch();

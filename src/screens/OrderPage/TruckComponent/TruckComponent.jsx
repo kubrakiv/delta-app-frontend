@@ -1,72 +1,59 @@
-import React from "react";
-import { Form } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./TruckComponent.scss";
 import { FaTruckMoving } from "react-icons/fa";
-import FormButtonComponent from "../FormButtonComponent/FormButtonComponent";
+import FormWrapper from "../../../components/FormWrapper";
+import { listTrucks } from "../../../actions/truckActions";
+import { updateOrder } from "../../../actions/orderActions";
+import SelectComponent from "../../../globalComponents/SelectComponent";
 
-function TruckComponent({
-    trucks,
-    selectedTruck,
-    setSelectedTruck,
-    editModeTruck,
-    // setEditModeTruck,
-    editModeOrder,
-    setEditModeOrder,
-    handleFormSubmit,
-    handleDoubleClick,
-    onField = "truck",
-    dispatch,
-}) {
+function TruckComponent() {
+    const dispatch = useDispatch();
+
+    const trucks = useSelector((state) => state.trucksInfo.trucks.data);
+    const order = useSelector((state) => state.ordersInfo.order.data);
+
+    const [selectedTruck, setSelectedTruck] = useState("");
+
+    useEffect(() => {
+        setSelectedTruck(order.truck);
+
+        dispatch(listTrucks());
+    }, [dispatch, order]);
+
+    const handleFormSubmit = () => {
+        let dataToUpdate = {};
+        dataToUpdate = { truck: selectedTruck };
+        dispatch(updateOrder(dataToUpdate, order.id));
+    };
+
     return (
         <>
-            <div
-                className="order-details__content-row-block"
-                onDoubleClick={() => handleDoubleClick(onField)}
-            >
-                <div className="order-details__content-row-block-title">
-                    Автомобіль
-                </div>
-
-                {editModeTruck || editModeOrder ? (
-                    <Form /* onSubmit={(e) => handleFormSubmit(e, "truck")} */>
-                        <Form.Select
-                            id="truck"
-                            name="truck"
-                            className="form-select-mb10"
-                            isSearchable
-                            value={selectedTruck}
-                            onChange={(e) => setSelectedTruck(e.target.value)}
-                            autoFocus
-                        >
-                            <option value={null} disabled selected>
-                                Select truck
-                            </option>
-                            {trucks.map((truck) => (
-                                <option
-                                    key={truck.id}
-                                    value={truck.plates}
-                                    selected={selectedTruck === truck.plates}
-                                >
-                                    {truck.plates}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        {editModeTruck && (
-                            <FormButtonComponent
-                                onField={onField}
-                                dispatch={dispatch}
-                                handleFormSubmit={handleFormSubmit}
-                                // setEditMode={setEditModeTruck}
-                                setEditModeOrder={setEditModeOrder}
-                            />
-                        )}
-                    </Form>
-                ) : (
+            <FormWrapper
+                title="Автомобіль"
+                content={
                     <div className="order-details__content-row-block-value">
                         <FaTruckMoving /> {selectedTruck}
                     </div>
-                )}
-            </div>
+                }
+                handleFormSubmit={handleFormSubmit}
+            >
+                <form>
+                    <SelectComponent
+                        title="Виберіть авто"
+                        id="truck"
+                        name="truck"
+                        value={selectedTruck}
+                        onChange={(e) => setSelectedTruck(e.target.value)}
+                        autoFocus
+                        options={trucks.map((truck) => (
+                            <option key={truck.id} value={truck.plates}>
+                                {truck.plates}
+                            </option>
+                        ))}
+                    />
+                </form>
+            </FormWrapper>
         </>
     );
 }

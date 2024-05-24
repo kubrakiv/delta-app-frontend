@@ -5,14 +5,11 @@ import cn from "classnames";
 import "./AddTaskModalComponent.scss";
 import AddTaskHeaderComponent from "../AddTaskHeaderComponent/AddTaskHeaderComponent";
 import AddTaskModalCloseComponent from "../AddTaskModalCloseComponent/AddTaskModalCloseComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { listTrucks } from "../../../actions/truckActions";
 
 const AddTaskModalComponent = ({
-    order,
     selectedTask,
-    selectedTruck,
-    setSelectedTruck,
-    selectedDriver,
-    setSelectedDriver,
     showAddTaskModal,
     setShowAddTaskModal,
     selectedPoint,
@@ -23,8 +20,20 @@ const AddTaskModalComponent = ({
     tasks,
     setTasks,
 }) => {
+    const dispatch = useDispatch();
     const modalRef = useRef(null);
+
     const [activeTab, setActiveTab] = useState(true);
+    const [selectedTruck, setSelectedTruck] = useState("");
+    const [selectedDriver, setSelectedDriver] = useState("");
+
+    const order = useSelector((state) => state.ordersInfo.order.data);
+
+    useEffect(() => {
+        setSelectedTruck(order.truck);
+        setSelectedDriver(order.driver);
+        dispatch(listTrucks());
+    }, [dispatch, order]);
 
     const handleToggleMode = () => {
         setActiveTab(!activeTab);
