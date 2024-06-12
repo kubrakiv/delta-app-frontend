@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import "./FormButtonComponent.scss";
 import { useDispatch } from "react-redux";
-import { setEditModeOrder } from "../../../reducers/orderReducers";
+import { setEditModeOrder } from "../../../actions/orderActions";
 
 function FormButtonComponent({ onSave, onClose }) {
     const dispatch = useDispatch();
@@ -23,7 +23,10 @@ function FormButtonComponent({ onSave, onClose }) {
         dispatch(setEditModeOrder(false));
     };
 
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         onSave();
         handleEditModeClose();
     };
@@ -34,7 +37,7 @@ function FormButtonComponent({ onSave, onClose }) {
                 <button
                     type="button"
                     className="form-footer-btn form-footer-btn_save"
-                    onClick={handleSave}
+                    onClick={(e) => handleSave(e)}
                 >
                     Зберегти
                 </button>

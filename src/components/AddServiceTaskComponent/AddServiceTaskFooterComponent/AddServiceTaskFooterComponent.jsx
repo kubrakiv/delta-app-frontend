@@ -4,6 +4,7 @@ import "./AddServiceTaskFooterComponent.scss";
 const AddServiceTaskFooterComponent = ({
     showServiceTaskModal,
     setShowServiceTaskModal,
+    handleSelectDriver,
 }) => {
     return (
         <>
@@ -21,6 +22,7 @@ const AddServiceTaskFooterComponent = ({
                     onClick={(e) => {
                         e.preventDefault();
                         setShowServiceTaskModal(false);
+                        handleSelectDriver(null);
                     }}
                 >
                     Закрити

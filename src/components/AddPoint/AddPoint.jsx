@@ -1,10 +1,9 @@
 import React, { useCallback, useState, useEffect, useContext } from "react";
 import axios from "axios";
-import AddPointHeaderComponent from "./AddPointHeaderComponent/AddPointHeaderComponent";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { getLatLng, getZipCode } from "use-places-autocomplete";
 import "./AddPoint.scss";
-import Map from "../Map/Map";
+import Map from "../Map";
 import AddPointFooterComponent from "./AddPointFooterComponent/AddPointFooterComponent";
 import AddPointAutocomplete from "./AddPointAutocomplete/AddPointAutocomplete";
 import AddPointCustomerComponent from "./AddPointCustomerComponent/AddPointCustomerComponent";
@@ -147,15 +146,7 @@ const AddPoint = ({
 
         if (!editMode) {
             try {
-                const response = await axios.post(
-                    "/api/points/create/",
-                    data
-                    // {
-                    //     headers: {
-                    //         "X-CSRFToken": csrfToken,
-                    //     },
-                    // }
-                );
+                const response = await axios.post("/api/points/create/", data);
 
                 onPointCreate(response.data);
                 setSelectedPoint(response.data);
@@ -180,10 +171,6 @@ const AddPoint = ({
             >
                 <div className="point-container">
                     <div className="point-details">
-                        {/* <AddPointHeaderComponent
-                            setShowAddPointModal={setShowAddPointModal}
-                            editMode={editMode}
-                        /> */}
                         {!editMode && (
                             <div className="add-point-details__content-row add-point-details__content-row__search">
                                 <AddPointAutocomplete

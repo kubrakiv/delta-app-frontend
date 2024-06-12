@@ -4,11 +4,12 @@ import axios from "axios";
 import { getCsrfToken } from "../../../utils/getCsrfToken";
 import { useSelector } from "react-redux";
 import SelectComponent from "../../../globalComponents/SelectComponent";
+import { transformSelectOptions } from "../../../utils/transformers";
 
 const AddDocumentsForm = () => {
     const order = useSelector((state) => state.ordersInfo.order.data);
     const [files, setFiles] = useState([]);
-    const [fileTypes, setFileTypes] = useState([]);
+    const [fileTypesOptions, setFileTypesOptions] = useState([]);
 
     const [selectedFileType, setSelectedFileType] = useState("");
 
@@ -22,7 +23,7 @@ const AddDocumentsForm = () => {
     useEffect(() => {
         (async () => {
             const { data } = await axios.get("/api/file-types/");
-            setFileTypes(data);
+            setFileTypesOptions(transformSelectOptions(data, "name"));
         })();
     }, []);
 
@@ -69,10 +70,7 @@ const AddDocumentsForm = () => {
                 <div className="upload-documents__content-block">
                     <div className="upload-documents__row">
                         <div className="upload-documents__content-row-block">
-                            <div
-                                controlId="date"
-                                className="upload-documents__row-block"
-                            >
+                            <div className="upload-documents__row-block">
                                 <SelectComponent
                                     label="Вибрати тип документу"
                                     title="Тип документу"
@@ -82,14 +80,7 @@ const AddDocumentsForm = () => {
                                     onChange={(e) =>
                                         setSelectedFileType(e.target.value)
                                     }
-                                    options={fileTypes.map((fileType) => (
-                                        <option
-                                            key={fileType.id}
-                                            value={fileType.name}
-                                        >
-                                            {fileType.name}
-                                        </option>
-                                    ))}
+                                    options={fileTypesOptions}
                                 />
                             </div>
                         </div>
@@ -98,15 +89,12 @@ const AddDocumentsForm = () => {
                 <div className="upload-documents__content-block">
                     <div className="upload-documents__row">
                         <div className="upload-documents__content-row-block">
-                            <div
-                                controlId="formFileMultiple"
-                                className="upload-documents__row-block"
-                            >
+                            <div className="upload-documents__row-block">
                                 <label className="upload-documents__form-title">
                                     Завантажити файли
                                 </label>
                                 <input
-                                    // label="Завантажити файли"
+                                    label="Завантажити файли"
                                     type="file"
                                     name="files"
                                     id="formFileMultiple"

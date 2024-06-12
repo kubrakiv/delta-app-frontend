@@ -2,6 +2,8 @@ import {
     SET_EDIT_MODE_ORDER,
     SET_ORDER_LIST_DATA,
     SET_ORDER_DETAILS_DATA,
+    SET_EDIT_MODE_TASK,
+    SET_ADD_TASK_MODE,
 } from "../actions/orderActions";
 
 const initialState = {
@@ -16,6 +18,11 @@ const initialState = {
         error: null,
     },
     editMode: false,
+    addTaskMode: false,
+    task: {
+        data: {},
+        editMode: false,
+    },
 };
 
 export const orderReducer = (state = initialState, action) => {
@@ -45,22 +52,20 @@ export const orderReducer = (state = initialState, action) => {
         case SET_EDIT_MODE_ORDER:
             return { ...state, editMode: action.payload };
 
+        case SET_ADD_TASK_MODE:
+            return { ...state, addTaskMode: action.payload };
+
+        case SET_EDIT_MODE_TASK:
+            return {
+                ...state,
+                task: {
+                    ...state.task,
+                    data: action.data,
+                    editMode: action.payload,
+                },
+            };
+
         default:
             return state;
     }
 };
-
-export const setOrderListData = (data) => ({
-    type: SET_ORDER_LIST_DATA,
-    data,
-});
-
-export const setOrderDetailsData = (data) => ({
-    type: SET_ORDER_DETAILS_DATA,
-    data,
-});
-
-export const setEditModeOrder = (editModeOrder) => ({
-    type: SET_EDIT_MODE_ORDER,
-    payload: editModeOrder,
-});

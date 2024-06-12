@@ -1,7 +1,7 @@
 import React from "react";
 import "./style.scss";
 
-const InputComponent = (
+const InputComponent = ({
     key,
     id,
     name,
@@ -11,8 +11,9 @@ const InputComponent = (
     autoFocus,
     label,
     multiple,
-    type
-) => {
+    type,
+    required,
+}) => {
     return (
         <>
             {label && (

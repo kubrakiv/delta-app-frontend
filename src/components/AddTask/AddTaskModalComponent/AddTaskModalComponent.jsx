@@ -1,132 +1,65 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setAddTaskMode, setEditModeTask } from "../../../actions/orderActions";
+import "./AddTaskModalComponent.scss";
 import AddPoint from "../../AddPoint/AddPoint";
 import AddTaskComponent from "../AddTaskComponent";
-import cn from "classnames";
-import "./AddTaskModalComponent.scss";
-import AddTaskHeaderComponent from "../AddTaskHeaderComponent/AddTaskHeaderComponent";
-import AddTaskModalCloseComponent from "../AddTaskModalCloseComponent/AddTaskModalCloseComponent";
-import { useDispatch, useSelector } from "react-redux";
-import { listTrucks } from "../../../actions/truckActions";
+import TabSwitcher from "../../TabSwitcher";
+import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
 
 const AddTaskModalComponent = ({
-    selectedTask,
-    showAddTaskModal,
-    setShowAddTaskModal,
     selectedPoint,
     setSelectedPoint,
     onPointCreate,
-    editModeTask,
-    setEditModeTask,
-    tasks,
-    setTasks,
 }) => {
     const dispatch = useDispatch();
-    const modalRef = useRef(null);
+    const task = useSelector((state) => state.ordersInfo.task.data);
+    const editMode = useSelector((state) => state.ordersInfo.task.editMode);
+    const addTaskMode = useSelector((state) => state.ordersInfo.addTaskMode);
 
     const [activeTab, setActiveTab] = useState(true);
-    const [selectedTruck, setSelectedTruck] = useState("");
-    const [selectedDriver, setSelectedDriver] = useState("");
-
-    const order = useSelector((state) => state.ordersInfo.order.data);
-
-    useEffect(() => {
-        setSelectedTruck(order.truck);
-        setSelectedDriver(order.driver);
-        dispatch(listTrucks());
-    }, [dispatch, order]);
 
     const handleToggleMode = () => {
         setActiveTab(!activeTab);
     };
 
-    const handleClickOutside = (event) => {
-        if (modalRef.current && !modalRef.current.contains(event.target)) {
-            setShowAddTaskModal(false);
+    const handleModalClose = () => {
+        if (addTaskMode) {
+            dispatch(setAddTaskMode(false));
+        }
+        if (editMode) {
+            dispatch(setEditModeTask(task, !editMode));
         }
     };
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            if (event.key === "Escape") {
-                setShowAddTaskModal(false);
-            }
-        };
-
-        // document.addEventListener("click", handleClickOutside);
-        document.addEventListener("keydown", handleKeyDown);
-
-        return () => {
-            // document.removeEventListener("click", handleClickOutside);
-            document.removeEventListener("keydown", handleKeyDown);
-        };
-    });
-
     return (
         <>
-            <div
-                className="modal-overlay"
-                style={{ display: showAddTaskModal ? "block" : "none" }}
-            >
-                <div
-                    ref={modalRef}
-                    className={`add-task-modal${
-                        showAddTaskModal ? "" : " hidden"
-                    }`}
-                    style={{ display: showAddTaskModal ? "block" : "none" }}
-                >
-                    <div className="add-task-modal__header">
-                        <div
-                            className={cn(
-                                "add-task-modal__header-btn add-task-modal__header-btn-left",
-                                {
-                                    "add-task-modal__header-btn_active":
-                                        activeTab,
-                                }
-                            )}
-                            onClick={handleToggleMode}
-                        >
-                            Вибрати пункт
-                        </div>
-                        <div
-                            className={cn(
-                                "add-task-modal__header-btn add-task-modal__header-btn-right",
-                                {
-                                    "add-task-modal__header-btn_active":
-                                        !activeTab,
-                                }
-                            )}
-                            onClick={handleToggleMode}
-                        >
-                            Додати пункт
-                        </div>
-                    </div>
-                    {activeTab ? (
-                        <AddTaskComponent
-                            order={order}
-                            selectedTask={selectedTask}
-                            selectedTruck={selectedTruck}
-                            setSelectedTruck={setSelectedTruck}
-                            selectedDriver={selectedDriver}
-                            setSelectedDriver={setSelectedDriver}
-                            setShowAddTaskModal={setShowAddTaskModal}
-                            editModeTask={editModeTask}
-                            setEditModeTask={setEditModeTask}
-                            tasks={tasks}
-                            setTasks={setTasks}
+            <GenericModalComponent
+                show={editMode || addTaskMode}
+                onClose={handleModalClose}
+                content={
+                    <>
+                        <TabSwitcher
+                            activeTab={activeTab}
+                            handleToggleMode={handleToggleMode}
                         />
-                    ) : (
-                        <AddPoint
-                            onToggleMode={handleToggleMode}
-                            onAddTask={true}
-                            editMode={false}
-                            setShowAddPointModal={setShowAddTaskModal}
-                            onPointCreate={onPointCreate}
-                            selectedPoint={selectedPoint}
-                            setSelectedPoint={setSelectedPoint}
-                        />
-                    )}
-                </div>
-            </div>
+
+                        {activeTab ? (
+                            <AddTaskComponent />
+                        ) : (
+                            <AddPoint
+                                onToggleMode={handleToggleMode}
+                                onAddTask={true}
+                                editMode={false}
+                                // setShowAddPointModal={setShowAddTaskModal}
+                                onPointCreate={onPointCreate}
+                                selectedPoint={selectedPoint}
+                                setSelectedPoint={setSelectedPoint}
+                            />
+                        )}
+                    </>
+                }
+            />
         </>
     );
 };

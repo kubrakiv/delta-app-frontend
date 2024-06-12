@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Form } from "react-bootstrap";
 import "./PriceComponent.scss";
 import PricePerKmComponent from "../PricePerKmComponent/PricePerKmComponent";
 import FormWrapper from "../../../components/FormWrapper";
@@ -9,13 +8,16 @@ import { getCsrfToken } from "../../../utils/getCsrfToken";
 import { updateOrder } from "../../../actions/orderActions";
 import InputComponent from "../../../globalComponents/InputComponent";
 import SelectComponent from "../../../globalComponents/SelectComponent";
+import cn from "classnames";
+import { transformSelectOptions } from "../../../utils/transformers";
 
 const PRICE_CONSTANTS = {
     PRICE: "price",
     PAYMENT_PERIOD: "payment_period",
+    PAYMENT_TYPE: "payment_type",
 };
 
-const { PRICE, PAYMENT_PERIOD } = PRICE_CONSTANTS;
+const { PRICE, PAYMENT_PERIOD, PAYMENT_TYPE } = PRICE_CONSTANTS;
 
 function PriceComponent() {
     const dispatch = useDispatch();
@@ -23,6 +25,7 @@ function PriceComponent() {
     const paymentTypes = useSelector(
         (state) => state.paymentTypesInfo.paymentTypes.data
     );
+    const paymentTypesOptions = transformSelectOptions(paymentTypes, "name");
 
     const [priceFields, setPriceFields] = useState(
         Object.values(PRICE_CONSTANTS).reduce((acc, item) => {
@@ -32,18 +35,23 @@ function PriceComponent() {
     );
 
     const formFields = [
-        [
-            {
-                id: PRICE,
-                placeholder: "Тариф",
-                type: "number",
-            },
-            {
-                id: PAYMENT_PERIOD,
-                placeholder: "Дні оплати",
-                type: "text",
-            },
-        ],
+        {
+            id: PRICE,
+            placeholder: "Тариф",
+            type: "number",
+        },
+        {
+            id: PAYMENT_PERIOD,
+            placeholder: "Дні оплати",
+            type: "text",
+        },
+        {
+            id: PAYMENT_TYPE,
+            type: "text",
+            component: "select",
+            title: "Тип оплати",
+            isFullWidth: true,
+        },
     ];
 
     const [selectedPaymentType, setSelectedPaymentType] = useState("");
@@ -121,46 +129,61 @@ function PriceComponent() {
                 }
                 handleFormSubmit={handleFormSubmit}
             >
-                <Form>
+                <form>
                     <div className="order-details__price-form-container">
-                        {formFields.map((item, index) => (
-                            <div
-                                key={index}
-                                className="order-details__form-row"
-                            >
-                                {item.map((field) => (
-                                    <InputComponent
-                                        key={field.id}
-                                        id={field.id}
-                                        name={field.id}
-                                        type={field.type}
-                                        title={field.placeholder}
-                                        placeholder={field.placeholder}
-                                        value={priceFields[field.id]}
-                                        onChange={(e) => handlePriceChange(e)}
-                                        autoFocus
-                                    />
-                                ))}
-                            </div>
-                        ))}
                         <div className="order-details__form-row">
-                            <SelectComponent
-                                title="Тип оплати"
-                                id="payment-type"
-                                name="payment-type"
-                                value={selectedPaymentType}
-                                onChange={(e) =>
-                                    setSelectedPaymentType(e.target.value)
-                                }
-                                options={paymentTypes.map((type) => (
-                                    <option key={type.id} value={type.name}>
-                                        {type.name}
-                                    </option>
-                                ))}
-                            />
+                            {formFields.map((item) => {
+                                const {
+                                    component = "input",
+                                    id,
+                                    placeholder,
+                                    type,
+                                    title,
+                                } = item;
+                                return (
+                                    <div
+                                        key={id}
+                                        className={cn(
+                                            "order-details__form-row_item",
+                                            {
+                                                "full-width": item.isFullWidth,
+                                            }
+                                        )}
+                                    >
+                                        {component === "select" ? (
+                                            <SelectComponent
+                                                title={title}
+                                                id={id}
+                                                name={id}
+                                                value={selectedPaymentType}
+                                                onChange={(e) =>
+                                                    setSelectedPaymentType(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                options={paymentTypesOptions}
+                                            />
+                                        ) : (
+                                            <InputComponent
+                                                key={id}
+                                                id={id}
+                                                name={id}
+                                                type={type}
+                                                title={placeholder}
+                                                placeholder={placeholder}
+                                                value={priceFields[id]}
+                                                onChange={(e) =>
+                                                    handlePriceChange(e)
+                                                }
+                                                autoFocus
+                                            />
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
-                </Form>
+                </form>
             </FormWrapper>
         </>
     );

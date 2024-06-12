@@ -1,27 +1,17 @@
 import React from "react";
 import "./AddTaskFooterComponent.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { setAddTaskMode, setEditModeTask } from "../../../actions/orderActions";
 
-const AddTaskFooterComponent = ({
-    editModeTask,
-    setEditModeTask,
-    setShowAddTaskModal,
-}) => {
+const AddTaskFooterComponent = () => {
+    const dispatch = useDispatch();
+    const task = useSelector((state) => state.ordersInfo.task.data);
+    const editMode = useSelector((state) => state.ordersInfo.task.editMode);
+    const addTaskMode = useSelector((state) => state.ordersInfo.addTaskMode);
+
     return (
         <>
             <div className="add-task-details__footer">
-                {/* {editModeTask && (
-                    <button
-                        title="Edit Order"
-                        className="add-task-details__footer-btn add-task-details__footer-btn_edit"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setEditModeTask(true);
-                        }}
-                    >
-                        Редагувати
-                    </button>
-                )} */}
-
                 <button
                     title="Save Order"
                     className="add-task-details__footer-btn add-task-details__footer-btn_save"
@@ -34,7 +24,12 @@ const AddTaskFooterComponent = ({
                     className="add-task-details__footer-btn add-task-details__footer-btn_close"
                     onClick={(e) => {
                         e.preventDefault();
-                        setShowAddTaskModal(false);
+                        if (editMode) {
+                            dispatch(setEditModeTask(task, !editMode));
+                        }
+                        if (addTaskMode) {
+                            dispatch(setAddTaskMode(false));
+                        }
                     }}
                 >
                     Закрити

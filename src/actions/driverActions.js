@@ -5,7 +5,7 @@ export const SET_DRIVER_LIST_DATA = "SET_DRIVER_LIST_DATA";
 
 export const listDrivers = () => async (dispatch) => {
     try {
-        const { data } = await axios.get("/api/drivers/");
+        const { data } = await axios.get("/api/driver-profiles/");
         dispatch(setDriverListData(data));
     } catch (error) {
         console.error(error);

@@ -9,11 +9,16 @@ const DocumentsTableComponent = () => {
     const documents = useSelector(
         (state) => state.documentsInfo.documents.data.documents
     );
+    const editModeDocument = useSelector(
+        (state) => state.documentsInfo.editMode
+    );
     const BASE_URL = "http://localhost:8000";
 
     useEffect(() => {
-        dispatch(listDocuments(order.id));
-    }, [order, dispatch]);
+        if (editModeDocument) {
+            dispatch(listDocuments(order.id));
+        }
+    }, [order, dispatch, editModeDocument]);
 
     const openDocument = async (documentId) => {
         try {

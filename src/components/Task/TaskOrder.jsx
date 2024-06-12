@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import "./TaskOrder.scss";
 import {
     FaCalendar,
@@ -15,29 +16,16 @@ import {
 } from "react-icons/pi";
 import { formattedTime } from "../../utils/formattedTime";
 import { DELIVERY_CONSTANTS } from "../../constants/global";
+import { getTaskTitle } from "../../utils/getTaskTitle";
+import { setMapCurrentLocation } from "../../actions/mapActions";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
-function TaskOrder({ task, handleDeleteTask, handleEditModeTask }) {
-    const [center, setCenter] = useState();
+function TaskOrder({ task, handleDeleteTask, onEditMode }) {
+    const dispatch = useDispatch();
+
     const [isHovered, setHovered] = useState(false);
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [unloadingStatus, setUnloadingStatus] = useState(false);
-
-    const handleShowPointOnMap = (task) => {
-        if (task && task.point_details) {
-            const { gps_latitude, gps_longitude } = task.point_details;
-            if (gps_latitude !== undefined && gps_longitude !== undefined) {
-                setCenter({
-                    lat: parseFloat(gps_latitude),
-                    lng: parseFloat(gps_longitude),
-                });
-            } else {
-                console.error("Latitude or longitude is undefined");
-            }
-        } else {
-            console.error("Invalid order or missing details");
-        }
-    };
 
     useEffect(() => {
         // Function to set loading and unloading statuses
@@ -58,6 +46,24 @@ function TaskOrder({ task, handleDeleteTask, handleEditModeTask }) {
         };
         setStatus();
     }, [task]);
+
+    const handleShowPointOnMap = (task) => {
+        if (task && task.point_details) {
+            const { gps_latitude, gps_longitude } = task.point_details;
+            if (gps_latitude !== undefined && gps_longitude !== undefined) {
+                dispatch(
+                    setMapCurrentLocation({
+                        lat: parseFloat(gps_latitude),
+                        lng: parseFloat(gps_longitude),
+                    })
+                );
+            } else {
+                console.error("Latitude or longitude is undefined");
+            }
+        } else {
+            console.error("Invalid order or missing details");
+        }
+    };
 
     const handleMouseEnter = () => {
         setHovered(true);
@@ -157,13 +163,7 @@ function TaskOrder({ task, handleDeleteTask, handleEditModeTask }) {
                     <div className="task-order__icon">{getIconComponent()}</div>
                     <div className="task-order__info">
                         <div className="task-order__address">
-                            {task.point_title ||
-                                (task.point_details &&
-                                    task.point_details.country_short +
-                                        "-" +
-                                        task.point_details.postal_code +
-                                        " " +
-                                        task.point_details.city)}
+                            {getTaskTitle(task)}
                         </div>
                         <div className="task-order__date-time">
                             {getTimeComponent()}
@@ -175,7 +175,7 @@ function TaskOrder({ task, handleDeleteTask, handleEditModeTask }) {
                                 type="button"
                                 title="Edit task"
                                 className="task-order__btn task-order__btn_edit"
-                                onClick={(e) => handleEditModeTask(e, task)}
+                                onClick={(e) => onEditMode(e, task)}
                             >
                                 <FaPencilAlt />
                             </button>

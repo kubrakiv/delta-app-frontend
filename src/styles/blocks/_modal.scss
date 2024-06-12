@@ -2,8 +2,27 @@
     position: fixed;
     width: 100%;
     height: 100%;
+    z-index: 2;
+}
+
+.modal-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 100;
+    z-index: 1;
+}
+
+.generic-modal {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 2px;
+    background-color: $backgroundcolor;
+    width: 70%;
+    height: auto;
+    border-radius: 4px;
+    z-index: 3;
 }
 
 .modal {
@@ -29,11 +48,11 @@
 }
 
 .add-task-modal {
-    // position: absolute;
-    // top: 5%;
+    position: absolute;
+    top: 5%;
     left: 50px auto;
     margin: 0 auto;
-    // transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     background-color: $backgroundcolor;
     width: 80%;
     height: auto;
@@ -77,15 +96,6 @@
 }
 
 .driver-modal {
-    margin: 0 auto;
-    padding: 2px;
-    background-color: $backgroundcolor;
-    width: 50%;
-    height: auto;
-    border-radius: 4px;
-}
-
-.generic-modal {
     margin: 0 auto;
     padding: 2px;
     background-color: $backgroundcolor;

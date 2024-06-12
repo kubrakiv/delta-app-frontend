@@ -1,12 +1,10 @@
 import axios from "axios";
-import {
-    setOrderDetailsData,
-    setOrderListData,
-} from "../reducers/orderReducers";
 
 export const SET_EDIT_MODE_ORDER = "SET_EDIT_MODE_ORDER";
+export const SET_ADD_TASK_MODE = "SET_ADD_TASK_MODE";
 export const SET_ORDER_LIST_DATA = "SET_ORDER_LIST_DATA";
 export const SET_ORDER_DETAILS_DATA = "SET_ORDER_DETAILS_DATA";
+export const SET_EDIT_MODE_TASK = "SET_EDIT_MODE_TASK";
 
 export const listOrders = () => async (dispatch) => {
     try {
@@ -60,3 +58,29 @@ export const updateOrder =
             dispatch(setOrderDetailsData({ loading: false }));
         }
     };
+
+export const setOrderListData = (data) => ({
+    type: SET_ORDER_LIST_DATA,
+    data,
+});
+
+export const setOrderDetailsData = (data) => ({
+    type: SET_ORDER_DETAILS_DATA,
+    data,
+});
+
+export const setEditModeOrder = (editModeOrder) => ({
+    type: SET_EDIT_MODE_ORDER,
+    payload: editModeOrder,
+});
+
+export const setAddTaskMode = (addTaskMode) => ({
+    type: SET_ADD_TASK_MODE,
+    payload: addTaskMode,
+});
+
+export const setEditModeTask = (task, editModeTask) => ({
+    type: SET_EDIT_MODE_TASK,
+    data: task,
+    payload: editModeTask,
+});

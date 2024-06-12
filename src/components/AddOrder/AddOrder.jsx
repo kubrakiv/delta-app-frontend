@@ -20,7 +20,7 @@ import AddOrderResponsibleManagerComponent from "./AddOrderResponsibleManagerCom
 import AddPointModalComponent from "../AddPoint/AddPointModalComponent/AddPointModalComponent";
 import TaskComponent from "../../screens/OrderPage/TaskComponent/TaskComponent";
 import { DirectionsService, useJsApiLoader } from "@react-google-maps/api";
-import Map from "../Map/Map";
+import Map from "../Map";
 import OpenContext from "../../components/OpenContext";
 import { formatDuration } from "../../utils/formatDuration";
 import { getCsrfToken } from "../../utils/getCsrfToken";

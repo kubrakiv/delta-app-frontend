@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
-import Map from "../../components/Map/Map";
+import Map from "../../components/Map";
 import Autocomplete from "../../components/Autocomplete/Autocomplete";
 import OpenContext from "../../components/OpenContext";
 

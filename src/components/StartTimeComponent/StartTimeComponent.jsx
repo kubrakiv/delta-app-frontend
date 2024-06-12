@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
 import "./StartTimeComponent.scss";
 import StartTimeHeaderComponent from "./StartTimeHeaderComponent/StartTimeHeaderComponent";
-import StartTimeFooterComponent from "./StartTimeFooterComponent/StartTimeFooterComponent";
 import axios from "axios";
 import { getCsrfToken } from "../../utils/getCsrfToken";
+import InputComponent from "../../globalComponents/InputComponent";
 
 const StartTimeComponent = ({
     setShowStartTimeModal,
@@ -54,7 +53,7 @@ const StartTimeComponent = ({
             <div className="start-time-container">
                 <div className="start-time">
                     <StartTimeHeaderComponent selectedTask={selectedTask} />
-                    <Form
+                    <form
                         onSubmit={handleFormSubmit}
                         className="start-time-form"
                     >
@@ -62,14 +61,9 @@ const StartTimeComponent = ({
                             <div className="start-time__content-block">
                                 <div className="start-time__row">
                                     <div className="start-time__content-row-block">
-                                        <Form.Group
-                                            controlId="date"
-                                            className="start-time__row-block"
-                                        >
-                                            <Form.Label className="start-time__form-title">
-                                                Дата початку
-                                            </Form.Label>
-                                            <Form.Control
+                                        <div className="start-time__row-block">
+                                            <InputComponent
+                                                label={"Дата початку"}
                                                 required
                                                 type="date"
                                                 placeholder="Enter task start date"
@@ -78,18 +72,13 @@ const StartTimeComponent = ({
                                                 onChange={(e) =>
                                                     setStartDate(e.target.value)
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                     <div className="start-time__content-row-block">
-                                        <Form.Group
-                                            controlId="time"
-                                            className="start-time__row-block"
-                                        >
-                                            <Form.Label className="start-time__form-title">
-                                                Час початку
-                                            </Form.Label>
-                                            <Form.Control
+                                        <div className="start-time__row-block">
+                                            <InputComponent
+                                                label={"Час початку"}
                                                 required
                                                 type="time"
                                                 placeholder="Enter task start time"
@@ -98,17 +87,13 @@ const StartTimeComponent = ({
                                                 onChange={(e) =>
                                                     setStartTime(e.target.value)
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <StartTimeFooterComponent
-                            setShowStartTimeModal={setShowStartTimeModal}
-                        />
-                    </Form>
+                    </form>
                 </div>
             </div>
         </>

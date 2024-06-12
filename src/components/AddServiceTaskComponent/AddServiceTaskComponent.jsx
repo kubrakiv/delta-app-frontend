@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getCsrfToken } from "../../utils/getCsrfToken";
-import { Form } from "react-bootstrap";
+import InputComponent from "../../globalComponents/InputComponent";
+import SelectComponent from "../../globalComponents/SelectComponent";
+import { transformSelectOptions } from "../../utils/transformers";
+import Select from "react-select";
+
+import { useSelector } from "react-redux";
 import AddServiceTaskFooterComponent from "./AddServiceTaskFooterComponent/AddServiceTaskFooterComponent";
 
 const AddServiceTaskComponent = ({
@@ -21,40 +26,41 @@ const AddServiceTaskComponent = ({
     editModeServiceTask,
     setEditModeServiceTask,
 }) => {
+    const trucks = useSelector((state) => state.trucksInfo.trucks.data);
+    const drivers = useSelector((state) => state.driversInfo.drivers.data);
+    const taskTypes = useSelector(
+        (state) => state.taskTypesInfo.taskTypes.data
+    );
+
+    const trucksOptions = transformSelectOptions(trucks, "plates");
+    const driversOptions = transformSelectOptions(drivers, "full_name");
+    const taskTypesOptions = transformSelectOptions(taskTypes, "name");
+
     const [title, setTitle] = useState("");
     const [startDate, setStartDate] = useState("");
     const [startTime, setStartTime] = useState("");
     const [endDate, setEndDate] = useState("");
     const [endTime, setEndTime] = useState("");
     const [truck, setTruck] = useState(selectedTruck || null);
-    const [driver, setDriver] = useState(selectedDriver || null);
+    const [driver, setDriver] = useState("");
     const [taskType, setTaskType] = useState("");
+    // const [selectedDriver, setSelectedDriver] = useState("");
 
-    const [trucks, setTrucks] = useState([]);
-    const [drivers, setDrivers] = useState([]);
-    const [taskTypes, setTaskTypes] = useState([]);
+    useEffect(() => {
+        if (selectedTruck) {
+            handleSelectDriver(selectedTruck.driver);
+        }
+        if (selectedTruck.driver === null) {
+            handleSelectDriver(null);
+            console.log("DRIVER", selectedTruck.driver);
+        }
+    }, [selectedTruck, handleSelectDriver]);
+
+    console.log("SELECTED TRUCK", selectedTruck);
+    console.log("SELECTED DRIVER", selectedDriver);
 
     useEffect(() => {
         getCsrfToken();
-    }, []);
-
-    useEffect(() => {
-        async function fetchTrucks() {
-            const { data } = await axios.get("/api/trucks/");
-            setTrucks(data);
-        }
-
-        fetchTrucks();
-
-        (async () => {
-            const { data } = await axios.get("/api/drivers/");
-            setDrivers(data);
-        })();
-
-        (async () => {
-            const { data } = await axios.get("/api/task-types/");
-            setTaskTypes(data);
-        })();
     }, []);
 
     useEffect(() => {
@@ -85,7 +91,7 @@ const AddServiceTaskComponent = ({
                 driver: selectedDriver,
                 type: selectedTaskType,
             };
-            console.log(data, "this is ADD MODE SERVICE TASK DATA");
+            console.log("Data", data);
 
             try {
                 const response = await axios.post("/api/tasks/create/", data);
@@ -108,7 +114,6 @@ const AddServiceTaskComponent = ({
                 driver: driver,
                 type: taskType,
             };
-            console.log(data, "this is EDIT MODE SERVICE TASK DATA");
 
             try {
                 const response = await axios.put(
@@ -130,24 +135,18 @@ const AddServiceTaskComponent = ({
         <>
             <div className="add-task-container">
                 <div className="add-task-details">
-                    {/* <AddTaskHeaderComponent
-                    setShowAddTaskModal={setShowAddTaskModal}
-                    editMode={editMode}
-                /> */}
-
-                    <Form onSubmit={handleFormSubmit} className="add-task-form">
+                    <form onSubmit={handleFormSubmit} className="add-task-form">
                         <div className="add-task-details__content">
                             <div className="add-task-details__content-block">
                                 <div className="add-task-details__row">
                                     <div className="add-task-details__content-row-block">
-                                        <Form.Group
+                                        <div
                                             controlId="type"
                                             className="add-task-details__row-block"
                                         >
-                                            <Form.Label className="add-task-details__form-title">
-                                                Тип завдання
-                                            </Form.Label>
-                                            <Form.Select
+                                            <SelectComponent
+                                                label={"Тип завдання"}
+                                                title={"Виберіть тип завдання"}
                                                 id="taskType"
                                                 name="taskType"
                                                 required
@@ -161,36 +160,16 @@ const AddServiceTaskComponent = ({
                                                         e.target.value
                                                     )
                                                 }
-                                            >
-                                                <option
-                                                    value={null}
-                                                    selected
-                                                    // disabled
-                                                >
-                                                    Виберіть тип завдання
-                                                </option>
-                                                {taskTypes.map((taskType) => (
-                                                    <option
-                                                        key={taskType.id}
-                                                        value={taskType.name}
-                                                    >
-                                                        {taskType.name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </Form.Group>
+                                                options={taskTypesOptions}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="add-task-details__row">
                                     <div className="add-task-details__content-row-block">
-                                        <Form.Group
-                                            controlId="title"
-                                            className="add-task-details__row-block"
-                                        >
-                                            <Form.Label className="add-task-details__form-title">
-                                                Завдання
-                                            </Form.Label>
-                                            <Form.Control
+                                        <div className="add-task-details__row-block">
+                                            <InputComponent
+                                                label={"Завдання"}
                                                 required
                                                 type="title"
                                                 placeholder="Введіть назву завдання"
@@ -203,21 +182,19 @@ const AddServiceTaskComponent = ({
                                                 onChange={(e) =>
                                                     setTitle(e.target.value)
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div className="add-task-details__row">
                                     <div className="add-task-details__content-row-block">
-                                        <Form.Group
+                                        <div
                                             controlId="date"
                                             className="add-task-details__row-block"
                                         >
-                                            <Form.Label className="add-task-details__form-title">
-                                                Дата початку
-                                            </Form.Label>
-                                            <Form.Control
+                                            <InputComponent
+                                                label={"Дата початку"}
                                                 required
                                                 type="date"
                                                 placeholder="Enter task start date"
@@ -233,18 +210,13 @@ const AddServiceTaskComponent = ({
                                                         e.target.value
                                                     )
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                     <div className="add-task-details__content-row-block">
-                                        <Form.Group
-                                            controlId="time"
-                                            className="add-task-details__row-block"
-                                        >
-                                            <Form.Label className="add-task-details__form-title">
-                                                Час початку
-                                            </Form.Label>
-                                            <Form.Control
+                                        <div className="add-task-details__row-block">
+                                            <InputComponent
+                                                label={"Час початку"}
                                                 required
                                                 type="time"
                                                 placeholder="Enter task start time"
@@ -253,8 +225,8 @@ const AddServiceTaskComponent = ({
                                                 onChange={(e) =>
                                                     setStartTime(e.target.value)
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                                 {(selectedTaskType &&
@@ -262,14 +234,11 @@ const AddServiceTaskComponent = ({
                                     (selectedTaskType === "Розвантаження" && (
                                         <div className="add-task-details__row">
                                             <div className="add-task-details__content-row-block">
-                                                <Form.Group
-                                                    controlId="date"
-                                                    className="add-task-details__row-block"
-                                                >
-                                                    <Form.Label className="add-task-details__form-title">
-                                                        Дата завершення
-                                                    </Form.Label>
-                                                    <Form.Control
+                                                <div className="add-task-details__row-block">
+                                                    <InputComponent
+                                                        label={
+                                                            "Дата завершення"
+                                                        }
                                                         type="date"
                                                         placeholder="Enter task start date"
                                                         value={endDate}
@@ -279,18 +248,13 @@ const AddServiceTaskComponent = ({
                                                                 e.target.value
                                                             )
                                                         }
-                                                    ></Form.Control>
-                                                </Form.Group>
+                                                    />
+                                                </div>
                                             </div>
                                             <div className="add-task-details__content-row-block">
-                                                <Form.Group
-                                                    controlId="time"
-                                                    className="add-task-details__row-block"
-                                                >
-                                                    <Form.Label className="add-task-details__form-title">
-                                                        Час завершення
-                                                    </Form.Label>
-                                                    <Form.Control
+                                                <div className="add-task-details__row-block">
+                                                    <InputComponent
+                                                        label={"Час завершення"}
                                                         type="time"
                                                         placeholder="Enter task start time"
                                                         value={endTime}
@@ -300,21 +264,17 @@ const AddServiceTaskComponent = ({
                                                                 e.target.value
                                                             )
                                                         }
-                                                    ></Form.Control>
-                                                </Form.Group>
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
                                 <div className="add-task-details__row">
                                     <div className="add-task-details__content-row-block">
-                                        <Form.Group
-                                            controlId="truck"
-                                            className="add-task-details__row-block"
-                                        >
-                                            <Form.Label className="add-task-details__form-title">
-                                                Автомобіль
-                                            </Form.Label>
-                                            <Form.Select
+                                        <div className="add-task-details__row-block">
+                                            <SelectComponent
+                                                label={"Автомобіль"}
+                                                title={"Виберіть автомобіль"}
                                                 id="truck"
                                                 name="truck"
                                                 value={
@@ -327,75 +287,55 @@ const AddServiceTaskComponent = ({
                                                         e.target.value
                                                     )
                                                 }
-                                            >
-                                                <option
-                                                    value={null}
-                                                    selected
-                                                    // disabled
-                                                >
-                                                    Виберіть автомобіль
-                                                </option>
-                                                {Array.isArray(trucks) &&
-                                                    trucks.map((truck) => (
-                                                        <option
-                                                            key={truck.id}
-                                                            value={truck.plates}
-                                                        >
-                                                            {truck.plates}
-                                                        </option>
-                                                    ))}
-                                            </Form.Select>
-                                        </Form.Group>
+                                                options={trucksOptions}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="add-task-details__content-row-block">
-                                        <Form.Group
+                                        <div
                                             controlId="driver"
                                             className="add-task-details__row-block"
                                         >
-                                            <Form.Label className="add-task-details__form-title">
-                                                Водій
-                                            </Form.Label>
-                                            <Form.Select
+                                            <SelectComponent
+                                                label={"Водій"}
+                                                title={"Виберіть водія"}
                                                 id="driver"
                                                 name="driver"
-                                                value={
-                                                    editModeServiceTask
-                                                        ? driver
-                                                        : selectedDriver
-                                                }
+                                                value={selectedDriver || null} // FIXME: when selectedDriver is null it should display the title
                                                 onChange={(e) =>
                                                     handleSelectDriver(
                                                         e.target.value
                                                     )
                                                 }
-                                            >
-                                                <option
-                                                    value={null}
-                                                    selected
-                                                    // disabled
-                                                >
-                                                    Виберіть водія
-                                                </option>
-                                                {drivers.map((driver) => (
-                                                    <option
-                                                        key={driver.id}
-                                                        value={driver.full_name}
-                                                    >
-                                                        {driver.full_name}
-                                                    </option>
-                                                ))}
-                                            </Form.Select>
-                                        </Form.Group>
+                                                options={driversOptions}
+                                            />
+                                            {/* <label className="upload-documents__form-title">
+                                                {"Водій"}
+                                            </label>
+                                            <Select
+                                                name={"driver"}
+                                                // className="add-task-details__row-block_select"
+                                                placeholder={"Виберіть водія"}
+                                                value={selectedDriver}
+                                                defaultValue={selectedDriver}
+                                                onChange={(e) =>
+                                                    handleSelectDriver(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                options={driversOptions}
+                                            /> */}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <AddServiceTaskFooterComponent
-                            showServiceTaskModal={showServiceTaskModal}
+                            handleSelectDriver={handleSelectDriver}
+                            handleFormSubmit={handleFormSubmit}
                             setShowServiceTaskModal={setShowServiceTaskModal}
                         />
-                    </Form>
+                    </form>
                 </div>
             </div>
         </>

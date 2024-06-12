@@ -17,10 +17,14 @@ import { customerReducer } from "./reducers/customerReducers";
 import { paymentTypeReducer } from "./reducers/paymentTypeReducers";
 import { platformReducer } from "./reducers/platformReducers";
 import { documentReducer } from "./reducers/documentReducers";
+import { pointReducer } from "./reducers/pointReducers";
+import { taskTypeReducer } from "./reducers/taskTypeReducers";
+import plannerReducers from "./reducers/plannerReducers";
+import { taskReducer } from "./reducers/taskReducers";
 
 const reducer = combineReducers({
     ordersInfo: orderReducer,
-
+    pointsInfo: pointReducer,
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
     userDetails: userDetailsReducer,
@@ -34,8 +38,10 @@ const reducer = combineReducers({
     customersInfo: customerReducer,
     paymentTypesInfo: paymentTypeReducer,
     platformsInfo: platformReducer,
-
     documentsInfo: documentReducer,
+    taskTypesInfo: taskTypeReducer,
+    tasksInfo: taskReducer,
+    plannerInfo: plannerReducers,
 });
 
 const userInfoFromStorage = localStorage.getItem("userInfo")

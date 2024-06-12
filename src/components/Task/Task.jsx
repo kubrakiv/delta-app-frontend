@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { DELIVERY_CONSTANTS } from "../../constants/global";
+import { useDispatch, useSelector } from "react-redux";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
 function Task({
@@ -18,8 +19,16 @@ function Task({
     handleStartTime,
     handleDeleteTask,
     handleEditModeTask,
-    showDriver,
+    // showDriver,
 }) {
+    const dispatch = useDispatch();
+
+    const showDriver = useSelector((state) => state.plannerInfo.showDriver);
+    const showOrderNumber = useSelector(
+        (state) => state.plannerInfo.showOrderNumber
+    );
+    const showCustomer = useSelector((state) => state.plannerInfo.showCustomer);
+
     const [isHovered, setHovered] = useState(false);
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [unloadingStatus, setUnloadingStatus] = useState(false);
@@ -216,9 +225,19 @@ function Task({
                         </div>
                     )}
                     <div className="task-details" style={textStyle}>
+                        {showOrderNumber && (
+                            <div className="task-details__order">
+                                {task.order_number}
+                            </div>
+                        )}
                         {showDriver && (
                             <div className="task-details__driver">
                                 {task.driver}
+                            </div>
+                        )}
+                        {showCustomer && (
+                            <div className="task-details__driver">
+                                {task.customer}
                             </div>
                         )}
                         <span>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 import "./PointPage.scss";
-import Map from "../../components/Map/Map";
+import Map from "../../components/Map";
 import PointHeaderComponent from "./PointHeaderComponent/PointHeaderComponent";
 import PointCustomerComponent from "./PointCustomerComponent/PointCustomerComponent";
 import PointCompanyComponent from "./PointCompanyComponent/PointCompanyComponent";
