@@ -24,10 +24,14 @@ const SelectComponent = ({
                 className="form-field__select form-select-mb10"
                 autoFocus={autoFocus}
             >
-                <option value={null} disabled>
+                <option value={""} disabled>
                     {title}
                 </option>
-                {options}
+                {options.map((item) => (
+                    <option key={item.label} value={item.value}>
+                        {item.label}
+                    </option>
+                ))}
             </select>
         </>
     );

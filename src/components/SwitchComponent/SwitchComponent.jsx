@@ -1,7 +1,7 @@
 import React from "react";
 import "./SwitchComponent.scss";
 
-const SwitchComponent = ({ isToggled, onToggle }) => {
+const SwitchComponent = ({ isToggled, onToggle, title }) => {
     return (
         <label className="switch">
             <input
@@ -10,7 +10,7 @@ const SwitchComponent = ({ isToggled, onToggle }) => {
                 checked={isToggled}
                 onChange={() => onToggle()}
             />
-            <span className="slider" title="Показати водія"></span>
+            <span className="slider" title={title}></span>
         </label>
     );
 };

@@ -1,32 +1,28 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import "./style.scss";
+import GenericFooterComponent from "./GenericFooterComponent";
 
-const GenericModalComponent = ({ show, onClose, content }) => {
+const GenericModalComponent = ({ show, onClose, content, footer }) => {
     const modalRef = useRef(null);
 
-    useEffect(() => {
-        // const handleClickOutside = (event) => {
-        //     if (modalRef.current && !modalRef.current.contains(event.target)) {
-        //         // onClose();
-        //     }
-        // };
-
-        const handleKeyDown = (event) => {
+    const handleKeyDown = useCallback(
+        (event) => {
             if (event.keyCode === 27) {
                 onClose();
             }
-        };
+        },
+        [onClose]
+    );
 
+    useEffect(() => {
         if (show) {
             document.addEventListener("keydown", handleKeyDown);
-            // document.addEventListener("click", handleClickOutside);
         }
 
         return () => {
-            // document.removeEventListener("click", handleClickOutside);
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [show, onClose]);
+    }, [show, handleKeyDown]);
 
     return (
         <>
@@ -34,12 +30,15 @@ const GenericModalComponent = ({ show, onClose, content }) => {
                 className="modal-overlay"
                 style={{ display: show ? "block" : "none" }}
             >
+                <div className="modal-background" onClick={onClose} />
                 <div
                     ref={modalRef}
                     className={`generic-modal${show ? "" : " hidden"}`}
                     style={{ display: show ? "block" : "none" }}
                 >
+                    {/* {header && <GenericHeaderComponent />} */}
                     {content}
+                    {footer && <GenericFooterComponent onClose={onClose} />}
                 </div>
             </div>
         </>

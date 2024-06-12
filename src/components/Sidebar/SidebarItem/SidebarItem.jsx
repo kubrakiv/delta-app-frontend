@@ -45,6 +45,13 @@ export default function SidebarItem({ item }) {
         return false;
     };
 
+    const linkContent = (
+        <span className="link">
+            {item.icon && <i className="link-icon">{item.icon}</i>}
+            {isSidebarOpen && <span className="link-title">{item.title}</span>}
+        </span>
+    );
+
     return (
         <>
             <div
@@ -57,23 +64,27 @@ export default function SidebarItem({ item }) {
                         hasOpenChild(item.childrens),
                 })}
             >
-                <NavLink
-                    to={item.path}
-                    className="sidebar-title"
-                    onClick={() => isSidebarOpen && setOpen(!open)}
-                >
-                    <span className="link">
-                        {item.icon && <i className="link-icon">{item.icon}</i>}
-                        {isSidebarOpen && (
-                            <span className="link-title">{item.title}</span>
+                {item?.childrens?.length ? (
+                    <div
+                        className="sidebar-title"
+                        onClick={() => isSidebarOpen && setOpen(!open)}
+                    >
+                        {linkContent}
+                        {isSidebarOpen && item.childrens && (
+                            <i className="toggle-btn">
+                                <FaAngleRight />
+                            </i>
                         )}
-                    </span>
-                    {isSidebarOpen && item.childrens && (
-                        <i className="toggle-btn">
-                            <FaAngleRight />
-                        </i>
-                    )}
-                </NavLink>
+                    </div>
+                ) : (
+                    <NavLink
+                        to={item.path}
+                        className="sidebar-title"
+                        onClick={() => isSidebarOpen && setOpen(!open)}
+                    >
+                        {linkContent}
+                    </NavLink>
+                )}
 
                 {item && (
                     <div

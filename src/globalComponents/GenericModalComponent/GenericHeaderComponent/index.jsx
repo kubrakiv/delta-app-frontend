@@ -1,6 +1,6 @@
 import React from "react";
 
-const StartTimeHeaderComponent = ({ selectedTask }) => {
+const GenericHeaderComponent = ({ data }) => {
     const wordToLowerCase = (word) => {
         return word?.toLowerCase();
     };
@@ -9,12 +9,11 @@ const StartTimeHeaderComponent = ({ selectedTask }) => {
         <>
             <div className="start-time__header">
                 <div className="start-time__header-block">
-                    Початок{" "}
-                    {selectedTask && wordToLowerCase(selectedTask?.type)}
+                    Початок {data && wordToLowerCase(data?.type)}
                 </div>
             </div>
         </>
     );
 };
 
-export default StartTimeHeaderComponent;
+export default GenericHeaderComponent;

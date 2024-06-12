@@ -1,13 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { getISOWeek, set } from "date-fns";
+import { getISOWeek } from "date-fns";
 import "./WeekPlanner.scss";
 import { generateDatesArray } from "./dateFunctions";
-import { InputSwitch } from "primereact/inputswitch";
 
 import DayTasks from "../Tasks/DayTasks";
-import { ModalItem } from "../ModalItem/ModalItem";
 import { Link } from "react-router-dom";
 import WeekSwitcherComponent from "../WeekSwitcherComponent/WeekSwitcherComponent";
 import WeekDateComponent from "../WeekDateComponent/WeekDateComponent";
@@ -15,27 +14,40 @@ import EndTimeModalComponent from "./EndTimeModalComponent/EndTimeModalComponent
 import StartTimeModalComponent from "./StartTimeModalComponent/StartTimeModalComponent";
 import ServiceTaskModalComponent from "./ServiceTaskModalComponent/ServiceTaskModalComponent";
 import SwitchComponent from "../SwitchComponent/SwitchComponent";
-import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { FaAngleDown, FaAngleUp, FaTrailer, FaTruck } from "react-icons/fa";
+import { setPlanner } from "../../actions/plannerActions";
+import { listTrucks } from "../../actions/truckActions";
+import { listDrivers } from "../../actions/driverActions";
+import { listTaskTypes } from "../../actions/taskTypeActions";
+import { listTasks } from "../../actions/taskActions";
+import { setTaskListData } from "../../reducers/taskReducers";
 
 export const WeekPlanner = () => {
+    const dispatch = useDispatch();
+    const showDriver = useSelector((state) => state.plannerInfo.showDriver);
+    const showOrderNumber = useSelector(
+        (state) => state.plannerInfo.showOrderNumber
+    );
+    const showCustomer = useSelector((state) => state.plannerInfo.showCustomer);
+    const trucks = useSelector((state) => state.trucksInfo.trucks.data);
+    const tasks = useSelector((state) => state.tasksInfo.tasks.data);
+
+    console.log("TRUCKS", trucks);
+
     const date = new Date();
     const [isHovered, setHovered] = useState(false);
 
     const [showDetails, setShowDetails] = useState(false);
 
-    const toggleDetails = () => {
-        setShowDetails(!showDetails);
-    };
-
-    const [tasks, setTasks] = useState([]);
-    const [trucks, setTrucks] = useState([]);
+    // const [tasks, setTasks] = useState([]);
     const [week, setWeek] = useState(getISOWeek(date));
     const [datesArray, setDatesArray] = useState(
         generateDatesArray(date, week)
     );
     const [showModal, setShowModal] = useState(false);
-    const [isToggled, setIsToggled] = useState(false);
-    const [showDriver, setShowDriver] = useState(false);
+    const [isToggledDriver, setIsToggledDriver] = useState(false);
+    const [isToggledOrderNumber, setIsToggledOrderNumber] = useState(false);
+    const [isToggledCustomer, setIsToggledCustomer] = useState(false);
     const [showEndTimeModal, setShowEndTimeModal] = useState(false);
     const [showStartTimeModal, setShowStartTimeModal] = useState(false);
     const [showServiceTaskModal, setShowServiceTaskModal] = useState(false);
@@ -69,11 +81,13 @@ export const WeekPlanner = () => {
             return task;
         });
         console.log(updatedTasks, "this is updated tasks");
-        setTasks(updatedTasks);
+        dispatch(setTaskListData(updatedTasks));
+        // setTasks(updatedTasks);
     };
 
     const handleTaskCreate = (taskData) => {
-        setTasks((prevTasks) => [...prevTasks, taskData]);
+        // setTasks((prevTasks) => [...prevTasks, taskData]);
+        dispatch(setTaskListData([...tasks, taskData]));
     };
 
     const handleModalShow = () => {
@@ -97,20 +111,10 @@ export const WeekPlanner = () => {
     };
 
     useEffect(() => {
-        async function fetchTasks() {
-            const { data } = await axios.get("/api/tasks/");
-            setTasks(data);
-        }
-        fetchTasks();
-    }, []);
-
-    useEffect(() => {
-        async function fetchTrucks() {
-            const { data } = await axios.get("/api/trucks/");
-            setTrucks(data);
-        }
-
-        fetchTrucks();
+        dispatch(listTrucks());
+        dispatch(listDrivers());
+        dispatch(listTaskTypes());
+        dispatch(listTasks());
     }, []);
 
     const handleWeekChange = (newWeek) => {
@@ -121,7 +125,6 @@ export const WeekPlanner = () => {
     const handleTruckDateSelect = ({ truckId, dayNumber }) => {
         const selectedTruck = trucks.find((truck) => truck.id === truckId);
         setSelectedTruck(selectedTruck);
-
         setSelectedDate(datesArray[dayNumber]);
 
         handleServiceTaskModalShow();
@@ -177,7 +180,8 @@ export const WeekPlanner = () => {
             console.log("Task deleted successfully:", response.data);
 
             const updatedTasks = tasks.filter((task) => task.id !== taskId);
-            setTasks(updatedTasks);
+            dispatch(setTaskListData(updatedTasks));
+            // setTasks(updatedTasks);
         } catch (error) {
             console.error("Error deleting task:", error.message);
         }
@@ -194,9 +198,23 @@ export const WeekPlanner = () => {
         console.log("THIS IS FROM EDIT TASK", task);
     };
 
+    const toggleDetails = () => {
+        setShowDetails(!showDetails);
+    };
+
     const handleShowDriver = () => {
-        setShowDriver(!showDriver);
-        setIsToggled(!isToggled);
+        dispatch(setPlanner({ showDriver: !showDriver }));
+        setIsToggledDriver(!isToggledDriver);
+    };
+
+    const handleShowOrderNumber = () => {
+        dispatch(setPlanner({ showOrderNumber: !showOrderNumber }));
+        setIsToggledOrderNumber(!isToggledOrderNumber);
+    };
+
+    const handleShowCustomer = () => {
+        dispatch(setPlanner({ showCustomer: !showCustomer }));
+        setIsToggledCustomer(!isToggledCustomer);
     };
 
     return (
@@ -249,8 +267,19 @@ export const WeekPlanner = () => {
                     />
                     <div></div>
                     <SwitchComponent
-                        isToggled={isToggled}
+                        title="Показати водія"
+                        isToggled={isToggledDriver}
                         onToggle={handleShowDriver}
+                    />
+                    <SwitchComponent
+                        title="Показати номер заявки"
+                        isToggled={isToggledOrderNumber}
+                        onToggle={handleShowOrderNumber}
+                    />
+                    <SwitchComponent
+                        title="Показати замовника"
+                        isToggled={isToggledCustomer}
+                        onToggle={handleShowCustomer}
                     />
                 </div>
 
@@ -297,27 +326,34 @@ export const WeekPlanner = () => {
                                     <div
                                         className="week-truck__row"
                                         key={truck.id}
-                                        // onMouseEnter={handleMouseEnter}
-                                        // onMouseLeave={handleMouseLeave}
                                     >
                                         <div className="week-truck__day-container">
                                             <div className="week-truck__first-col">
-                                                <div className="week-truck__plates with-icon-truck">
-                                                    {truck.plates}
+                                                <div className="week-truck__truck-plates">
+                                                    <span className="week-truck__truck-plates_icon">
+                                                        {<FaTruck />}
+                                                    </span>
+                                                    <span>{truck.plates}</span>
                                                 </div>
                                                 {truck.trailer && (
-                                                    <div className="week-truck__trailer-plates with-icon-trailer">
-                                                        {truck.trailer}
+                                                    <div className="week-truck__trailer-plates">
+                                                        <span className="week-truck__trailer-plates_icon">
+                                                            {<FaTrailer />}
+                                                        </span>
+                                                        <span>
+                                                            {truck.trailer}
+                                                        </span>
                                                     </div>
                                                 )}
-                                                {truck.driver_details && (
+                                                {truck?.driver_details && (
                                                     <div
                                                         className="week-truck__driver-details"
                                                         onClick={toggleDetails}
                                                     >
                                                         {
-                                                            truck.driver_details
-                                                                .full_name
+                                                            truck
+                                                                ?.driver_details
+                                                                ?.full_name
                                                         }
                                                         {showDetails ? (
                                                             <FaAngleUp />
@@ -328,9 +364,10 @@ export const WeekPlanner = () => {
                                                 )}
                                                 {showDetails && (
                                                     <span className="week-truck__driver-details_phone-number">
-                                                        {truck.driver &&
-                                                            truck.driver_details
-                                                                .phone_number}
+                                                        {truck?.driver &&
+                                                            truck
+                                                                ?.driver_details
+                                                                ?.phone_number}
                                                     </span>
                                                 )}
                                             </div>
@@ -343,7 +380,6 @@ export const WeekPlanner = () => {
                                                     key={dayNumber}
                                                 >
                                                     <DayTasks
-                                                        showDriver={showDriver}
                                                         isHovered={isHovered}
                                                         tasks={dayTasks}
                                                         onTruckDateSelect={
@@ -380,17 +416,6 @@ export const WeekPlanner = () => {
                                 );
                             })}
                         </div>
-
-                        {/* <ModalItem
-                            showModal={showModal}
-                            onCloseModal={handleModalClose}
-                            editMode={editMode}
-                            data={selectedTask}
-                            onTaskUpdate={handleTaskUpdate}
-                            selectedDate={selectedDate}
-                            selectedTruck={selectedTruck}
-                            onTaskCreate={handleTaskCreate}
-                        /> */}
                     </div>
                 </div>
             </div>

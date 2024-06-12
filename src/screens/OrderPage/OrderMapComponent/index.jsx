@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useJsApiLoader, DirectionsService } from "@react-google-maps/api";
-import Map from "../../../components/Map/Map";
+import Map from "../../../components/Map";
 import { formatDuration } from "../../../utils/formatDuration";
 
 const { REACT_APP_API_KEY: API_KEY } = process.env;
@@ -10,14 +10,13 @@ const OrderMapComponent = () => {
     const map = useSelector((state) => state.map);
     const order = useSelector((state) => state.ordersInfo.order.data);
     const tasks = useSelector((state) => state.ordersInfo.order.data.tasks);
+    const defaultCenter = useSelector((state) => state.map.defaultCenter);
 
-    const [center, setCenter] = useState(map.defaultCenter);
     const [directionsResponse, setDirectionsResponse] = useState(null);
     const [duration, setDuration] = useState("");
     const [distance, setDistance] = useState("");
 
     useEffect(() => {
-        // setTasks(order.tasks);
         setDistance(order.distance);
     }, [order]);
 
@@ -114,7 +113,7 @@ const OrderMapComponent = () => {
                         />
                         <Map
                             tasks={tasks}
-                            center={center}
+                            center={defaultCenter}
                             directionsResponse={directionsResponse}
                         />
                     </>

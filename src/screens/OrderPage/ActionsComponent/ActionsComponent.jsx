@@ -1,21 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setEditModeDocument } from "../../../reducers/documentReducers";
+import { setAddTaskMode } from "../../../actions/orderActions";
 
 const ActionsComponent = () => {
     const dispatch = useDispatch();
     const editModeDocument = useSelector(
         (state) => state.documentsInfo.editMode
     );
-    const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-
-    const handleAddTaskButtonClick = (e) => {
-        e.stopPropagation();
-        setShowAddTaskModal(true);
-    };
 
     const handleDocumentModalOpen = () => {
         dispatch(setEditModeDocument(!editModeDocument));
+    };
+
+    const handleAddTaskButtonClick = (e) => {
+        e.stopPropagation();
+        dispatch(setAddTaskMode(true));
     };
 
     return (

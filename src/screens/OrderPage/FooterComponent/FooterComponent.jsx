@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setEditModeOrder } from "../../../reducers/orderReducers";
+import { setEditModeOrder } from "../../../actions/orderActions";
 import { useNavigate } from "react-router-dom";
 
 const FooterComponent = () => {

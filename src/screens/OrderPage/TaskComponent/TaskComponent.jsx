@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import TaskOrder from "../../../components/Task/TaskOrder";
 import { getDateTime } from "../../../utils/getDateTime";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { setEditModeTask } from "../../../actions/orderActions";
+import { setPointDetailsData } from "../../../actions/pointActions";
 
 function TaskComponent() {
+    const dispatch = useDispatch();
     const order = useSelector((state) => state.ordersInfo.order.data);
 
     const [tasks, setTasks] = useState(order.tasks || []);
-    const [editModeTask, setEditModeTask] = useState(false);
-
-    const [selectedPoint, setSelectedPoint] = useState({});
 
     useEffect(() => {
         setTasks(order.tasks);
@@ -30,8 +30,8 @@ function TaskComponent() {
         e.preventDefault();
         e.stopPropagation();
 
-        setEditModeTask(true);
-        // setShowAddTaskModal(true);
+        dispatch(setEditModeTask(task, true));
+        dispatch(setPointDetailsData(task.point_details));
     };
 
     const handleDeleteTask = async (e, taskId) => {
@@ -64,7 +64,7 @@ function TaskComponent() {
                     <div key={task.id}>
                         <TaskOrder
                             task={task}
-                            handleEditModeTask={handleEditModeTask}
+                            onEditMode={handleEditModeTask}
                             handleDeleteTask={handleDeleteTask}
                         />
                     </div>

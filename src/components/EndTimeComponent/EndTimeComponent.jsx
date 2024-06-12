@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
 import "./EndTimeComponent.scss";
 import EndTimeHeaderComponent from "./EndTimeHeaderComponent/EndTimeHeaderComponent";
-import EndTimeFooterComponent from "./EndTimeFooterComponent/EndTimeFooterComponent";
 import axios from "axios";
 import { getCsrfToken } from "../../utils/getCsrfToken";
+import InputComponent from "../../globalComponents/InputComponent";
 
 const EndTimeComponent = ({
     setShowEndTimeModal,
@@ -49,19 +48,14 @@ const EndTimeComponent = ({
             <div className="end-time-container">
                 <div className="end-time">
                     <EndTimeHeaderComponent selectedTask={selectedTask} />
-                    <Form onSubmit={handleFormSubmit} className="end-time-form">
+                    <form onSubmit={handleFormSubmit} className="end-time-form">
                         <div className="end-time__content">
                             <div className="end-time__content-block">
                                 <div className="end-time__row">
                                     <div className="end-time__content-row-block">
-                                        <Form.Group
-                                            controlId="date"
-                                            className="end-time__row-block"
-                                        >
-                                            <Form.Label className="end-time__form-title">
-                                                Дата завершення
-                                            </Form.Label>
-                                            <Form.Control
+                                        <div className="end-time__row-block">
+                                            <InputComponent
+                                                label={"Дата завершення"}
                                                 required
                                                 type="date"
                                                 placeholder="Enter task start date"
@@ -70,18 +64,13 @@ const EndTimeComponent = ({
                                                 onChange={(e) =>
                                                     setEndDate(e.target.value)
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                     <div className="end-time__content-row-block">
-                                        <Form.Group
-                                            controlId="time"
-                                            className="end-time__row-block"
-                                        >
-                                            <Form.Label className="end-time__form-title">
-                                                Час завершення
-                                            </Form.Label>
-                                            <Form.Control
+                                        <div className="end-time__row-block">
+                                            <InputComponent
+                                                label={"Час завершення"}
                                                 required
                                                 type="time"
                                                 placeholder="Enter task start time"
@@ -90,17 +79,13 @@ const EndTimeComponent = ({
                                                 onChange={(e) =>
                                                     setEndTime(e.target.value)
                                                 }
-                                            ></Form.Control>
-                                        </Form.Group>
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <EndTimeFooterComponent
-                            setShowEndTimeModal={setShowEndTimeModal}
-                        />
-                    </Form>
+                    </form>
                 </div>
             </div>
         </>

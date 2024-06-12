@@ -3,9 +3,12 @@ import "./CustomerComponent.scss";
 import PlatformComponent from "../../../components/PlatformComponent/PlatformComponent";
 import { useDispatch, useSelector } from "react-redux";
 import FormWrapper from "../../../components/FormWrapper";
-import { getCsrfToken } from "../../../utils/getCsrfToken";
 import { updateOrder } from "../../../actions/orderActions";
-import { listCustomers } from "../../../actions/customerActions";
+import {
+    listCustomers,
+    setCustomerDetailsData,
+    setManagerListData,
+} from "../../../actions/customerActions";
 import SelectComponent from "../../../globalComponents/SelectComponent";
 
 function CustomerComponent() {
@@ -16,20 +19,35 @@ function CustomerComponent() {
         (state) => state.customersInfo.customers.data
     );
 
-    const [selectedCustomer, setSelectedCustomer] = useState("");
+    const [selectedCustomer, setSelectedCustomer] = useState(order.customer);
 
     useEffect(() => {
-        setSelectedCustomer(order.customer);
         dispatch(listCustomers());
-    }, [dispatch, order]);
+    }, []);
 
     useEffect(() => {
-        getCsrfToken();
-    });
+        const currentCustomer = customers.find(
+            (customer) => customer.name === order.customer
+        );
+        if (currentCustomer) {
+            dispatch(setManagerListData({ data: currentCustomer.managers }));
+        }
+    }, [dispatch, order.customer, customers]);
+
+    useEffect(() => {
+        const customer = customers.find(
+            (customer) => customer.name === selectedCustomer
+        );
+        dispatch(
+            setCustomerDetailsData({
+                data: customer,
+            })
+        );
+    }, [dispatch, selectedCustomer, customers]);
 
     const handleFormSubmit = () => {
         let dataToUpdate = {};
-
+        dataToUpdate.customer = selectedCustomer;
         dispatch(updateOrder(dataToUpdate, order.id));
     };
 
@@ -58,7 +76,7 @@ function CustomerComponent() {
                                 {customer.name}
                             </option>
                         ))}
-                    ></SelectComponent>
+                    />
                 </form>
             </FormWrapper>
         </>

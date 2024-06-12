@@ -9,7 +9,9 @@ const UploadDocumentsFooterComponent = () => {
         (state) => state.documentsInfo.editMode
     );
 
-    const handleCloseDocumentModal = () => {
+    const handleCloseDocumentModal = (e) => {
+        e.preventDefault();
+
         dispatch(setEditModeDocument(!editModeDocument));
     };
 
@@ -26,7 +28,7 @@ const UploadDocumentsFooterComponent = () => {
                 <button
                     title="Close Window"
                     className="upload-documents__footer-btn upload-documents__footer-btn_close"
-                    onClick={handleCloseDocumentModal}
+                    onClick={(e) => handleCloseDocumentModal(e)}
                 >
                     Закрити
                 </button>
