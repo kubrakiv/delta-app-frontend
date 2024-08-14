@@ -10,6 +10,9 @@ import "./AddDriverComponent.scss";
 import driverImagePlaceholder from "../../../img/driver_placeholder.jpg";
 import cn from "classnames";
 import { transformDateFormat } from "../../../utils/formatDate";
+import { updateDriver } from "../../../actions/driverActions";
+
+const { REACT_APP_PROXY: BASE_URL } = process.env;
 
 const AddDriverComponent = ({
     showDriverModal,
@@ -19,11 +22,8 @@ const AddDriverComponent = ({
     editDriverProfileMode,
     setEditDriverProfileMode,
     handleEditProfileMode,
-    handleRemoveSelectedDriver,
     handleDriverUpdate,
 }) => {
-    // const [roles, setRoles] = useState([]);
-    // const [editDriverProfileMode, setEditDriverProfileMode] = useState(false);
 
     const [driverImage, setDriverImage] = useState(driverImagePlaceholder);
     const [firstName, setFirstName] = useState("");
@@ -38,7 +38,6 @@ const AddDriverComponent = ({
     const [workStart, setWorkStart] = useState("");
     const [workEnd, setWorkEnd] = useState("");
 
-    const BASE_URL = "http://localhost:8000";
 
     const dispatch = useDispatch();
 
@@ -47,7 +46,6 @@ const AddDriverComponent = ({
     }, []);
 
     useEffect(() => {
-        // if (selectedDriver && !editDriverProfileMode) {
         setFirstName(selectedDriver.first_name);
         setLastName(selectedDriver.last_name);
         setMiddleName(selectedDriver.middle_name);
@@ -59,7 +57,6 @@ const AddDriverComponent = ({
         setBirthday(selectedDriver.birth_date);
         setWorkStart(selectedDriver.work_start);
         setWorkEnd(selectedDriver.work_end);
-        // }
     }, [selectedDriver]);
 
     const submitDriverProfile = async (
@@ -85,21 +82,10 @@ const AddDriverComponent = ({
             };
             console.log("Driver data", driver);
             try {
-                const config = {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                };
-
-                const { data } = await axios.put(
-                    `/api/driver-profiles/update/${selectedDriver.user}/`,
-                    driver,
-                    config
-                );
-
-                console.log(data, "Driver profile updated");
-                handleDriverUpdate(selectedDriver.user, data);
-                setSelectedDriver(data);
+                dispatch(updateDriver(driver, selectedDriver.user));
+                
+                handleDriverUpdate(selectedDriver.user, driver);
+                setSelectedDriver(driver);
                 setEditDriverProfileMode(false);
                 setShowDriverModal(false);
             } catch (error) {
@@ -174,16 +160,22 @@ const AddDriverComponent = ({
                                     <label className="driver-details__content-row-block-title">
                                         Фото водія
                                     </label>
-                                    <div className="driver-details__content-row-block-photo">
-                                        <img src={driverImage} alt="driver" />
-                                        <input
-                                            type="file"
-                                            id="driver-image"
-                                            label="Завантажити фото"
-                                            className="driver-details__content-row-block-upload"
-                                            onChange={handleDriverImageUpload}
-                                        />
-                                    </div>
+                                    {editDriverProfileMode ? (
+                                        <div className="driver-details__content-row-block-photo">
+                                            <img src={driverImage} alt="driver" />
+                                            <input
+                                                type="file"
+                                                id="driver-image"
+                                                label="Завантажити фото"
+                                                className="driver-details__content-row-block-upload"
+                                                onChange={handleDriverImageUpload}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="driver-details__content-row-block-photo">
+                                            <img src={driverImage} alt="driver" />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="driver-details__content-block">
@@ -261,7 +253,7 @@ const AddDriverComponent = ({
                                             <div className={btnClassEdit}>
                                                 {editDriverProfileMode ? (
                                                     <input
-                                                        required
+                                                        // required
                                                         type="last_name"
                                                         id="last_name"
                                                         placeholder="Введіть по батькові"
@@ -542,9 +534,7 @@ const AddDriverComponent = ({
                             setShowDriverModal={setShowDriverModal}
                             setSelectedDriver={setSelectedDriver}
                             setEditDriverProfileMode={setEditDriverProfileMode}
-                            handleRemoveSelectedDriver={
-                                handleRemoveSelectedDriver
-                            }
+                            
                         />
                     </form>
                 </div>

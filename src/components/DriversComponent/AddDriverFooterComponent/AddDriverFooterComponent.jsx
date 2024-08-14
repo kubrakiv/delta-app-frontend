@@ -3,15 +3,13 @@ import "./AddDriverFooterComponent.scss";
 
 const AddDriverFooterComponent = ({
     setShowDriverModal,
-    setSelectedDriver,
     setEditDriverProfileMode,
-    handleRemoveSelectedDriver,
 }) => {
     return (
         <>
             <div className="driver-details__footer">
                 <button
-                    title="Edit Order"
+                    title="Редагувати профіль водія"
                     className="driver-details__footer-btn driver-details__footer-btn_edit"
                     onClick={(e) => {
                         e.preventDefault();
@@ -21,20 +19,19 @@ const AddDriverFooterComponent = ({
                     Редагувати
                 </button>
                 <button
-                    title="Записати"
+                    title="Записати профіль водія"
                     className="driver-details__footer-btn driver-details__footer-btn_save"
                     type="submit"
                 >
                     Записати
                 </button>
                 <button
-                    title="Закрити"
+                    title="Закрити вікно"
                     className="driver-details__footer-btn driver-details__footer-btn_close"
                     onClick={(e) => {
                         e.preventDefault();
                         setShowDriverModal(false);
                         setEditDriverProfileMode(false);
-                        handleRemoveSelectedDriver();
                     }}
                 >
                     Закрити
