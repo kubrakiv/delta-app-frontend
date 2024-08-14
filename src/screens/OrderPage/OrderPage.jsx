@@ -19,49 +19,49 @@ import OrderMapComponent from "./OrderMapComponent";
 import UploadDocumentsComponent from "../../components/UploadDocumentsComponent/UploadDocumentsComponent";
 
 const OrderPage = () => {
-    return (
-        <>
-            <AddTaskModalComponent />
-            <UploadDocumentsComponent />
-            <div className="order-container">
-                <div className="order-details">
-                    <HeaderComponent />
-                    <ActionsComponent />
-                    <div className="order-details__content">
-                        <div className="order-details__content-block">
-                            <div className="order-details__content-row">
-                                <CarrierComponent />
-                                <CarrierManagerComponent />
-                            </div>
-                            <div className="order-details__content-row">
-                                <TruckComponent />
-                                <DriverComponent />
-                            </div>
-                            <div className="order-details__content-row">
-                                <div className="order-details__content-row-block order-details__content-row-block_tasks">
-                                    <RouteComponent />
-                                    <TaskComponent />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="order-details__content-block">
-                            <div className="order-details__content-row">
-                                <PriceComponent />
-                                <MarketPriceComponent />
-                                <CustomerComponent />
-                            </div>
-                            <div className="order-details__content-row">
-                                <CargoComponent />
-                                <CustomerManagerComponent />
-                            </div>
-                            <OrderMapComponent />
-                        </div>
-                    </div>
-                    <FooterComponent />
+  return (
+    <>
+      <AddTaskModalComponent />
+      <UploadDocumentsComponent />
+      <div className="order-container">
+        <div className="order-details">
+          <HeaderComponent />
+          <ActionsComponent />
+          <div className="order-details__content">
+            <div className="order-details__content-block">
+              <div className="order-details__content-row">
+                <CarrierComponent />
+                <CarrierManagerComponent />
+              </div>
+              <div className="order-details__content-row">
+                <TruckComponent />
+                <DriverComponent />
+              </div>
+              <div className="order-details__content-row">
+                <div className="order-details__content-row-block order-details__content-row-block_tasks">
+                  <RouteComponent />
+                  <TaskComponent />
                 </div>
+              </div>
             </div>
-        </>
-    );
+            <div className="order-details__content-block">
+              <div className="order-details__content-row">
+                <PriceComponent />
+                <MarketPriceComponent />
+                <CustomerComponent />
+              </div>
+              <div className="order-details__content-row">
+                <CargoComponent />
+                <CustomerManagerComponent />
+              </div>
+              <OrderMapComponent />
+            </div>
+          </div>
+          <FooterComponent />
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default OrderPage;

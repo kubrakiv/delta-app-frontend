@@ -19,107 +19,66 @@ import PointsPage from "./screens/PointsPage/PointsPage";
 import PointPage from "./screens/PointPage/PointPage";
 import OrderScreen from "./screens/OrderScreen";
 import RegisterPage from "./screens/RegisterPage/RegisterPage";
-import { RestrictedRoute } from "./RestrictedRoute";
 import DriverListPage from "./screens/DriverListPage/DriverListPage";
 import TrucksPage from "./screens/TrucksPage/TrucksPage";
+import AddDriverPage from "./screens/AddDriverPage";
+import { RestrictedRoute } from "./RestrictedRoute";
+
+const routes = [
+  { path: "/register", element: <RegisterPage /> },
+  { path: "/login", element: <LoginPage /> },
+  {
+    path: "/start",
+    element: <StartScreen />,
+    roles: ["admin", "logist", "driver"],
+  },
+  { path: "/profile", element: <ProfilePage />, roles: ["admin", "logist"] },
+  { path: "/admin/userlist", element: <UserListPage />, roles: ["admin"] },
+  { path: "/admin/user/:id/edit", element: <UserEditPage />, roles: ["admin"] },
+  { path: "/orders-list", element: <Orders />, roles: ["admin", "logist"] },
+  {
+    path: "/orders",
+    element: <OrdersTableComponent />,
+    roles: ["admin", "logist"],
+  },
+  { path: "/orders/:id", element: <OrderScreen />, roles: ["admin", "logist"] },
+  { path: "/points", element: <PointsPage />, roles: ["admin", "logist"] },
+  { path: "/dashboard", element: <Dashboard />, roles: ["admin", "logist"] },
+  { path: "/planner", element: <PlanScreen />, roles: ["admin", "logist"] },
+  { path: "/tasks", element: <TaskTablePage />, roles: ["admin", "logist"] },
+  { path: "/tasks/:id", element: <TaskPage />, roles: ["admin", "logist"] },
+  { path: "/tasks/add", element: <AddTaskPage />, roles: ["admin", "logist"] },
+  { path: "/orders/add", element: <AddOrder />, roles: ["admin", "logist"] },
+  { path: "/map", element: <MapPage />, roles: ["admin", "logist"] },
+  { path: "/points/:id", element: <PointPage />, roles: ["admin", "logist"] },
+  { path: "/drivers", element: <DriverListPage />, roles: ["admin", "logist"] },
+  {
+    path: "/drivers/add",
+    element: <AddDriverPage />,
+    roles: ["admin", "logist"],
+  },
+  { path: "/vehicles", element: <TrucksPage />, roles: ["admin", "logist"] },
+];
+
+const generateRoutes = (routes) =>
+  routes.map(({ path, element, roles }) => ({
+    path,
+    element: roles ? (
+      <RestrictedRoute requiredRoles={roles}>{element}</RestrictedRoute>
+    ) : (
+      element
+    ),
+  }));
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Layout />,
-        children: [
-            {
-                index: true,
-                element: <MainPage />,
-            },
-            {
-                path: "/register",
-                element: <RegisterPage />,
-            },
-            {
-                path: "/login",
-                element: (
-                    <RestrictedRoute
-                        component={<LoginPage />}
-                        redirectTo="/start"
-                    />
-                ),
-            },
-            {
-                path: "/start",
-                element: <StartScreen />,
-            },
-            {
-                path: "/profile",
-                element: <ProfilePage />,
-            },
-            {
-                path: "/admin/userlist",
-                element: <UserListPage />,
-            },
-            {
-                path: "/admin/user/:id/edit",
-                element: <UserEditPage />,
-            },
-            {
-                path: "/orders-list",
-                element: <Orders />,
-            },
-            {
-                path: "/orders",
-                element: <OrdersTableComponent />,
-            },
-            {
-                path: "/orders/:id",
-                element: <OrderScreen />,
-            },
-
-            {
-                path: "/points",
-                element: <PointsPage />,
-            },
-            {
-                path: "/dashboard",
-                element: <Dashboard />,
-            },
-            {
-                path: "/planner",
-                element: <PlanScreen />,
-            },
-            {
-                path: "/tasks",
-                element: <TaskTablePage />,
-            },
-            {
-                path: "/tasks/:id",
-                element: <TaskPage />,
-            },
-            {
-                path: "/tasks/add",
-                element: <AddTaskPage />,
-            },
-            {
-                path: "/orders/add",
-                element: <AddOrder />,
-            },
-            {
-                path: "/map",
-                element: <MapPage />,
-            },
-            {
-                path: "/points/:id",
-                element: <PointPage />,
-            },
-            {
-                path: "/drivers",
-                element: <DriverListPage />,
-            },
-            {
-                path: "/vehicles",
-                element: <TrucksPage />,
-            },
-        ],
-    },
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { index: true, element: <MainPage /> },
+      ...generateRoutes(routes),
+    ],
+  },
 ]);
 
 export default router;

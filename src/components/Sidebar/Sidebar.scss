@@ -1,12 +1,12 @@
 @import "../../styles/utils/vars";
 
 .sidebar {
-    background-color: $sidebarcolor;
-    color: white;
-    height: calc(100vh - 40px - 24px);
-    transition: all 0.3s;
-    flex-shrink: 0;
-    top: 40px;
-    position: sticky;
-    z-index: 97;
+  background-color: $sidebarcolor;
+  color: white;
+  height: calc(100vh - 40px - 18px);
+  transition: all 0.3s;
+  flex-shrink: 0;
+  top: 40px;
+  position: sticky;
+  z-index: 97;
 }
