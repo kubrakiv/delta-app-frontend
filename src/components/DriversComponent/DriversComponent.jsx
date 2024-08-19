@@ -42,6 +42,8 @@ const DriversComponent = () => {
     dispatch(listDrivers());
   }, [dispatch]);
 
+  console.log("Drivers", drivers);
+
   const handleEditProfileMode = (e) => {
     e.preventDefault();
 
@@ -176,7 +178,7 @@ const DriversComponent = () => {
             <thead className="drivers-table__header">
               <tr className="drivers-table__head-row">
                 <th className="drivers-table__head-th">ID</th>
-                <th className="drivers-table__head-th"> Фото </th>
+                <th className="drivers-table__head-th">Фото</th>
                 <th className="drivers-table__head-th">Повне ім'я</th>
                 <th className="drivers-table__head-th">Номер телефону</th>
                 <th className="drivers-table__head-th">Посада</th>

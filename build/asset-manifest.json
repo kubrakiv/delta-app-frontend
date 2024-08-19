@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.1547930f.css",
+    "main.js": "/static/js/main.75604f6b.js",
+    "static/media/1920x1080-beautiful-road.jpg": "/static/media/1920x1080-beautiful-road.91c13259d5e4bcf85dce.jpg",
+    "static/media/delta_dog_2.jpg": "/static/media/delta_dog_2.20069bcdce92f00b46f8.jpg",
+    "static/media/delta_dog_3.jpg": "/static/media/delta_dog_3.0819d0b2b1c0d2bf1352.jpg",
+    "static/media/delta_dog_1.jpg": "/static/media/delta_dog_1.995c7210ad61951fe6ca.jpg",
+    "static/media/delta_1.jpg": "/static/media/delta_1.9ed314e09d1638b739a6.jpg",
+    "static/media/trucks.jpg": "/static/media/trucks.f67b65673f779e980382.jpg",
+    "static/media/delta_dog.jpg": "/static/media/delta_dog.5952b375924aa2c75aa0.jpg",
+    "static/media/delta_2.jpg": "/static/media/delta_2.67da87de3fa4ee98f45e.jpg",
+    "index.html": "/index.html",
+    "static/media/form-select-arrow.svg": "/static/media/form-select-arrow.aae2a8f793b1ab268f3f.svg",
+    "main.1547930f.css.map": "/static/css/main.1547930f.css.map",
+    "main.75604f6b.js.map": "/static/js/main.75604f6b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1547930f.css",
+    "static/js/main.75604f6b.js"
+  ]
+}
