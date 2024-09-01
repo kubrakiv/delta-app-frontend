@@ -6,7 +6,6 @@ import delta from "../../../img/delta-logo.png";
 
 const MainPageHeaderComponent = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = () => {
@@ -16,11 +15,6 @@ const MainPageHeaderComponent = () => {
   const handleCareer = () => {
     window.scrollTo(0, 0);
     navigate("/career");
-    // setIsTransitioning(true);
-    // setTimeout(() => {
-    //   window.scrollTo(0, 0);
-    //   navigate("/career");
-    // }, 500); // Duration of the fade-out transition
   };
 
   const scrollToSection = (id) => {

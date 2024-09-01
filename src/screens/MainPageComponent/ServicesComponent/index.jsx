@@ -11,7 +11,7 @@ const ServicesComponent = () => {
             <h1>Our Services</h1>
             <div className="services-list">
               <div className="services-item">
-                <h3>International Transportation</h3>
+                <h2>International Transportation</h2>
                 <p>
                   We operate across Europe with a our own fleet of modern
                   curtain trailers, offering efficient and secure transportation
@@ -19,7 +19,7 @@ const ServicesComponent = () => {
                 </p>
               </div>
               <div className="services-item service-item-alt">
-                <h3>Our Fleet</h3>
+                <h2>Our Fleet</h2>
                 <p>
                   <div className="p-line">
                     <FaCaretRight />
@@ -36,7 +36,7 @@ const ServicesComponent = () => {
                 </p>
               </div>
               <div className="services-item service-item-alt-2">
-                <h3>Main directions</h3>
+                <h2>Main directions</h2>
                 <p className="p-container">
                   <div className="p-line">
                     <FaCaretRight />
