@@ -2,11 +2,22 @@
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("../../../img/1920x1080-beautiful-road.jpg");
   background-attachment: fixed; /* Keeps the background fixed during scroll */
-  // filter: brightness(0.5); /* Darkens the background for better text contrast */
+  background-size: cover;
+  background-position: center center;
+
+  @media (max-width: 768px) {
+    background-attachment: scroll; /* Change to scroll for better performance on mobile */
+    background-size: cover; /* Ensure the image covers the entire area */
+  }
+
+  @media (max-width: 480px) {
+    background-attachment: scroll; /* Ensure smooth scrolling on smaller devices */
+    background-size: cover; /* Adjust based on your preference */
+    background-position: center top; /* Adjust position to better fit mobile screens */
+  }
 }
 
 .golovna-page {
-  // margin-top: 98px;
   padding-top: 150px; // To offset the fixed header
   color: white;
   h3 {
@@ -16,6 +27,7 @@
 }
 
 .golovna-title {
+  padding-top: 50px;
   text-align: center;
   font-size: 52px;
   font-weight: 700;
@@ -96,7 +108,8 @@
     padding-left: 10px;
     padding-right: 10px;
   }
-  .section {
+
+  .golovna-title {
     padding-top: 80px;
   }
 

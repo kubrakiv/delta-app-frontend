@@ -14,8 +14,8 @@
 }
 
 .about-page {
+  padding-top: 98px; // Reduce padding to save space
   h1 {
-    padding-top: 98px; // Reduce padding to save space
     font-size: 36px;
     font-weight: bold;
     margin-bottom: 20px;
@@ -30,7 +30,7 @@
     align-items: flex-start;
     gap: 30px; // Reduce the gap between blocks
     max-height: 100%; // Ensure all blocks fit within the viewport
-    padding: 0 20px; // Add padding for mobile responsiveness
+    padding: 0 10px; // Add padding for mobile responsiveness
 
     .about-item {
       background: linear-gradient(135deg, #434c4e, #142d32);
@@ -146,9 +146,8 @@
 
 @media (max-width: 480px) {
   .about-page {
-    padding: 20px 10px;
-
     h1 {
+      padding: 20px 10px;
       font-size: 28px;
     }
 

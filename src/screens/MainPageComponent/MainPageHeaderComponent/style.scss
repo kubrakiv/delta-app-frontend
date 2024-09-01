@@ -153,13 +153,13 @@
     &.open {
       max-height: 500px; /* Adjust this value based on your content */
       padding: 25px;
-      font-size: 18px; /* Increase font size */
+      font-size: 24px; /* Increase font size */
     }
 
     li,
     .enter-btn {
       width: 100%;
-      font-size: 18px; /* Reduce font size */
+      font-size: 24px; /* Reduce font size */
       padding: 8px 10px;
       margin-right: 10px;
       text-align: left;
@@ -172,7 +172,7 @@
     li,
     .enter-btn {
       padding: 6px 12px; /* Adjust padding for small screens */
-      font-size: 14px; /* Reduce font size */
+      font-size: 24px; /* Reduce font size */
     }
   }
 }
