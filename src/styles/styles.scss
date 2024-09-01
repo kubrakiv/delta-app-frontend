@@ -2,6 +2,7 @@
 @import "./utils/normalize";
 @import "./utils/vars";
 @import "./blocks/page";
+@import "./blocks/container";
 @import "./blocks/table";
 @import "./blocks/button";
 @import "./blocks/carousel";
@@ -29,6 +30,6 @@
 @import "./blocks/trucks";
 
 * {
-    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }

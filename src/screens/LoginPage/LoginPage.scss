@@ -22,3 +22,22 @@
     flex-direction: column;
   }
 }
+
+.login-enter-btn {
+  display: inline-block;
+  // margin-top: 50px;
+  padding: 12px 25px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #004b91; /* Blue color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 1s ease;
+  // transition:  0.5s ease;
+
+  &:hover {
+    background-color: #003366; /* Darker blue */
+  }
+}

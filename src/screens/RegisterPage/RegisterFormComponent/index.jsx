@@ -75,6 +75,7 @@ const RegisterFormComponent = () => {
     e.preventDefault();
     let userData = {};
     let isValid = true;
+    setMessage("");
 
     // Check if all necessary fields are filled
     Object.keys(registerFields).forEach((key) => {

@@ -118,7 +118,7 @@ const LoginPage = () => {
                   ))}
                 </div>
               }
-              <button className="button" type="submit">
+              <button className="login-enter-btn" type="submit">
                 Увійти
               </button>
             </form>
