@@ -1,21 +1,30 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddTaskMode, setEditModeTask } from "../../../actions/orderActions";
+import {
+  setAddTaskMode,
+  setAddTaskNoOrderMode,
+  setEditModeTask,
+} from "../../../actions/orderActions";
 import "./AddTaskModalComponent.scss";
 import AddPoint from "../../AddPoint/AddPoint";
 import AddTaskComponent from "../AddTaskComponent";
 import TabSwitcher from "../../TabSwitcher";
 import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
+import AddTaskNoOrderComponent from "../AddTaskNoOrderComponent";
 
 const AddTaskModalComponent = ({
   selectedPoint,
   setSelectedPoint,
   onPointCreate,
+  showAddTaskModal,
 }) => {
   const dispatch = useDispatch();
   const task = useSelector((state) => state.ordersInfo.task.data);
-  const editMode = useSelector((state) => state.ordersInfo.task.editMode);
+  const editMode = useSelector((state) => state.ordersInfo.task.editModeTask);
   const addTaskMode = useSelector((state) => state.ordersInfo.addTaskMode);
+  const addTaskNoOrderMode = useSelector(
+    (state) => state.ordersInfo.addTaskNoOrderMode
+  );
 
   const [activeTab, setActiveTab] = useState(true);
 
@@ -24,6 +33,10 @@ const AddTaskModalComponent = ({
   };
 
   const handleModalClose = () => {
+    if (addTaskNoOrderMode) {
+      dispatch(setAddTaskMode(false));
+      dispatch(setAddTaskNoOrderMode(false));
+    }
     if (addTaskMode) {
       dispatch(setAddTaskMode(false));
     }
@@ -33,34 +46,35 @@ const AddTaskModalComponent = ({
   };
 
   return (
-    <>
-      <GenericModalComponent
-        show={editMode || addTaskMode}
-        onClose={handleModalClose}
-        content={
-          <>
-            <TabSwitcher
-              activeTab={activeTab}
-              handleToggleMode={handleToggleMode}
-            />
+    <GenericModalComponent
+      show={editMode || addTaskMode || addTaskNoOrderMode || showAddTaskModal}
+      onClose={handleModalClose}
+      content={
+        <>
+          <TabSwitcher
+            activeTab={activeTab}
+            handleToggleMode={handleToggleMode}
+          />
 
-            {activeTab ? (
-              <AddTaskComponent />
-            ) : (
-              <AddPoint
-                onToggleMode={handleToggleMode}
-                onAddTask={true}
-                editMode={false}
-                // setShowAddPointModal={setShowAddTaskModal}
-                onPointCreate={onPointCreate}
-                selectedPoint={selectedPoint}
-                setSelectedPoint={setSelectedPoint}
-              />
-            )}
-          </>
-        }
-      />
-    </>
+          {activeTab ? (
+            <>
+              {addTaskNoOrderMode && <AddTaskNoOrderComponent />}
+              {addTaskMode && <AddTaskComponent />}
+            </>
+          ) : (
+            <AddPoint
+              onToggleMode={handleToggleMode}
+              onAddTask={true}
+              editMode={false}
+              // setShowAddPointModal={setShowAddTaskModal}
+              onPointCreate={onPointCreate}
+              selectedPoint={selectedPoint}
+              setSelectedPoint={setSelectedPoint}
+            />
+          )}
+        </>
+      }
+    />
   );
 };
 

@@ -1,34 +1,29 @@
-import React, { useEffect, useRef } from "react";
-import "./StartTimeModalComponent.scss";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowStartTimeModal } from "../../../features/planner/plannerSlice";
+import { selectShowStartTimeModal } from "../../../features/planner/plannerSelectors";
+
 import StartTimeComponent from "../../StartTimeComponent/StartTimeComponent";
 import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
 
-const StartTimeModalComponent = ({
-    showStartTimeModal,
-    setShowStartTimeModal,
-    selectedTask,
-    onTaskUpdate,
-}) => {
-    const handleCloseModal = () => {
-        setShowStartTimeModal(false);
-    };
+import "./StartTimeModalComponent.scss";
 
-    return (
-        <>
-            <GenericModalComponent
-                show={showStartTimeModal}
-                onClose={handleCloseModal}
-                content={
-                    <StartTimeComponent
-                        setShowStartTimeModal={setShowStartTimeModal}
-                        selectedTask={selectedTask}
-                        onTaskUpdate={onTaskUpdate}
-                    />
-                }
-                footer
-            />
-        </>
-    );
+const StartTimeModalComponent = () => {
+  const dispatch = useDispatch();
+  const showStartTimeModal = useSelector(selectShowStartTimeModal);
+
+  const handleCloseModal = () => {
+    dispatch(setShowStartTimeModal(false));
+  };
+
+  return (
+    <>
+      <GenericModalComponent
+        show={showStartTimeModal}
+        onClose={handleCloseModal}
+        content={<StartTimeComponent />}
+      />
+    </>
+  );
 };
 
 export default StartTimeModalComponent;

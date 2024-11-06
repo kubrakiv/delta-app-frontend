@@ -48,7 +48,7 @@ function DriverComponent() {
             title="Виберіть водія"
             id="driver"
             name="driver"
-            value={selectedDriver}
+            value={selectedDriver || ""}
             onChange={(e) => setSelectedDriver(e.target.value)}
             autoFocus
             options={driverOptions}

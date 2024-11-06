@@ -1,12 +1,11 @@
-import React from "react";
 import { WeekPlanner } from "../components/WeekPlanner/WeekPlanner";
 
 function PlanScreen() {
-    return (
-        <>
-            <WeekPlanner />
-        </>
-    );
+  return (
+    <>
+      <WeekPlanner />
+    </>
+  );
 }
 
 export default PlanScreen;

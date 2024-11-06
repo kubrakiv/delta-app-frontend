@@ -1,34 +1,29 @@
-import React, { useEffect, useRef } from "react";
-import "./EndTimeModalComponent.scss";
+import { useDispatch, useSelector } from "react-redux";
 import EndTimeComponent from "../../EndTimeComponent/EndTimeComponent";
 import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
 
-const EndTimeModalComponent = ({
-    showEndTimeModal,
-    setShowEndTimeModal,
-    selectedTask,
-    onTaskUpdate,
-}) => {
-    const handleCloseModal = () => {
-        setShowEndTimeModal(false);
-    };
+import { setShowEndTimeModal } from "../../../features/planner/plannerSlice";
+import { selectShowEndTimeModal } from "../../../features/planner/plannerSelectors";
 
-    return (
-        <>
-            <GenericModalComponent
-                show={showEndTimeModal}
-                onClose={handleCloseModal}
-                content={
-                    <EndTimeComponent
-                        setShowEndTimeModal={setShowEndTimeModal}
-                        selectedTask={selectedTask}
-                        onTaskUpdate={onTaskUpdate}
-                    />
-                }
-                footer
-            />
-        </>
-    );
+import "./EndTimeModalComponent.scss";
+
+const EndTimeModalComponent = () => {
+  const dispatch = useDispatch();
+  const showEndTimeModal = useSelector(selectShowEndTimeModal);
+
+  const handleCloseModal = () => {
+    dispatch(setShowEndTimeModal(false));
+  };
+
+  return (
+    <>
+      <GenericModalComponent
+        show={showEndTimeModal}
+        onClose={handleCloseModal}
+        content={<EndTimeComponent />}
+      />
+    </>
+  );
 };
 
 export default EndTimeModalComponent;

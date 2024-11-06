@@ -1,48 +1,58 @@
-import React, { useRef, useEffect, useCallback } from "react";
-import "./style.scss";
+import { useRef, useEffect, useCallback } from "react";
+
 import GenericFooterComponent from "./GenericFooterComponent";
+import GenericHeaderComponent from "./GenericHeaderComponent";
 
-const GenericModalComponent = ({ show, onClose, content, footer }) => {
-    const modalRef = useRef(null);
+import "./style.scss";
 
-    const handleKeyDown = useCallback(
-        (event) => {
-            if (event.keyCode === 27) {
-                onClose();
-            }
-        },
-        [onClose]
-    );
+const GenericModalComponent = ({
+  title,
+  show,
+  onClose,
+  content,
+  footer,
+  header,
+}) => {
+  const modalRef = useRef(null);
 
-    useEffect(() => {
-        if (show) {
-            document.addEventListener("keydown", handleKeyDown);
-        }
+  const handleKeyDown = useCallback(
+    (event) => {
+      if (event.keyCode === 27) {
+        onClose();
+      }
+    },
+    [onClose]
+  );
 
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [show, handleKeyDown]);
+  useEffect(() => {
+    if (show) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
 
-    return (
-        <>
-            <div
-                className="modal-overlay"
-                style={{ display: show ? "block" : "none" }}
-            >
-                <div className="modal-background" onClick={onClose} />
-                <div
-                    ref={modalRef}
-                    className={`generic-modal${show ? "" : " hidden"}`}
-                    style={{ display: show ? "block" : "none" }}
-                >
-                    {/* {header && <GenericHeaderComponent />} */}
-                    {content}
-                    {footer && <GenericFooterComponent onClose={onClose} />}
-                </div>
-            </div>
-        </>
-    );
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [show, handleKeyDown]);
+
+  return (
+    <>
+      <div
+        className="modal-overlay"
+        style={{ display: show ? "block" : "none" }}
+      >
+        <div className="modal-background" onClick={onClose} />
+        <div
+          ref={modalRef}
+          className={`generic-modal${show ? "" : " hidden"}`}
+          style={{ display: show ? "block" : "none" }}
+        >
+          {header && <GenericHeaderComponent title={title} onClose={onClose} />}
+          {content}
+          {footer && <GenericFooterComponent onClose={onClose} />}
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default GenericModalComponent;

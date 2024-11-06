@@ -6,6 +6,7 @@ import "./LoginPage.scss";
 import toast from "react-hot-toast";
 import InputComponent from "../../globalComponents/InputComponent";
 import MessageComponent from "../../components/MessageComponent/MessageComponent";
+import { getCsrfToken } from "../../utils/getCsrfToken";
 
 const USER_CONSTANTS = {
   EMAIL: "email",
@@ -33,6 +34,10 @@ const LoginPage = () => {
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo, error } = userLogin;
+
+  useEffect(() => {
+    getCsrfToken();
+  }, []);
 
   useEffect(() => {
     const notify = () => {
