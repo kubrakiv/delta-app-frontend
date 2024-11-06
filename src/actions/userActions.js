@@ -1,4 +1,5 @@
 import axios from "axios";
+import { listDrivers } from "./driverActions";
 
 export const USER_LOGIN_REQUEST = "USER_LOGIN_REQUEST";
 export const USER_LOGIN_SUCCESS = "USER_LOGIN_SUCCESS";
@@ -78,6 +79,9 @@ export const register = (user) => async (dispatch) => {
 
     const { data } = await axios.post("/api/users/register/", user, config);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
+    // Fetch and update driver list after successful registration
+    await dispatch(listDrivers()); // Call listDrivers here
+    // dispatch({ type: USER_LIST_SUCCESS, payload: data }); // FIXME check if this works when I register new driver
   } catch (error) {
     dispatch({
       type: USER_REGISTER_FAIL,

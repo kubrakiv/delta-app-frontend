@@ -1,36 +1,35 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useContext,
-} from "react";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Form } from "react-bootstrap";
-import "./AddOrder.scss";
-import TaskOrder from "../../components/Task/TaskOrder";
-import { FaArrowLeft, FaRegUser, FaTruckMoving } from "react-icons/fa";
-import AddTaskButton from "../AddTaskButton/AddTaskButton";
-import { ModalItem } from "../ModalItem/ModalItem";
-import AddOrderCustomerManagerComponent from "./AddOrderCustomerManagerComponent/AddOrderCustomerManagerComponent";
-import AddOrderModalComponent from "../AddTask/AddTaskModalComponent/AddTaskModalComponent";
-import AddTaskModalComponent from "../AddTask/AddTaskModalComponent/AddTaskModalComponent";
-import AddOrderResponsibleManagerComponent from "./AddOrderResponsibleManagerComponent/AddOrderResponsibleManagerComponent";
-import AddPointModalComponent from "../AddPoint/AddPointModalComponent/AddPointModalComponent";
-import TaskComponent from "../../screens/OrderPage/TaskComponent/TaskComponent";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 import { DirectionsService, useJsApiLoader } from "@react-google-maps/api";
-import Map from "../Map";
-import OpenContext from "../../components/OpenContext";
 import { formatDuration } from "../../utils/formatDuration";
 import { getCsrfToken } from "../../utils/getCsrfToken";
 import { getUserDetails } from "../../actions/userActions";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  clearTaskListNoOrder,
+  setAddTaskNoOrderMode,
+} from "../../actions/orderActions";
 
-const { REACT_APP_API_KEY: API_KEY } = process.env;
+import AddOrderCustomerManagerComponent from "./AddOrderCustomerManagerComponent/AddOrderCustomerManagerComponent";
+import AddTaskModalComponent from "../AddTask/AddTaskModalComponent/AddTaskModalComponent";
+import CarrierComponent from "../../screens/OrderPage/CarrierComponent/CarrierComponent";
+import Map from "../Map";
+import AddOrderTaskComponent from "./AddOrderTaskComponent";
+
+import "./AddOrder.scss";
+
+const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
 function AddOrder() {
-  const { libraries, defaultCenter } = useContext(OpenContext);
+  const defaultCenter = useSelector((state) => state.map.defaultCenter);
+  const map = useSelector((state) => state.map);
+
+  const taskListNoOrder = useSelector(
+    (state) => state.ordersInfo.taskListNoOrder.data
+  );
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [center, setCenter] = useState(defaultCenter);
@@ -51,8 +50,6 @@ function AddOrder() {
   const [platforms, setPlatforms] = useState([]);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
 
-  const [truck, setTruck] = useState(null);
-  const [driver, setDriver] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [price, setPrice] = useState("");
   const [marketPrice, setMarketPrice] = useState("");
@@ -60,8 +57,7 @@ function AddOrder() {
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [selectedPaymentType, setSelectedPaymentType] = useState(null);
   const [orderNumber, setOrderNumber] = useState("");
-  const [selectedCustomerManagerName, setSelectedCustomerManagerName] =
-    useState("");
+
   const [cargoName, setCargoName] = useState("");
   const [cargoWeight, setCargoWeight] = useState("");
   const [cargoLoadingType, setCargoLoadingType] = useState("");
@@ -69,7 +65,6 @@ function AddOrder() {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
-  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTruck, setSelectedTruck] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [selectedCustomerManager, setSelectedCustomerManager] = useState(null);
@@ -92,7 +87,7 @@ function AddOrder() {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: API_KEY,
-    libraries: libraries,
+    libraries: map.libraries,
   });
 
   useEffect(() => {
@@ -101,14 +96,14 @@ function AddOrder() {
     }
   }, [dispatch, userInfo]);
 
-  const calculateDistance = (lat1, lng1, lat2, lng2) => {
-    const point1 = new window.google.maps.LatLng(lat1, lng1);
-    const point2 = new window.google.maps.LatLng(lat2, lng2);
-    return window.google.maps.geometry.spherical.computeDistanceBetween(
-      point1,
-      point2
-    );
-  };
+  // const calculateDistance = (lat1, lng1, lat2, lng2) => {
+  //   const point1 = new window.google.maps.LatLng(lat1, lng1);
+  //   const point2 = new window.google.maps.LatLng(lat2, lng2);
+  //   return window.google.maps.geometry.spherical.computeDistanceBetween(
+  //     point1,
+  //     point2
+  //   );
+  // };
 
   async function calculateRoute(origin, destination) {
     // eslint-disable-next-line no-undef
@@ -145,9 +140,16 @@ function AddOrder() {
     setSelectedTruck(null);
   };
 
-  const handleAddTaskButtonClick = (e) => {
+  // const handleAddTaskButtonClick = (e) => {
+  //   e.stopPropagation();
+  //   setShowAddTaskModal(true);
+  //   dispatch(setAddTaskMode(true));
+  // };
+
+  const handleAddTaskNoOrderButtonClick = (e) => {
     e.stopPropagation();
     setShowAddTaskModal(true);
+    dispatch(setAddTaskNoOrderMode(true));
   };
 
   const handleModalShow = () => {
@@ -167,18 +169,18 @@ function AddOrder() {
 
     calculateRoute(
       {
-        lat: tasks[0].point_details.gps_latitude,
-        lng: tasks[0].point_details.gps_longitude,
+        lat: tasks[0]?.point_details.gps_latitude,
+        lng: tasks[0]?.point_details.gps_longitude,
       },
       {
-        lat: tasks[1].point_details.gps_latitude,
-        lng: tasks[1].point_details.gps_longitude,
+        lat: tasks[1]?.point_details.gps_latitude,
+        lng: tasks[1]?.point_details.gps_longitude,
       }
     );
     console.log(distance, "this is distance");
 
     let dataOrder = {
-      user: user.id,
+      user: userInfo.id,
       truck: selectedTruck,
       price: parseFloat(price),
       market_price: parseFloat(marketPrice),
@@ -186,7 +188,7 @@ function AddOrder() {
       payment_type: selectedPaymentType,
       driver: selectedDriver,
       customer: selectedCustomer,
-      distance: parseInt(distance.replace(" km", "")),
+      distance: distance ? parseInt(distance.replace(" km", "")) : 0,
       customer_manager: selectedCustomerManager,
       cargo_name: cargoName,
       cargo_weight: cargoWeight,
@@ -203,11 +205,19 @@ function AddOrder() {
       console.log("Order CREATED successfully:", responseOrder.data);
 
       // Processing the task sequentially
-      for (const task of tasks) {
-        task.order = responseOrder.data.number;
+      for (const task of taskListNoOrder) {
+        // Create a new task object instead of mutating the existing one
+        const updatedTask = {
+          ...task,
+          order: responseOrder.data.number,
+        };
         try {
-          const responseTask = await axios.post(`/api/tasks/create/`, task);
+          const responseTask = await axios.post(
+            `/api/tasks/create/`,
+            updatedTask
+          );
           handleTaskCreate(responseTask.data);
+          dispatch(clearTaskListNoOrder());
         } catch (taskError) {
           console.error("Error creating task:", taskError.message);
         }
@@ -228,14 +238,18 @@ function AddOrder() {
     fetchTrucks();
   }, []);
 
+  console.log("Trucks:", trucks);
+
   useEffect(() => {
     async function fetchDrivers() {
-      const { data } = await axios.get("/api/drivers/");
+      const { data } = await axios.get("/api/driver-profiles/");
       setDrivers(data);
     }
 
     fetchDrivers();
   }, []);
+
+  console.log("Drivers:", drivers);
 
   useEffect(() => {
     async function fetchCustomers() {
@@ -392,23 +406,7 @@ function AddOrder() {
 
   return (
     <>
-      <AddTaskModalComponent
-        onAddTaskReset={handleAddTaskReset}
-        selectedTruck={selectedTruck}
-        setSelectedTruck={setSelectedTruck}
-        selectedDriver={selectedDriver}
-        setSelectedDriver={setSelectedDriver}
-        selectedPoint={selectedPoint}
-        setSelectedPoint={setSelectedPoint}
-        showAddTaskModal={showAddTaskModal}
-        setShowAddTaskModal={setShowAddTaskModal}
-        editMode={editMode}
-        editModeTask={editModeTask}
-        setEditModeTask={setEditModeTask}
-        tasks={tasks}
-        setTasks={setTasks}
-        onPointCreate={handlePointCreate}
-      />
+      <AddTaskModalComponent />
       <div className="order-container">
         <div className="add-order-details">
           <form onSubmit={(e) => handleFormSubmit(e)}>
@@ -422,7 +420,16 @@ function AddOrder() {
               <div className="add-order-details__header-block">
                 Маршрут № {order.number}
               </div>
+              {/* TODO replace map function with reduce function*/}
               {tasks.length > 0 && (
+                <div className="add-order-details__header-block">
+                  {tasks.reduce((acc, task, index) => {
+                    const taskString = `${task.point_details.country_short}-${task.point_details.postal_code} ${task.point_details.city}`;
+                    return index === 0 ? taskString : `${acc} - ${taskString}`;
+                  }, "")}
+                </div>
+              )}
+              {/* {tasks.length > 0 && (
                 <div className="add-order-details__header-block">
                   {tasks
                     .map(
@@ -431,50 +438,45 @@ function AddOrder() {
                     )
                     .join(" - ")}
                 </div>
-              )}
+              )} */}
 
               <div className="add-order-details__header-block">
                 <div className="add-order-details__header-block_order-number">
                   Заявка
                 </div>
-                <Form.Control
+                <input
+                  className="form-field__input form-select-mb5"
                   id="orderNumber"
                   name="orderNumber"
                   value={orderNumber}
                   placeholder="Номер заявки замовника"
                   onChange={(e) => setOrderNumber(e.target.value)}
-                ></Form.Control>
+                ></input>
               </div>
             </div>
             <div className="add-order-details__actions">
               <button
                 type="button"
                 className="add-order-details__action-add-task-btn"
-                onClick={handleAddTaskButtonClick}
+                onClick={handleAddTaskNoOrderButtonClick}
               >
                 Додати завдання
               </button>
-
-              {/* <button
-                                type="button"
-                                className="add-order-details__action"
-                            >
-                                <Link to="/orders-list">Documents</Link>
-                            </button> */}
             </div>
+            {/* <ActionsComponent /> */}
 
             <div className="add-order-details__content">
               <div className="add-order-details__content-block">
                 <div className="add-order-details__content-row">
-                  <div className="add-order-details__content-row-block">
+                  {/* <div className="add-order-details__content-row-block">
                     <div className="add-order-details__content-row-block-title">
                       Перевізник
                     </div>
                     <div className="add-order-details__content-row-block-value">
                       Delta Logistics SRO
                     </div>
-                  </div>
-                  {/* <AddOrderResponsibleManagerComponent /> */}
+                  </div> */}
+                  <CarrierComponent />
                 </div>
                 <div className="add-order-details__content-row">
                   <div className="add-order-details__content-row-block">
@@ -483,23 +485,18 @@ function AddOrder() {
                     </div>
 
                     {editModeOrder && (
-                      <Form.Select
+                      <select
+                        className="form-field__select form-select-mb10"
                         id="truck"
                         name="truck"
-                        value={selectedTruck}
+                        value={selectedTruck || ""}
                         onChange={(e) => setSelectedTruck(e.target.value)}
                       >
-                        <option
-                          value={null}
-                          selected
-                          // disabled
-                        >
-                          Select truck
-                        </option>
+                        <option value={""}>Select truck</option>
                         {trucks.map((truck) => (
                           <option key={truck.id}>{truck.plates}</option>
                         ))}
-                      </Form.Select>
+                      </select>
                     )}
                   </div>
 
@@ -508,35 +505,31 @@ function AddOrder() {
                       Водій
                     </div>
                     {editModeOrder && (
-                      <Form.Select
+                      <select
+                        className="form-field__select form-select-mb10"
                         id="driver"
                         name="driver"
-                        value={selectedDriver}
+                        value={selectedDriver || ""}
                         onChange={(e) => setSelectedDriver(e.target.value)}
                       >
-                        <option
-                          value={null}
-                          selected
-                          // disabled
-                        >
-                          Select driver
-                        </option>
-                        {Array.isArray(drivers) &&
+                        <option value={""}>Select driver</option>
+                        {drivers &&
                           drivers.map((driver) => (
-                            <option key={driver.id} value={driver.full_name}>
+                            <option
+                              key={driver.profile}
+                              value={driver.full_name}
+                            >
                               {driver.full_name}
                             </option>
                           ))}
-                      </Form.Select>
+                      </select>
                     )}
                   </div>
                 </div>
-                {tasks.length > 0 && (
+                {taskListNoOrder.length > 0 && (
                   <div className="add-order-details__content-row">
                     <div className="add-order-details__content-row-block">
-                      <TaskComponent
-                        tasks={tasks}
-                        setTasks={setTasks}
+                      <AddOrderTaskComponent
                         handleShowPointOnMap={handleShowPointOnMap}
                         handleEditModeTask={handleEditModeTask}
                         handleDeleteTask={handleDeleteTask}
@@ -554,54 +547,48 @@ function AddOrder() {
                     {editModeOrder && (
                       <div className="add-order-details__price-form-container">
                         <div className="add-order-details__form-col">
-                          <Form.Control
+                          <input
                             id="price"
                             name="text"
-                            className="add-order-details__price-form-container__form-input"
+                            className="form-field__input form-select-mb5"
                             value={price}
                             placeholder="Тариф"
                             onChange={(e) => setPrice(e.target.value)}
-                          ></Form.Control>
-                          <Form.Control
+                          ></input>
+                          <input
                             id="price"
                             name="text"
-                            className="add-order-details__price-form-container__form-input"
+                            className="form-field__input form-select-mb5"
                             value={marketPrice}
                             placeholder="Ринковий тариф"
                             onChange={(e) => setMarketPrice(e.target.value)}
-                          ></Form.Control>
+                          ></input>
                         </div>
                         <div className="add-order-details__form-col">
-                          <Form.Control
+                          <input
                             id="paymentDays"
                             name="number"
-                            className="add-order-details__price-form-container__form-input"
+                            className="form-field__input form-select-mb5"
                             value={paymentDays}
                             placeholder="Дні оплати"
                             onChange={(e) => setPaymentDays(e.target.value)}
-                          ></Form.Control>
-                          <Form.Select
+                          ></input>
+                          <select
                             id="payment-type"
                             name="payment-type"
-                            className="add-order-details__price-form-container__form-input"
-                            value={selectedPaymentType}
+                            className="form-field__select form-select-mb10"
+                            value={selectedPaymentType || ""}
                             onChange={(e) =>
                               setSelectedPaymentType(e.target.value)
                             }
                           >
-                            <option
-                              value={null}
-                              selected
-                              // disabled
-                            >
-                              Тип оплати
-                            </option>
+                            <option value={""}>Тип оплати</option>
                             {paymentTypes.map((paymentType) => (
                               <option key={paymentType.id}>
                                 {paymentType.name}
                               </option>
                             ))}
-                          </Form.Select>
+                          </select>
                         </div>
                       </div>
                     )}
@@ -611,43 +598,37 @@ function AddOrder() {
                     <div className="add-order-details__content-row-block-title">
                       Замовник
                     </div>
-                    <Form.Select
+                    <select
+                      className="form-field__select form-select-mb10"
                       id="customer"
                       name="customer"
-                      value={selectedCustomer}
+                      value={selectedCustomer || ""}
                       onChange={(e) => setSelectedCustomer(e.target.value)}
                     >
-                      <option value={null} selected disabled>
-                        Select customer
-                      </option>
+                      <option value={""}>Select customer</option>
 
-                      {Array.isArray(customers) &&
+                      {customers &&
                         customers.map((customer) => (
                           <option key={customer.id}>{customer.name}</option>
                         ))}
-                    </Form.Select>
+                    </select>
                     <div className="add-order-details__content-row-block-title">
                       Платформа
                     </div>
 
                     {editModeOrder && (
-                      <Form.Select
+                      <select
+                        className="form-field__select form-select-mb10"
                         id="platform"
                         name="platform"
-                        value={selectedPlatform}
+                        value={selectedPlatform || ""}
                         onChange={(e) => setSelectedPlatform(e.target.value)}
                       >
-                        <option
-                          value={null}
-                          selected
-                          // disabled
-                        >
-                          Select platform
-                        </option>
+                        <option value={""}>Select platform</option>
                         {platforms.map((platform) => (
                           <option key={platform.id}>{platform.name}</option>
                         ))}
-                      </Form.Select>
+                      </select>
                     )}
                   </div>
                 </div>
@@ -659,42 +640,43 @@ function AddOrder() {
                     {editModeOrder && (
                       <div className="add-order-details__cargo-form-container">
                         <div className="add-order-details__form-col">
-                          <Form.Control
+                          <input
                             id="weight"
                             name="weight"
                             placeholder="Вага"
-                            className="add-order-details__cargo-form-container__form-input"
+                            className="form-field__input form-select-mb5"
                             value={cargoWeight}
                             onChange={(e) => setCargoWeight(e.target.value)}
-                          ></Form.Control>
-                          <Form.Control
+                          ></input>
+                          <input
                             id="cargoName"
                             name="cargoName"
                             placeholder="Назва вантажу"
-                            className="add-order-details__cargo-form-container__form-input"
+                            className="form-field__input form-select-mb5"
+                            // className="add-order-details__cargo-form-container__form-input"
                             value={cargoName}
                             onChange={(e) => setCargoName(e.target.value)}
-                          ></Form.Control>
+                          ></input>
                         </div>
                         <div className="add-order-details__form-col">
-                          <Form.Control
+                          <input
                             id="bodyType"
                             name="bodyType"
                             placeholder="Тип кузова"
-                            className="add-order-details__cargo-form-container__form-input"
+                            className="form-field__input form-select-mb5"
                             value={trailerType}
                             onChange={(e) => setTrailerType(e.target.value)}
-                          ></Form.Control>
-                          <Form.Control
+                          ></input>
+                          <input
                             id="loadingType"
                             name="loadingType"
                             placeholder="Тип завантаження"
-                            className="add-order-details__cargo-form-container__form-input"
+                            className="form-field__input form-select-mb5"
                             value={cargoLoadingType}
                             onChange={(e) =>
                               setCargoLoadingType(e.target.value)
                             }
-                          ></Form.Control>
+                          ></input>
                         </div>
                       </div>
                     )}
@@ -706,7 +688,7 @@ function AddOrder() {
                   />
                 </div>
                 <div className="add-order-details__content-row">
-                  {tasks.length > 0 && (
+                  {taskListNoOrder.length > 0 && (
                     <div className="order-details__content-row-block order-details__content-row-block-map">
                       {isLoaded ? (
                         <>
@@ -715,7 +697,7 @@ function AddOrder() {
                             callback={directionsCallback}
                           />
                           <Map
-                            tasks={tasks}
+                            tasks={taskListNoOrder}
                             center={center}
                             directionsResponse={directionsResponse}
                           />

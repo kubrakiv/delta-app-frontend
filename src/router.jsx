@@ -20,11 +20,12 @@ import PointPage from "./screens/PointPage/PointPage";
 import OrderScreen from "./screens/OrderScreen";
 import RegisterPage from "./screens/RegisterPage/RegisterPage";
 import DriverListPage from "./screens/DriverListPage/DriverListPage";
-import TrucksPage from "./screens/TrucksPage/TrucksPage";
+import TrucksPage from "./screens/TrucksPage";
 import AddDriverPage from "./screens/AddDriverPage";
 import { RestrictedRoute } from "./RestrictedRoute";
 import MainPageComponent from "./screens/MainPageComponent";
 import CareerPage from "./screens/CareerPage";
+import CustomerPage from "./screens/CustomerPage";
 
 const routes = [
   { path: "/career", element: <CareerPage /> },
@@ -61,6 +62,7 @@ const routes = [
     roles: ["admin", "logist"],
   },
   { path: "/vehicles", element: <TrucksPage />, roles: ["admin", "logist"] },
+  { path: "/customers", element: <CustomerPage />, roles: ["admin", "logist"] },
 ];
 
 const generateRoutes = (routes) =>

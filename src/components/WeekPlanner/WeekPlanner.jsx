@@ -1,108 +1,74 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { getISOWeek } from "date-fns";
-import "./WeekPlanner.scss";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+
+import { getISOWeek, parseISO, getYear } from "date-fns";
 import { generateDatesArray } from "./dateFunctions";
+
+import { FaAngleDown, FaAngleUp, FaTrailer, FaTruck } from "react-icons/fa";
+
+import {
+  setSwitchers,
+  setSelectedTask,
+  setShowStartTimeModal,
+  setShowEndTimeModal,
+  setShowServiceTaskModal,
+  setEditModeServiceTask,
+  setSelectedTruck,
+  setSelectedDriver,
+  setSelectedDate,
+  setAddModeServiceTask,
+} from "../../features/planner/plannerSlice";
+
+import {
+  selectSwitchers,
+  selectSelectedTask,
+} from "../../features/planner/plannerSelectors";
+
+import { listDrivers } from "../../actions/driverActions";
+import { listTaskTypes } from "../../actions/taskTypeActions";
+import { deleteTask, listTasks } from "../../features/tasks/tasksOperations";
+import { selectTrucks } from "../../features/trucks/trucksSelectors";
+import { listTrucks } from "../../features/trucks/trucksOperations";
+import { selectTasks } from "../../features/tasks/tasksSelectors";
+
 import DayTasks from "../Tasks/DayTasks";
-import { Link } from "react-router-dom";
 import WeekSwitcherComponent from "../WeekSwitcherComponent/WeekSwitcherComponent";
 import WeekDateComponent from "../WeekDateComponent/WeekDateComponent";
 import EndTimeModalComponent from "./EndTimeModalComponent/EndTimeModalComponent";
 import StartTimeModalComponent from "./StartTimeModalComponent/StartTimeModalComponent";
 import ServiceTaskModalComponent from "./ServiceTaskModalComponent/ServiceTaskModalComponent";
 import SwitchComponent from "../SwitchComponent/SwitchComponent";
-import { FaAngleDown, FaAngleUp, FaTrailer, FaTruck } from "react-icons/fa";
-import { setPlanner } from "../../features/planner/plannerSlice";
-import { listDrivers } from "../../actions/driverActions";
-import { listTaskTypes } from "../../actions/taskTypeActions";
-import { listTasks } from "../../actions/taskActions";
-import { setTaskListData } from "../../reducers/taskReducers";
-import { selectTrucks } from "../../features/trucks/trucksSelectors";
-import { listTrucks } from "../../features/trucks/trucksOperations";
-import { selectPlanner } from "../../features/planner/plannerSelectors";
+
+import "./WeekPlanner.scss";
 
 export const WeekPlanner = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const searchParams = new URLSearchParams(location.search);
+  const currentYear = parseInt(searchParams.get("year")) || getYear(new Date());
+  const currentWeek =
+    parseInt(searchParams.get("week")) || getISOWeek(new Date());
+
+  const [week, setWeek] = useState(currentWeek);
+  const [year, setYear] = useState(currentYear);
+
   const { showDriver, showOrderNumber, showCustomer } =
-    useSelector(selectPlanner);
+    useSelector(selectSwitchers);
+
   const trucks = useSelector(selectTrucks);
-  const tasks = useSelector((state) => state.tasksInfo.tasks.data);
+  const tasks = useSelector(selectTasks);
 
   const date = new Date();
-  const [isHovered, setHovered] = useState(false);
 
   const [showDetails, setShowDetails] = useState(false);
 
-  // const [tasks, setTasks] = useState([]);
-  const [week, setWeek] = useState(getISOWeek(date));
   const [datesArray, setDatesArray] = useState(generateDatesArray(date, week));
-  const [showModal, setShowModal] = useState(false);
   const [isToggledDriver, setIsToggledDriver] = useState(false);
   const [isToggledOrderNumber, setIsToggledOrderNumber] = useState(false);
   const [isToggledCustomer, setIsToggledCustomer] = useState(false);
-  const [showEndTimeModal, setShowEndTimeModal] = useState(false);
-  const [showStartTimeModal, setShowStartTimeModal] = useState(false);
-  const [showServiceTaskModal, setShowServiceTaskModal] = useState(false);
-
-  // Hooks for edtiting tasks
-  const [editMode, setEditMode] = useState(false);
-  const [editModeServiceTask, setEditModeServiceTask] = useState(false);
-
-  // Hooks for variables from the order
-  const [selectedTask, setSelectedTask] = useState({});
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTruck, setSelectedTruck] = useState({});
-  const [selectedDriver, setSelectedDriver] = useState({});
-  const [selectedPoint, setSelectedPoint] = useState({});
-  const [selectedTaskType, setSelectedTaskType] = useState({});
-
-  const handleMouseEnter = () => {
-    setHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(false);
-  };
-
-  const handleTaskUpdate = (taskId, taskData) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return taskData;
-      }
-
-      return task;
-    });
-    console.log(updatedTasks, "this is updated tasks");
-    dispatch(setTaskListData(updatedTasks));
-    // setTasks(updatedTasks);
-  };
-
-  const handleTaskCreate = (taskData) => {
-    // setTasks((prevTasks) => [...prevTasks, taskData]);
-    dispatch(setTaskListData([...tasks, taskData]));
-  };
-
-  const handleModalShow = () => {
-    setShowModal(true);
-    console.log("Open modal");
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-    console.log("Close modal");
-  };
-
-  const handleServiceTaskModalShow = () => {
-    setShowServiceTaskModal(true);
-    console.log("Open Service Task modal");
-  };
-
-  const handleServiceTaskModalClose = () => {
-    setShowServiceTaskModal(false);
-    console.log("Close Service Task modal");
-  };
 
   useEffect(() => {
     dispatch(listTrucks());
@@ -113,49 +79,46 @@ export const WeekPlanner = () => {
 
   const handleWeekChange = (newWeek) => {
     setWeek(newWeek);
+    navigate(`/planner?year=${year}&week=${newWeek}`);
     setDatesArray(generateDatesArray(date, newWeek));
   };
 
+  const handleYearChange = (newYear) => {
+    setYear(newYear);
+    navigate(`/planner?year=${newYear}&week=${week}`);
+  };
+  const filterTasksForWeek = (tasks, week) => {
+    return tasks.filter((task) => {
+      const taskWeek = getISOWeek(parseISO(task.start_date));
+      return taskWeek === week;
+    });
+  };
+
   const handleTruckDateSelect = ({ truckId, dayNumber }) => {
-    const selectedTruck = trucks.find((truck) => truck.id === truckId);
-    setSelectedTruck(selectedTruck);
-    setSelectedDate(datesArray[dayNumber]);
+    const truck = trucks.find((truck) => truck.id === truckId);
 
-    handleServiceTaskModalShow();
+    dispatch(setSelectedTruck(truck));
+    dispatch(setSelectedDate(datesArray[dayNumber]));
+    dispatch(setSelectedDriver(truck.driver_details));
+    dispatch(setShowServiceTaskModal(true));
   };
 
-  const handleSelectDriver = (driver) => {
-    setSelectedDriver(driver);
+  const handleEditModeTask = (e, task) => {
+    e.preventDefault();
+
+    dispatch(setSelectedTask(task));
+    dispatch(setEditModeServiceTask(true));
+    dispatch(setShowServiceTaskModal(true));
   };
 
-  const handleSelectTask = ({ task, editMode, truckId, dayNumber }) => {
-    setEditMode(editMode);
-    console.log("Truck ID SELECTED", truckId);
-
-    if (editMode) {
-      setSelectedTask(task);
-    }
-
-    setSelectedDate(datesArray[dayNumber]);
-
-    const selectedTruck = trucks.find((truck) => truck.id === truckId);
-    if (selectedTruck) {
-      setSelectedTruck(selectedTruck);
-      console.log("Truck found:", selectedTruck);
-    } else {
-      console.log("Truck not found for id:", truckId);
-    }
-    // handleModalShow();
+  const handleStartTime = (task) => {
+    dispatch(setShowStartTimeModal(true));
+    dispatch(setSelectedTask(task));
   };
 
-  const handleEndTime = () => {
-    console.log("Open End Time Modal");
-    setShowEndTimeModal(true);
-  };
-
-  const handleStartTime = () => {
-    console.log("Open Start Time Modal");
-    setShowStartTimeModal(true);
+  const handleEndTime = (task) => {
+    dispatch(setShowEndTimeModal(true));
+    dispatch(setSelectedTask(task));
   };
 
   const handleDeleteTask = async (e, taskId) => {
@@ -169,83 +132,34 @@ export const WeekPlanner = () => {
       return;
     }
 
-    try {
-      const response = await axios.delete(`/api/tasks/delete/${taskId}/`);
-      console.log("Task deleted successfully:", response.data);
-
-      const updatedTasks = tasks.filter((task) => task.id !== taskId);
-      dispatch(setTaskListData(updatedTasks));
-      // setTasks(updatedTasks);
-    } catch (error) {
-      console.error("Error deleting task:", error.message);
-    }
+    dispatch(deleteTask(taskId));
   };
 
-  const handleEditModeTask = (e, task) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    setEditModeServiceTask(true);
-    setSelectedTask(task);
-    handleServiceTaskModalShow();
-
-    console.log("THIS IS FROM EDIT TASK", task);
-  };
-
+  // Show driver phone number
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
 
   const handleShowDriver = () => {
-    dispatch(setPlanner({ showDriver: !showDriver }));
+    dispatch(setSwitchers({ showDriver: !showDriver }));
     setIsToggledDriver(!isToggledDriver);
   };
 
   const handleShowOrderNumber = () => {
-    dispatch(setPlanner({ showOrderNumber: !showOrderNumber }));
+    dispatch(setSwitchers({ showOrderNumber: !showOrderNumber }));
     setIsToggledOrderNumber(!isToggledOrderNumber);
   };
 
   const handleShowCustomer = () => {
-    dispatch(setPlanner({ showCustomer: !showCustomer }));
+    dispatch(setSwitchers({ showCustomer: !showCustomer }));
     setIsToggledCustomer(!isToggledCustomer);
   };
 
   return (
     <>
-      <StartTimeModalComponent
-        handleStartTime={handleStartTime}
-        showStartTimeModal={showStartTimeModal}
-        setShowStartTimeModal={setShowStartTimeModal}
-        selectedTask={selectedTask}
-        onTaskUpdate={handleTaskUpdate}
-      />
-      <EndTimeModalComponent
-        handleEndTime={handleEndTime}
-        showEndTimeModal={showEndTimeModal}
-        setShowEndTimeModal={setShowEndTimeModal}
-        selectedTask={selectedTask}
-        onTaskUpdate={handleTaskUpdate}
-      />
-      <ServiceTaskModalComponent
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedTruck={selectedTruck}
-        setSelectedTruck={setSelectedTruck}
-        selectedDriver={selectedDriver}
-        setSelectedDriver={setSelectedDriver}
-        handleSelectDriver={handleSelectDriver}
-        selectedTaskType={selectedTaskType}
-        setSelectedTaskType={setSelectedTaskType}
-        handleServiceTaskModalClose={handleServiceTaskModalClose}
-        showServiceTaskModal={showServiceTaskModal}
-        setShowServiceTaskModal={setShowServiceTaskModal}
-        handleTaskCreate={handleTaskCreate}
-        handleTaskUpdate={handleTaskUpdate}
-        selectedTask={selectedTask}
-        editModeServiceTask={editModeServiceTask}
-        setEditModeServiceTask={setEditModeServiceTask}
-      />
+      <StartTimeModalComponent />
+      <EndTimeModalComponent />
+      <ServiceTaskModalComponent />
 
       <div className="planner-container">
         <div className="week-number">
@@ -256,8 +170,10 @@ export const WeekPlanner = () => {
           </div>
 
           <WeekSwitcherComponent
+            year={year}
             week={week}
             handleWeekChange={handleWeekChange}
+            handleYearChange={handleYearChange}
           />
           <div></div>
           <SwitchComponent
@@ -298,16 +214,17 @@ export const WeekPlanner = () => {
                 })}
               </div>
 
-              {/* rows with trucks */}
               {trucks.map((truck) => {
-                // TODO - this part has to be learnt better
-                const weeklyTasks = datesArray.map((date) => {
-                  return tasks.filter((task) => {
-                    return (
-                      task.start_date === date[1] && truck.plates === task.truck
-                    );
-                  });
-                });
+                const weeklyTasks = datesArray.map((date) =>
+                  filterTasksForWeek(
+                    tasks.filter(
+                      (task) =>
+                        task.start_date === date[1] &&
+                        truck.plates === task.truck
+                    ),
+                    week
+                  )
+                );
 
                 return (
                   <div className="week-truck__row" key={truck.id}>
@@ -351,18 +268,12 @@ export const WeekPlanner = () => {
                         key={dayNumber}
                       >
                         <DayTasks
-                          isHovered={isHovered}
                           tasks={dayTasks}
-                          onTruckDateSelect={handleTruckDateSelect}
-                          onSelect={handleSelectTask}
                           truckId={truck.id}
                           dayNumber={dayNumber}
-                          setShowModal={setShowModal}
+                          onTruckDateSelect={handleTruckDateSelect}
                           handleEndTime={handleEndTime}
                           handleStartTime={handleStartTime}
-                          handleServiceTaskModalShow={
-                            handleServiceTaskModalShow
-                          }
                           handleDeleteTask={handleDeleteTask}
                           handleEditModeTask={handleEditModeTask}
                         />

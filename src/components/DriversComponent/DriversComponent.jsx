@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./DriversComponent.scss";
-import DriverSearchComponent from "./DriverSearchComponent/DriverSearchComponent";
+import SearchComponent from "../../globalComponents/SearchComponent";
 import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import driverImagePlaceholder from "../../img/driver_placeholder.jpg";
 import cn from "classnames";
 import GenericModalComponent from "../../globalComponents/GenericModalComponent";
-import AddDriverComponent from "./AddDriverComponent/AddDriverComponent";
+import EditDriverComponent from "./EditDriverComponent/EditDriverComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteDriver, listDrivers } from "../../actions/driverActions";
+import {
+  deleteDriver,
+  listDrivers,
+  setUpdateDriversList,
+} from "../../actions/driverActions";
 import RegisterFormComponent from "../../screens/RegisterPage/RegisterFormComponent";
 import { useNavigate } from "react-router-dom";
 
-const { REACT_APP_PROXY: BASE_URL } = process.env;
+const { REACT_APP_PROXY: BASE_URL } = import.meta.env;
 
 const DriversComponent = () => {
   const dispatch = useDispatch();
@@ -25,7 +29,6 @@ const DriversComponent = () => {
   const [selectedDrivers, setSelectedDrivers] = useState([]);
 
   // All edit mode hooks
-  const [createDriverMode, setCreateDriverMode] = useState(false);
   const [editDriverProfileMode, setEditDriverProfileMode] = useState(false);
 
   const handleCheckboxChange = (driverID) => {
@@ -54,7 +57,7 @@ const DriversComponent = () => {
     }
     if (selectedDrivers.length === 1) {
       setSelectedDriver(
-        drivers.find((driver) => driver.user === selectedDrivers[0])
+        drivers.find((driver) => driver.profile === selectedDrivers[0])
       );
       setEditDriverProfileMode(true);
       setShowDriverModal(true);
@@ -73,8 +76,6 @@ const DriversComponent = () => {
     setSelectedDriver({});
     console.log("Add driver button clicked");
     navigate("/drivers/add");
-    // setShowDriverModal(true);
-    // setCreateDriverMode(true);
   };
 
   const handleDeleteSelectedDrivers = () => {
@@ -97,7 +98,6 @@ const DriversComponent = () => {
           dispatch(deleteDriver(driverId));
         }
         setSelectedDrivers([]);
-        dispatch(listDrivers());
       } catch (error) {
         console.error("Error deleting drivers:", error.message);
       }
@@ -106,13 +106,13 @@ const DriversComponent = () => {
 
   const handleDriverUpdate = (driverId, driverData) => {
     const updatedDrivers = drivers.map((driver) => {
-      if (driver.user === driverId) {
+      if (driver.profile === driverId) {
         return driverData;
       }
       return driver;
     });
     console.log("Updated drivers", updatedDrivers);
-    dispatch(listDrivers());
+    dispatch(setUpdateDriversList(updatedDrivers));
   };
 
   const handleModalClose = () => {
@@ -125,23 +125,16 @@ const DriversComponent = () => {
         show={showDriverModal}
         onClose={handleModalClose}
         content={
-          createDriverMode ? (
-            <RegisterFormComponent
-              setShowDriverModal={setShowDriverModal}
-              setCreateDriverMode={setCreateDriverMode}
-            />
-          ) : (
-            <AddDriverComponent
-              setShowDriverModal={setShowDriverModal}
-              showDriverModal={showDriverModal}
-              selectedDriver={selectedDriver}
-              editDriverProfileMode={editDriverProfileMode}
-              setSelectedDriver={setSelectedDriver}
-              setEditDriverProfileMode={setEditDriverProfileMode}
-              handleEditProfileMode={handleEditProfileMode}
-              handleDriverUpdate={handleDriverUpdate}
-            />
-          )
+          <EditDriverComponent
+            setShowDriverModal={setShowDriverModal}
+            showDriverModal={showDriverModal}
+            selectedDriver={selectedDriver}
+            editDriverProfileMode={editDriverProfileMode}
+            setSelectedDriver={setSelectedDriver}
+            setEditDriverProfileMode={setEditDriverProfileMode}
+            handleEditProfileMode={handleEditProfileMode}
+            handleDriverUpdate={handleDriverUpdate}
+          />
         }
       />
       <div className="drivers-container">
@@ -172,7 +165,11 @@ const DriversComponent = () => {
             {/* TODO: Add this buttons block to globalComponents */}
           </div>
         </div>
-        <DriverSearchComponent search={search} setSearch={setSearch} />
+        <SearchComponent
+          search={search}
+          setSearch={setSearch}
+          placeholder={"Введіть ім'я або прізвище водія"}
+        />
         <div className="table-container">
           <table className="drivers-table">
             <thead className="drivers-table__header">
@@ -198,10 +195,10 @@ const DriversComponent = () => {
                   })
                   .map((driver, index) => (
                     <tr
-                      key={driver.user}
+                      key={driver.profile}
                       className={cn("drivers-table__body-row", {
                         "drivers-table__body-row_active":
-                          selectedDrivers.includes(driver.user),
+                          selectedDrivers.includes(driver.profile),
                       })}
                       onDoubleClick={(e) => handleRowDoubleClick(e, driver)}
                     >
@@ -232,9 +229,9 @@ const DriversComponent = () => {
                         <input
                           type="checkbox"
                           className="drivers-table__checkbox"
-                          checked={selectedDrivers.includes(driver.user)}
+                          checked={selectedDrivers.includes(driver.profile)}
                           onChange={() => {
-                            handleCheckboxChange(driver.user);
+                            handleCheckboxChange(driver.profile);
                           }}
                         />
                       </td>

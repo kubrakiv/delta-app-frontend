@@ -1,59 +1,54 @@
-import React from "react";
-import "./ServiceTaskModalComponent.scss";
-import AddServiceTaskComponent from "../../AddServiceTaskComponent/AddServiceTaskComponent";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedDate,
+  setSelectedDriver,
+  setSelectedTask,
+  setSelectedTruck,
+  setShowServiceTaskModal,
+} from "../../../features/planner/plannerSlice";
+import {
+  selectShowServiceTaskModal,
+  selectSelectedTask,
+  selectEditModeServiceTask,
+} from "../../../features/planner/plannerSelectors";
+
 import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
+import AddServiceTaskComponent from "../../AddServiceTaskComponent/AddServiceTaskComponent";
 
-const AddServiceTaskModalComponent = ({
-    showServiceTaskModal,
-    setShowServiceTaskModal,
-    selectedTask,
-    selectedDate,
-    setSelectedDate,
-    selectedTruck,
-    setSelectedTruck,
-    selectedDriver,
-    setSelectedDriver,
-    handleSelectDriver,
-    selectedTaskType,
-    setSelectedTaskType,
-    handleTaskCreate,
-    handleTaskUpdate,
-    editModeServiceTask,
-    setEditModeServiceTask,
-}) => {
-    const handleModalClose = () => {
-        setShowServiceTaskModal(false);
-    };
+import "./ServiceTaskModalComponent.scss";
 
-    return (
-        <>
-            <GenericModalComponent
-                show={showServiceTaskModal}
-                onClose={handleModalClose}
-                content={
-                    <AddServiceTaskComponent
-                        setShowServiceTaskModal={setShowServiceTaskModal}
-                        showServiceTaskModal={showServiceTaskModal}
-                        selectedTask={selectedTask}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        selectedTruck={selectedTruck}
-                        setSelectedTruck={setSelectedTruck}
-                        selectedDriver={selectedDriver}
-                        setSelectedDriver={setSelectedDriver}
-                        handleSelectDriver={handleSelectDriver}
-                        selectedTaskType={selectedTaskType}
-                        setSelectedTaskType={setSelectedTaskType}
-                        handleTaskCreate={handleTaskCreate}
-                        handleTaskUpdate={handleTaskUpdate}
-                        editModeServiceTask={editModeServiceTask}
-                        setEditModeServiceTask={setEditModeServiceTask}
-                    />
-                }
-                footer
+const ServiceTaskModalComponent = () => {
+  const dispatch = useDispatch();
+  const showServiceTaskModal = useSelector(selectShowServiceTaskModal);
+  const editModeServiceTask = useSelector(selectEditModeServiceTask);
+  const selectedTask = useSelector(selectSelectedTask);
+
+  const handleModalClose = () => {
+    dispatch(setShowServiceTaskModal(false));
+    dispatch(setSelectedTask(null));
+    dispatch(setSelectedTruck(null));
+    dispatch(setSelectedDriver(null));
+    dispatch(setSelectedDate(null));
+  };
+
+  return (
+    <>
+      <GenericModalComponent
+        show={showServiceTaskModal}
+        onClose={handleModalClose}
+        content={
+          editModeServiceTask ? (
+            <AddServiceTaskComponent
+              onCloseModal={handleModalClose}
+              initialTaskData={selectedTask}
             />
-        </>
-    );
+          ) : (
+            <AddServiceTaskComponent onCloseModal={handleModalClose} />
+          )
+        }
+      />
+    </>
+  );
 };
 
-export default AddServiceTaskModalComponent;
+export default ServiceTaskModalComponent;

@@ -25,7 +25,7 @@ const InputComponent = ({
         type={type}
         placeholder={placeholder}
         className="form-field__input form-select-mb5"
-        value={value}
+        value={value || ""}
         onChange={onChange}
         autoFocus={autoFocus}
       />

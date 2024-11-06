@@ -1,95 +1,89 @@
-import React, { useEffect, useState } from "react";
-import "./EndTimeComponent.scss";
-import EndTimeHeaderComponent from "./EndTimeHeaderComponent/EndTimeHeaderComponent";
-import axios from "axios";
-import { getCsrfToken } from "../../utils/getCsrfToken";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import { selectSelectedTask } from "../../features/planner/plannerSelectors";
+import { setShowEndTimeModal } from "../../features/planner/plannerSlice";
+import { updateTask } from "../../features/tasks/tasksOperations";
+
 import InputComponent from "../../globalComponents/InputComponent";
+import EndTimeFooterComponent from "./EndTimeFooterComponent/EndTimeFooterComponent";
+import EndTimeHeaderComponent from "./EndTimeHeaderComponent/EndTimeHeaderComponent";
 
-const EndTimeComponent = ({
-    setShowEndTimeModal,
-    selectedTask,
-    onTaskUpdate,
-}) => {
-    const [endDate, setEndDate] = useState("");
-    const [endTime, setEndTime] = useState("");
+import "./EndTimeComponent.scss";
 
-    useEffect(() => {
-        getCsrfToken();
-    }, []);
+const EndTimeComponent = () => {
+  const dispatch = useDispatch();
+  const selectedTask = useSelector(selectSelectedTask);
 
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
+  const [endDate, setEndDate] = useState("");
+  const [endTime, setEndTime] = useState("");
 
-        if (!endDate || !endTime) {
-            return;
-        }
+  useEffect(() => {
+    setEndDate(selectedTask?.end_date);
+    setEndTime(selectedTask?.end_time);
+  }, [selectedTask]);
 
-        const data = {
-            end_date: endDate,
-            end_time: endTime,
-        };
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
 
-        if (data) {
-            try {
-                const responseTask = await axios.put(
-                    `/api/tasks/edit/${selectedTask.id}/`,
-                    data
-                );
+    if (!endDate || !endTime) {
+      return;
+    }
 
-                setShowEndTimeModal(false);
-                onTaskUpdate(selectedTask.id, responseTask.data);
-            } catch (taskError) {
-                console.log(taskError);
-            }
-        }
+    const data = {
+      end_date: endDate,
+      end_time: endTime,
     };
-    return (
-        <>
-            <div className="end-time-container">
-                <div className="end-time">
-                    <EndTimeHeaderComponent selectedTask={selectedTask} />
-                    <form onSubmit={handleFormSubmit} className="end-time-form">
-                        <div className="end-time__content">
-                            <div className="end-time__content-block">
-                                <div className="end-time__row">
-                                    <div className="end-time__content-row-block">
-                                        <div className="end-time__row-block">
-                                            <InputComponent
-                                                label={"Дата завершення"}
-                                                required
-                                                type="date"
-                                                placeholder="Enter task start date"
-                                                value={endDate}
-                                                className="add-task-form__input"
-                                                onChange={(e) =>
-                                                    setEndDate(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="end-time__content-row-block">
-                                        <div className="end-time__row-block">
-                                            <InputComponent
-                                                label={"Час завершення"}
-                                                required
-                                                type="time"
-                                                placeholder="Enter task start time"
-                                                value={endTime}
-                                                className="add-task-form__input"
-                                                onChange={(e) =>
-                                                    setEndTime(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+
+    if (data) {
+      dispatch(updateTask({ id: selectedTask.id, ...data }));
+      dispatch(setShowEndTimeModal(false));
+    }
+  };
+  return (
+    <>
+      <div className="end-time-container">
+        <div className="end-time">
+          <EndTimeHeaderComponent selectedTask={selectedTask} />
+          <form onSubmit={handleFormSubmit} className="end-time-form">
+            <div className="end-time__content">
+              <div className="end-time__content-block">
+                <div className="end-time__row">
+                  <div className="end-time__content-row-block">
+                    <div className="end-time__row-block">
+                      <InputComponent
+                        label={"Дата завершення"}
+                        required
+                        type="date"
+                        placeholder="Enter end date"
+                        value={endDate}
+                        className="add-task-form__input"
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="end-time__content-row-block">
+                    <div className="end-time__row-block">
+                      <InputComponent
+                        label={"Час завершення"}
+                        required
+                        type="time"
+                        placeholder="Enter end time"
+                        value={endTime}
+                        className="add-task-form__input"
+                        onChange={(e) => setEndTime(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </>
-    );
+            <EndTimeFooterComponent />
+          </form>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default EndTimeComponent;

@@ -1,4 +1,3 @@
-import React from "react";
 import "./OrderPage.scss";
 import TruckComponent from "./TruckComponent/TruckComponent";
 import DriverComponent from "./DriverComponent/DriverComponent";

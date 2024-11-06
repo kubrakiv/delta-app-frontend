@@ -8,49 +8,46 @@ import { logout } from "../../actions/userActions";
 import OpenContext from "../OpenContext";
 
 function Header() {
-    const { toggleSidebar } = useContext(OpenContext);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const { toggleSidebar } = useContext(OpenContext);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const userLogin = useSelector((state) => state.userLogin);
-    const { userInfo } = userLogin;
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
-    const logoutHandler = () => {
-        dispatch(logout());
-        navigate("/");
-    };
+  const logoutHandler = () => {
+    dispatch(logout());
+    navigate("/");
+  };
 
-    return (
-        <header className="header">
-            <div className="header-navbar">
-                <div className="top-section-header" onClick={toggleSidebar}>
-                    <FaBars />
-                </div>
-                <div className="header-navbar__title">
-                    <Link to="/start">DELTA APP</Link>
-                </div>
+  return (
+    <header className="header">
+      <div className="header-navbar">
+        <div className="top-section-header" onClick={toggleSidebar}>
+          <FaBars />
+        </div>
+        <div className="header-navbar__title">
+          <Link to="/start">DELTA APP</Link>
+        </div>
 
-                {userInfo ? (
-                    // TODO: add dropdown menu for profile and logout
-                    <>
-                        <div className="header-navbar__user">
-                            <Link to="/profile">{userInfo.full_name}</Link>
-                        </div>
-                        <button
-                            className="header-navbar__logout button"
-                            onClick={logoutHandler}
-                        >
-                            Вийти
-                        </button>
-                    </>
-                ) : (
-                    <div className="header-navbar__login">
-                        <Link to="/login">LOGIN</Link>
-                    </div>
-                )}
+        {userInfo ? (
+          // TODO: add dropdown menu for profile and logout
+          <>
+            <div className="header-navbar__user">
+              <Link to="/profile">{userInfo.full_name}</Link>
             </div>
-        </header>
-    );
+            <div className="header-navbar__logout-btn" onClick={logoutHandler}>
+              <span>Вийти</span>
+            </div>
+          </>
+        ) : (
+          <div className="header-navbar__login">
+            <Link to="/login">LOGIN</Link>
+          </div>
+        )}
+      </div>
+    </header>
+  );
 }
 
 export default Header;
