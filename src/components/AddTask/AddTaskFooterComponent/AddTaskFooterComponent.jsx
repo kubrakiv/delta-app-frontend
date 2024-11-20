@@ -1,5 +1,3 @@
-import React from "react";
-import "./AddTaskFooterComponent.scss";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAddTaskMode,
@@ -7,29 +5,9 @@ import {
   setEditModeTask,
 } from "../../../actions/orderActions";
 
-const AddTaskFooterComponent = () => {
-  const dispatch = useDispatch();
-  const task = useSelector((state) => state.ordersInfo.task.data);
-  const editMode = useSelector((state) => state.ordersInfo.task.editMode);
-  const addTaskMode = useSelector((state) => state.ordersInfo.addTaskMode);
-  const addTaskNoOrderMode = useSelector(
-    (state) => state.ordersInfo.addTaskNoOrderMode
-  );
+import "./AddTaskFooterComponent.scss";
 
-  const handleModalClose = (e) => {
-    e.preventDefault();
-    if (addTaskNoOrderMode) {
-      dispatch(setAddTaskMode(false));
-      dispatch(setAddTaskNoOrderMode(false));
-    }
-    if (addTaskMode) {
-      dispatch(setAddTaskMode(false));
-    }
-    if (editMode) {
-      dispatch(setEditModeTask(task, !editMode));
-    }
-  };
-
+const AddTaskFooterComponent = ({ onCloseModal }) => {
   return (
     <>
       <div className="add-task-details__footer">
@@ -43,7 +21,7 @@ const AddTaskFooterComponent = () => {
         <button
           title="Close Order"
           className="add-task-details__footer-btn add-task-details__footer-btn_close"
-          onClick={(e) => handleModalClose(e)}
+          onClick={() => onCloseModal()}
         >
           Закрити
         </button>

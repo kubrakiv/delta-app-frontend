@@ -20,8 +20,7 @@ export const CUSTOMER_MANAGER_CONSTANTS = {
 export const CUSTOMER_CONSTANTS = {
   COMPANY_NAME: "name",
   NIP_NUMBER: "nip_number",
-  PAYMENT_PERIOD: "payment_period",
-  PAYMENT_TYPE: "payment_type",
+  VAT_NUMBER: "vat_number",
   EMAIL: "email",
   WEBSITE: "website",
   POST_ADDRESS: "post_address",
@@ -59,4 +58,12 @@ export const TASK_CONSTANTS = {
   TASK_START_TIME: "start_time",
   TASK_END_DATE: "end_date",
   TASK_END_TIME: "end_time",
+};
+
+export const PRICE_CONSTANTS = {
+  PRICE: "price",
+  PAYMENT_PERIOD: "payment_period",
+  PAYMENT_TYPE: "payment_type",
+  CURRENCY: "currency",
+  VAT: "vat",
 };

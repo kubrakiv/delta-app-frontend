@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import {
   selectCustomer,
   selectCustomers,
@@ -168,12 +168,7 @@ const CustomersListComponent = () => {
                       <td className="customers-table__body-td">
                         {customer.website}
                       </td>
-                      <td className="customers-table__body-td">
-                        {customer.payment_type === 1
-                          ? "По оригіналам"
-                          : "По копіям"}{" "}
-                        - {customer.payment_period} днів
-                      </td>
+
                       <td className="customers-table__body-td">
                         {customer.managers &&
                           customer.managers.map((manager, index) => (

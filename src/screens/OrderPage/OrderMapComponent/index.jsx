@@ -27,20 +27,19 @@ const OrderMapComponent = () => {
   });
 
   const directionsServiceOptions = useMemo(() => {
+    if (!tasks || tasks.length === 0) {
+      return null;
+    }
+
     const origin = {
-      lat: parseFloat(tasks?.length > 0 && tasks[0].point_details.gps_latitude),
-      lng: parseFloat(
-        tasks?.length > 0 && tasks[0].point_details.gps_longitude
-      ),
+      lat: parseFloat(tasks[0].point_details.gps_latitude || 0),
+      lng: parseFloat(tasks[0].point_details.gps_longitude || 0),
     };
 
     const destination = {
-      lat: parseFloat(
-        tasks?.length > 0 && tasks[tasks?.length - 1].point_details.gps_latitude
-      ),
+      lat: parseFloat(tasks[tasks?.length - 1].point_details.gps_latitude || 0),
       lng: parseFloat(
-        tasks?.length > 0 &&
-          tasks[tasks?.length - 1].point_details.gps_longitude
+        tasks[tasks?.length - 1].point_details.gps_longitude || 0
       ),
     };
 
@@ -48,19 +47,64 @@ const OrderMapComponent = () => {
       tasks &&
       tasks.slice(1, -1).map((task) => ({
         location: {
-          lat: parseFloat(tasks?.length > 0 && task.point_details.gps_latitude),
-          lng: parseFloat(
-            tasks?.length > 0 && task.point_details.gps_longitude
-          ),
+          lat: parseFloat(task.point_details.gps_latitude || 0),
+          lng: parseFloat(task.point_details.gps_longitude || 0),
         },
         stopover: true,
       }));
+
+    // Function to determine if Switzerland should be avoided
+    const shouldAvoidSwitzerland = (lat, lng) => {
+      // Rough latitude and longitude bounds for Italy
+      const italyBounds = {
+        latMin: 36.0,
+        latMax: 47.0,
+        lngMin: 6.0,
+        lngMax: 18.0,
+      };
+
+      // Check if the coordinates fall within Italy's bounds
+      if (
+        lat >= italyBounds.latMin &&
+        lat <= italyBounds.latMax &&
+        lng >= italyBounds.lngMin &&
+        lng <= italyBounds.lngMax
+      ) {
+        return true; // Italy detected, avoid Switzerland
+      }
+
+      return false; // Otherwise, don't need to avoid Switzerland
+    };
+
+    // Determine if either the origin or destination requires avoiding Switzerland
+    const avoidSwitzerland =
+      shouldAvoidSwitzerland(origin.lat, origin.lng) ||
+      shouldAvoidSwitzerland(destination.lat, destination.lng);
+
+    // Define waypoints to help avoid Switzerland if needed
+    const avoidSwitzerlandWaypoints = avoidSwitzerland
+      ? [
+          {
+            location: { lat: 45.99732650852601, lng: 11.120364378056005 }, // Near Innsbruck, Austria - guiding through Austria
+            stopover: false,
+          },
+          {
+            location: { lat: 47.005185080619526, lng: 11.508408026490219 }, // Near Innsbruck, Austria - guiding through Austria
+            stopover: false,
+          },
+        ]
+      : [];
+
+    // Combine existing waypoints and avoidance waypoints
+    const combinedWaypoints = waypoints
+      ? [...avoidSwitzerlandWaypoints, ...waypoints]
+      : avoidSwitzerlandWaypoints;
 
     return {
       origin,
       destination,
       travelMode: "DRIVING",
-      waypoints,
+      waypoints: combinedWaypoints,
     };
   }, [tasks]);
 
@@ -69,37 +113,18 @@ const OrderMapComponent = () => {
       if (response !== null) {
         if (response.status === "OK") {
           setDirectionsResponse(response);
-
-          const totalDistanceMeters = response.routes[0].legs.reduce(
-            (total, leg) => total + leg.distance.value,
-            0
-          );
-
-          const totalDistanceKm =
-            (totalDistanceMeters / 1000).toFixed(0) + " km";
-
-          setDistance(totalDistanceKm);
-
-          const totalDurationSeconds = response.routes[0].legs.reduce(
-            (total, leg) => total + leg.duration.value,
-            0
-          );
-
-          const totalDurationFormatted = formatDuration(totalDurationSeconds);
-
-          setDuration(totalDurationFormatted);
         } else {
           console.log("response: ", response);
         }
       }
     },
-    [setDirectionsResponse, setDistance, setDuration]
+    [setDirectionsResponse]
   );
 
   return (
     <div className="order-details__content-row">
       <div className="order-details__content-row-block order-details__content-row-block-map">
-        {isLoaded ? (
+        {isLoaded && directionsServiceOptions ? (
           <>
             <DirectionsService
               options={directionsServiceOptions}

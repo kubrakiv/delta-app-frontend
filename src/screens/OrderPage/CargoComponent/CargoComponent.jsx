@@ -115,15 +115,15 @@ const CargoComponent = () => {
               <div key={index} className="order-details__form-col">
                 {fields.map((field) => {
                   return (
-                    <InputComponent
-                      id={field.id}
-                      key={field.id}
-                      name={field.id}
-                      placeholder={field.placeholder} // FIXME: placeholder is not rendering
-                      value={cargoFields[field.id]}
-                      onChange={(e) => handleCargoChange(e)}
-                      //   autoFocus
-                    />
+                    <div key={field.id}>
+                      <InputComponent
+                        id={field.id}
+                        name={field.id}
+                        placeholder={field.placeholder}
+                        value={cargoFields[field.id]}
+                        onChange={(e) => handleCargoChange(e)}
+                      />
+                    </div>
                   );
                 })}
               </div>

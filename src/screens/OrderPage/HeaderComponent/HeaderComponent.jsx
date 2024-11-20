@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import OrderNumberComponent from "../OrderNumberComponent/OrderNumberComponent";
-import "./HeaderComponent.scss";
-import { FaArrowLeft } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
+
+import OrderNumberComponent from "../OrderNumberComponent/OrderNumberComponent";
+
+import "./HeaderComponent.scss";
 
 const HeaderComponent = () => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const HeaderComponent = () => {
   };
 
   const handleOrderTitle = () => {
-    if (tasks.length > 0) {
+    if (tasks?.length > 0) {
       return tasks
         .map(
           (task) =>
@@ -42,15 +44,13 @@ const HeaderComponent = () => {
         <div className="order-details__header-block">
           Маршрут № {order.number}
         </div>
-        {tasks.length > 0 && (
+        {tasks?.length > 0 && (
           <div className="order-details__header-block">
             {handleOrderTitle()}
           </div>
         )}
-        <div className="order-details__header-block">
-          Заявка {order.order_number}
-        </div>
-        {/* <OrderNumberComponent /> */}
+
+        <OrderNumberComponent />
       </div>
     </>
   );

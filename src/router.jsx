@@ -17,15 +17,18 @@ import AddOrder from "./components/AddOrder/AddOrder";
 import MapPage from "./screens/MapPage/MapPage";
 import PointsPage from "./screens/PointsPage/PointsPage";
 import PointPage from "./screens/PointPage/PointPage";
-import OrderScreen from "./screens/OrderScreen";
+import OrderPage from "./screens/OrderPage/OrderPage";
 import RegisterPage from "./screens/RegisterPage/RegisterPage";
 import DriverListPage from "./screens/DriverListPage/DriverListPage";
 import TrucksPage from "./screens/TrucksPage";
 import AddDriverPage from "./screens/AddDriverPage";
-import { RestrictedRoute } from "./RestrictedRoute";
 import MainPageComponent from "./screens/MainPageComponent";
 import CareerPage from "./screens/CareerPage";
 import CustomerPage from "./screens/CustomerPage";
+import InvoicePage from "./screens/InvoicePage";
+import InvoiceComponent from "./components/InvoiceComponent";
+
+import { RestrictedRoute } from "./RestrictedRoute";
 
 const routes = [
   { path: "/career", element: <CareerPage /> },
@@ -45,7 +48,7 @@ const routes = [
     element: <OrdersTableComponent />,
     roles: ["admin", "logist"],
   },
-  { path: "/orders/:id", element: <OrderScreen />, roles: ["admin", "logist"] },
+  { path: "/orders/:id", element: <OrderPage />, roles: ["admin", "logist"] },
   { path: "/points", element: <PointsPage />, roles: ["admin", "logist"] },
   { path: "/dashboard", element: <Dashboard />, roles: ["admin", "logist"] },
   { path: "/planner", element: <PlanScreen />, roles: ["admin", "logist"] },
@@ -63,6 +66,22 @@ const routes = [
   },
   { path: "/vehicles", element: <TrucksPage />, roles: ["admin", "logist"] },
   { path: "/customers", element: <CustomerPage />, roles: ["admin", "logist"] },
+  { path: "/invoices", element: <InvoicePage />, roles: ["admin", "logist"] },
+  {
+    path: "/invoices/create",
+    element: <InvoiceComponent />,
+    roles: ["admin", "logist"],
+  },
+  {
+    path: "/invoices/:invoiceId",
+    element: <InvoiceComponent />,
+    roles: ["admin", "logist"],
+  },
+  {
+    path: "/invoices/create",
+    element: <InvoiceComponent />,
+    roles: ["admin", "logist"],
+  },
 ];
 
 const generateRoutes = (routes) =>

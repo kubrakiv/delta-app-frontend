@@ -27,7 +27,7 @@ export const customerSlice = createSlice({
     setEditModeCustomer: (state, action) => {
       state.editModeCustomer = action.payload;
     },
-    setManagerListData: (state, action) => {
+    setManagersListData: (state, action) => {
       state.managers.data = action.payload;
     },
   },
@@ -56,7 +56,7 @@ export const customerActions = customerSlice.actions;
 export const {
   setCustomerDetailsData,
   setEditModeCustomer,
-  setManagerListData,
+  setManagersListData,
   setManagerDetailsData,
 } = customerSlice.actions;
 export default customerSlice.reducer;

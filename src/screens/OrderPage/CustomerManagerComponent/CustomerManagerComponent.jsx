@@ -1,27 +1,20 @@
 import { useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./CustomerManagerComponent.scss";
 import { FaRegUser } from "react-icons/fa";
-import FormWrapper from "../../../components/FormWrapper";
-import SelectComponent from "../../../globalComponents/SelectComponent";
 import { updateOrder } from "../../../actions/orderActions";
 import { transformSelectOptions } from "../../../utils/transformers";
-import { createSelector } from "reselect";
+// import { createSelector } from "reselect";
+
+import FormWrapper from "../../../components/FormWrapper";
+import SelectComponent from "../../../globalComponents/SelectComponent";
+
+import "./CustomerManagerComponent.scss";
+import { selectManagers } from "../../../features/customers/customersSelectors";
 
 function CustomerManagerComponent() {
-  const selectCustomersInfo = (state) => state.customersInfo;
-
-  const selectManagers = createSelector(
-    [selectCustomersInfo],
-    (customersInfo) => customersInfo.customer?.data?.managers || []
-  );
-
   const dispatch = useDispatch();
-  const order = useSelector((state) => state.ordersInfo.order.data);
-  // const managers = useSelector(
-  //   (state) => state.customersInfo.customer?.data?.managers || []
-  // );
 
+  const order = useSelector((state) => state.ordersInfo.order.data);
   const managers = useSelector(selectManagers);
 
   const [selectedManager, setSelectedManager] = useState(
@@ -37,12 +30,6 @@ function CustomerManagerComponent() {
   const manager = managers?.find(
     (manager) => manager.full_name === order.customer_manager
   );
-
-  // const manager = useMemo(() => {
-  //   return managers?.find(
-  //     (manager) => manager.full_name === order.customer_manager
-  //   );
-  // }, [managers, order.customer_manager]);
 
   const handleFormSubmit = () => {
     let dataToUpdate = {};

@@ -1,11 +1,12 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
-import "./Header.scss";
 import { logout } from "../../actions/userActions";
 
 import OpenContext from "../OpenContext";
+
+import "./Header.scss";
 
 function Header() {
   const { toggleSidebar } = useContext(OpenContext);
@@ -16,8 +17,15 @@ function Header() {
   const { userInfo } = userLogin;
 
   const logoutHandler = () => {
-    dispatch(logout());
-    navigate("/");
+    const confirmExit = window.confirm("Ви впевнені, що хочете вийти?");
+    if (!confirmExit) {
+      return;
+    }
+
+    if (confirmExit) {
+      dispatch(logout());
+      navigate("/");
+    }
   };
 
   return (
@@ -31,7 +39,6 @@ function Header() {
         </div>
 
         {userInfo ? (
-          // TODO: add dropdown menu for profile and logout
           <>
             <div className="header-navbar__user">
               <Link to="/profile">{userInfo.full_name}</Link>

@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./TruckComponent.scss";
 import { FaTruckMoving } from "react-icons/fa";
 import FormWrapper from "../../../components/FormWrapper";
 import { listTrucks } from "../../../features/trucks/trucksOperations";
@@ -8,6 +7,8 @@ import { updateOrder } from "../../../actions/orderActions";
 import SelectComponent from "../../../globalComponents/SelectComponent";
 import { transformSelectOptions } from "../../../utils/transformers";
 import { RootState, AppDispatch } from "../../../store";
+
+import "./TruckComponent.scss";
 
 interface Truck {
   id: number;

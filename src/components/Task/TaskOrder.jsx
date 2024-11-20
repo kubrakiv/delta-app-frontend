@@ -14,10 +14,12 @@ import {
   PiArrowFatUpFill,
 } from "react-icons/pi";
 import { formattedTime } from "../../utils/formattedTime";
-import { DELIVERY_CONSTANTS } from "../../constants/global";
 import { getTaskTitle } from "../../utils/getTaskTitle";
 import { setMapCurrentLocation } from "../../actions/mapActions";
+
+import { DELIVERY_CONSTANTS } from "../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
+
 import "./TaskOrder.scss";
 
 function TaskOrder({ task, handleDeleteTask, onEditMode }) {

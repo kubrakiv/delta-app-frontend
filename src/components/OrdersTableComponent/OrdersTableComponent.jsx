@@ -1,31 +1,67 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteOrder,
-  listOrderDetails,
-  listOrders,
-} from "../../actions/orderActions";
-import "./OrdersTableComponent.scss";
-import tableHead from "./tableHead.json";
 import chroma from "chroma-js";
-import PricePerKmComponent from "../../screens/OrderPage/PricePerKmComponent/PricePerKmComponent";
-import { round } from "../../utils/round";
+
+import { deleteOrder, listOrders } from "../../actions/orderActions";
 import { formattedTime } from "../../utils/formattedTime";
-import { set } from "date-fns";
+import { listTrucks } from "../../features/trucks/trucksOperations";
+import { listDrivers } from "../../actions/driverActions";
+import { transformDate } from "../../utils/formatDate";
+
+import tableHead from "./tableHead.json";
+
+import PricePerKmComponent from "../../screens/OrderPage/PricePerKmComponent/PricePerKmComponent";
+import OrderActionsComponent from "./OrderActionsComponent";
+import InvoiceStatusComponent from "./InvoiceStatusComponent";
+import OrderStatusComponent from "./OrderStatusComponent";
+
+import { FaCheck } from "react-icons/fa";
+import SwitchComponent from "../SwitchComponent/SwitchComponent";
+
+import "./OrdersTableComponent.scss";
+
+export const findTrailer = (truckPlates, trucks) => {
+  if (!truckPlates || !trucks) return "";
+  const truckInfo = trucks.find((item) => item.plates === truckPlates);
+
+  return truckInfo?.trailer || "";
+};
 
 function OrdersTableComponent() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const orderList = useSelector((state) => state.ordersInfo.orders);
   const { loading, data: ordersData, error } = orderList;
 
-  const editModeOrder = useSelector((state) => state.ordersInfo.editMode);
+  const trucks = useSelector((state) => state.trucksInfo.trucks.data);
+
+  const selectedDriver = useSelector(
+    (state) => state.ordersInfo.selectedDriver
+  );
+  const selectedTruck = useSelector((state) => state.ordersInfo.selectedTruck);
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const [hoveredOrder, setHoveredOrder] = useState(null);
   const [orderId, setOrderId] = useState(null);
 
+  const [hovered, setHovered] = useState(false);
+  const [selectedOrders, setSelectedOrders] = useState([]);
+
+  const [showAddresses, setShowAddresses] = useState(true); // New state to show/hide address fields
+  const [showTruckData, setShowTruckData] = useState(true); // New state to show/hide truck data
+  const [showDateTime, setShowDateTime] = useState(true); // New state to show/hide date and time fields
+
   let hoverTimer;
+
+  useEffect(() => {
+    dispatch(listTrucks());
+    dispatch(listDrivers());
+  }, []);
 
   const handleMouseEnter = (order) => {
     hoverTimer = setTimeout(() => {
@@ -38,12 +74,6 @@ function OrdersTableComponent() {
     setHoveredOrder(null);
   };
 
-  const [hovered, setHovered] = useState(false);
-
-  const [selectedOrders, setSelectedOrders] = useState([]);
-
-  const navigate = useNavigate();
-
   useEffect(() => {
     dispatch(listOrders());
   }, []);
@@ -51,26 +81,6 @@ function OrdersTableComponent() {
   const handleRowDoubleClick = (order) => {
     navigate(`/orders/${order.id}`);
   };
-
-  // const handleAddOrderButtonClick = async (e) => {
-  //     e.preventDefault();
-  //     try {
-  //         const response = await axios.post(
-  //             `/api/orders/create/`,
-  //             {},
-  //             {
-  //                 headers: {
-  //                     "X-CSRFToken": csrfToken,
-  //                 },
-  //             }
-  //         );
-
-  //         console.log("Blank order created successfully:", response.data);
-  //         setOrders([...orders, response.data]);
-  //     } catch (error) {
-  //         console.error("Error creating blank order:", error.message);
-  //     }
-  // };
 
   const buttonStyle = {
     backgroundColor: hovered ? "red" : chroma("red").darken(0.6).hex(),
@@ -87,8 +97,6 @@ function OrdersTableComponent() {
   };
 
   const handleDeleteSelectedOrders = () => {
-    console.log("Delete selected orders", selectedOrders);
-
     if (selectedOrders.length === 0) {
       window.alert("Виберіть замовлення для видалення"); // Alert if no orders are selected
       return;
@@ -102,7 +110,6 @@ function OrdersTableComponent() {
     }
 
     if (confirmDelete) {
-      console.log("Deleting selected orders", selectedOrders);
       try {
         for (let orderId of selectedOrders) {
           dispatch(deleteOrder(orderId)); // Dispatch delete action for each order
@@ -119,78 +126,106 @@ function OrdersTableComponent() {
       return "No tasks";
     }
 
-    // Extract country codes and remove duplicates
+    // Extract country codes and ensure they are unique
     const routeArray = data.tasks
       .map((task) => task?.point_details?.country_short)
       .filter((value, index, self) => self.indexOf(value) === index);
 
+    // If all tasks are in the same country, return 'COUNTRY-CODE-COUNTRY-CODE'
+    if (routeArray.length === 1) {
+      return `${routeArray[0]}-${routeArray[0]}`;
+    }
+
+    // Otherwise, join the unique country codes with a dash
     const route = routeArray.join("-");
     return route;
   };
 
-  // TODO create a statuses component in the table
-  // Function to set loading and unloading statuses
-  // const setStatus = (task) => {
-  //     if (task.type === "Завантаження") {
-  //         if (task.end_date && task.end_time) {
-  //             setLoadingStatus(true);
-  //         } else {
-  //             setLoadingStatus(false);
-  //         }
-  //     } else if (task.type === "Розвантаження") {
-  //         if (task.end_date && task.end_time) {
-  //             setUnloadingStatus(true);
-  //         } else {
-  //             setUnloadingStatus(false);
-  //         }
-  //     }
-  // };
+  const filteredOrders = ordersData
+    .filter((order) => {
+      const driverSearch = selectedDriver?.toLowerCase();
+      return (
+        driverSearch === "" || order.driver.toLowerCase().includes(driverSearch)
+      );
+    })
+    .filter((order) => {
+      const truckSearch = selectedTruck?.toLowerCase();
+      return (
+        truckSearch === "" || order.truck.toLowerCase().includes(truckSearch)
+      );
+    })
+    .filter((order) => {
+      // Date Filtering
+      const loadingStartDate = new Date(order.loading_start_date);
+      if (startDate && loadingStartDate <= startDate) return false;
+      if (endDate && loadingStartDate >= endDate) return false;
+      return true;
+    });
 
-  // Find loading and unloading tasks and set statuses
-  // orders.forEach((order) => {
-  //     order.tasks &&
-  //         order.tasks.forEach((task) => {
-  //             if (task.type === "Завантаження") {
-  //                 setStatus(task); // Set loading status
-  //                 if (task.end_date && task.end_time) {
-  //                     setLoadingStartDate(task.end_date);
-  //                     setLoadingStartTime(task.end_time);
-  //                 }
-  //             } else if (task.type === "Розвантаження") {
-  //                 setStatus(task); // Set unloading status
-  //                 if (task.end_date && task.end_time) {
-  //                     setUnloadingStartDate(task.end_date);
-  //                     setUnloadingStartTime(task.end_time);
-  //                 }
-  //             }
-  //         });
-  // });
+  // Function to parse order number and return the components
+  const parseOrderNumber = (orderNumber) => {
+    const [incremental, month, year] = orderNumber
+      .split("-")
+      .map((value, index) => (index === 0 ? Number(value) : Number(value)));
+    // Assume the year is in the format '24', representing 2024
+    const fullYear = year < 50 ? 2000 + year : 1900 + year; // Adjust year parsing logic as needed
+    return { incremental, month, fullYear };
+  };
+
+  // Sort the filteredOrders array based on the parsed components
+  const sortedOrders = filteredOrders.sort((a, b) => {
+    const {
+      incremental: incA,
+      month: monthA,
+      fullYear: yearA,
+    } = parseOrderNumber(a.number);
+    const {
+      incremental: incB,
+      month: monthB,
+      fullYear: yearB,
+    } = parseOrderNumber(b.number);
+
+    if (yearA !== yearB) {
+      return yearA - yearB;
+    }
+    if (monthA !== monthB) {
+      return monthA - monthB;
+    }
+    return incA - incB; // Sort by incremental number if year and month are the same
+  });
 
   return (
     <>
       <div className="orders-table-container">
         <div className="orders-header-block">
           <h2 className="table__name">Реєстр маршрутів</h2>
-          <div className="orders-header-block__buttons-container">
-            <button
-              type="button"
-              className="orders-header-block__add-order-btn"
-              // onClick={handleAddOrderButtonClick}
-            >
-              Додати пустий маршрут
-            </button>
-            <button
-              type="button"
-              className="orders-header-block__add-order-btn"
-              style={buttonStyle}
-              onMouseEnter={() => setHovered(true)}
-              onMouseLeave={() => setHovered(false)}
-              onClick={handleDeleteSelectedOrders}
-            >
-              Видалити маршрути
-            </button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <SwitchComponent
+              isToggled={showTruckData}
+              onToggle={() => setShowTruckData(!showTruckData)}
+              title="Truck info"
+            />
+            <SwitchComponent
+              isToggled={showDateTime}
+              onToggle={() => setShowDateTime(!showDateTime)}
+              title="Date/Time info"
+            />
+            <SwitchComponent
+              isToggled={showAddresses}
+              onToggle={() => setShowAddresses(!showAddresses)}
+              title="Route info"
+            />
           </div>
         </div>
+        <OrderActionsComponent
+          onDelete={handleDeleteSelectedOrders}
+          selectedDriver={selectedDriver}
+          selectedTruck={selectedTruck}
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={(date) => setStartDate(date)}
+          onEndDateChange={(date) => setEndDate(date)}
+        />
         {loading ? (
           <h3>Loading</h3>
         ) : error ? (
@@ -200,15 +235,49 @@ function OrdersTableComponent() {
             <table className="orders-table">
               <thead className="orders-table__header">
                 <tr className="orders-table__header-row">
-                  {tableHead.map((col, index) => (
-                    <th key={index} className="orders-table__header-th">
-                      {Object.values(col)}
-                    </th>
-                  ))}
+                  {tableHead
+                    .filter((col) => {
+                      if (!showAddresses) {
+                        // Hide specific columns based on toggle state
+                        return (
+                          col["Loading Address"] !== "Loading Address" &&
+                          col["Unloading Address"] !== "Unloading Address"
+                        );
+                      }
+                      return true;
+                    })
+                    .filter((col) => {
+                      if (!showDateTime) {
+                        // Hide specific columns based on toggle state
+                        return (
+                          col["Loading Date"] !== "Loading Date" &&
+                          col["Loading Time"] !== "Loading Time" &&
+                          col["Unloading Date"] !== "Unloading Date" &&
+                          col["Unloading Time"] !== "Unloading Time"
+                        );
+                      }
+                      return true;
+                    })
+                    .filter((col) => {
+                      if (!showTruckData) {
+                        // Hide specific columns based on toggle state
+                        return (
+                          col["Truck"] !== "Truck" &&
+                          col["Driver"] !== "Driver" &&
+                          col["Trailer"] !== "Trailer"
+                        );
+                      }
+                      return true;
+                    })
+                    .map((col, index) => (
+                      <th key={index} className="orders-table__header-th">
+                        {Object.values(col)}
+                      </th>
+                    ))}
                 </tr>
               </thead>
               <tbody className="orders-table__body">
-                {ordersData.map((order) => (
+                {sortedOrders.map((order) => (
                   <tr
                     key={order.id}
                     className="orders-table__body-row"
@@ -221,35 +290,51 @@ function OrdersTableComponent() {
                         onChange={() => handleCheckboxChange(order.id)}
                       />
                     </td>
+                    {/* Order status */}
+                    <td className="orders-table__body-td">
+                      <OrderStatusComponent order={order} />
+                    </td>
+                    {/* Invoice status */}
+                    <td className="orders-table__body-td">
+                      <InvoiceStatusComponent order={order} />
+                    </td>
+                    {/* Documents status */}
+                    <td className="orders-table__body-td">
+                      <FaCheck style={{ color: "red" }} />
+                    </td>
 
                     <td className="orders-table__body-td">
                       {extractRoute(order)}
                     </td>
                     <td className="orders-table__body-td">{order.number}</td>
-                    <td className="orders-table__body-td">
-                      {order.tasks &&
-                        order.tasks
-                          .filter((task) => task.type === "Loading")
-                          .map((task) => (
-                            <div key={task.id}>
-                              {task.point_details?.country_short}-
-                              {task.point_details?.postal_code}{" "}
-                              {task.point_details?.city}
-                            </div>
-                          ))}
-                    </td>
-                    <td className="orders-table__body-td">
-                      {order.tasks &&
-                        order.tasks
-                          .filter((task) => task.type === "Unloading")
-                          .map((task) => (
-                            <div key={task.id}>
-                              {task.point_details?.country_short}-
-                              {task.point_details?.postal_code}{" "}
-                              {task.point_details?.city}
-                            </div>
-                          ))}
-                    </td>
+                    {showAddresses && (
+                      <td className="orders-table__body-td">
+                        {order.tasks &&
+                          order.tasks
+                            .filter((task) => task.type === "Loading")
+                            .map((task) => (
+                              <div key={task.id}>
+                                {task.point_details?.country_short}-
+                                {task.point_details?.postal_code}{" "}
+                                {task.point_details?.city}
+                              </div>
+                            ))}
+                      </td>
+                    )}
+                    {showAddresses && (
+                      <td className="orders-table__body-td">
+                        {order.tasks &&
+                          order.tasks
+                            .filter((task) => task.type === "Unloading")
+                            .map((task) => (
+                              <div key={task.id}>
+                                {task.point_details?.country_short}-
+                                {task.point_details?.postal_code}{" "}
+                                {task.point_details?.city}
+                              </div>
+                            ))}
+                      </td>
+                    )}
                     <td
                       className="orders-table__body-td"
                       onMouseEnter={() => handleMouseEnter(order)}
@@ -273,48 +358,70 @@ function OrdersTableComponent() {
                     </td>
                     <td className="orders-table__body-td">{order.platform}</td>
 
-                    <td className="orders-table__body-td">{order.driver}</td>
-                    <td className="orders-table__body-td">{order.truck}</td>
-                    <td className="orders-table__body-td">{"9AF1015"}</td>
-                    <td className="orders-table__body-td">
-                      {order.loading_end_date
-                        ? order.loading_end_date
-                        : order.loading_start_date}
-                    </td>
-                    <td className="orders-table__body-td">
-                      {order.loading_end_time
-                        ? formattedTime(order.loading_end_time)
-                        : "No time"}
-                      {/* {order.loading_end_time
-                        ? formattedTime(order.loading_end_time)
-                        : formattedTime(order.loading_start_time)} */}
-                    </td>
-                    <td className="orders-table__body-td">
-                      {order.unloading_end_date
-                        ? order.unloading_end_date
-                        : order.unloading_start_date}
-                    </td>
-                    <td className="orders-table__body-td">
-                      {order.unloading_end_time
-                        ? formattedTime(order.unloading_end_time)
-                        : "No time"}
-                      {/* {order.unloading_end_time
-                        ? formattedTime(order.unloading_end_time)
-                        : formattedTime(order.unloading_start_time)} */}
-                    </td>
+                    {showTruckData && (
+                      <td className="orders-table__body-td">{order.driver}</td>
+                    )}
+                    {showTruckData && (
+                      <td className="orders-table__body-td">{order.truck}</td>
+                    )}
+                    {showTruckData && (
+                      <td className="orders-table__body-td">
+                        {findTrailer(order.truck, trucks)}
+                      </td>
+                    )}
+                    {showDateTime && (
+                      <td className="orders-table__body-td">
+                        {order.loading_end_date
+                          ? transformDate(order.loading_end_date)
+                          : transformDate(order.loading_start_date)}
+                      </td>
+                    )}
+                    {showDateTime && (
+                      <td className="orders-table__body-td">
+                        {order.loading_end_time ? (
+                          formattedTime(order.loading_end_time)
+                        ) : (
+                          <FaCheck style={{ color: "red" }} />
+                        )}
+                      </td>
+                    )}
+                    {showDateTime && (
+                      <td className="orders-table__body-td">
+                        {order.unloading_end_date
+                          ? transformDate(order.unloading_end_date)
+                          : transformDate(order.unloading_start_date)}
+                      </td>
+                    )}
+                    {showDateTime && (
+                      <td className="orders-table__body-td">
+                        {order.unloading_end_time ? (
+                          formattedTime(order.unloading_end_time)
+                        ) : (
+                          <FaCheck style={{ color: "red" }} />
+                        )}
+                      </td>
+                    )}
                     <td className="orders-table__body-td">{order.distance}</td>
                     <td className="orders-table__body-td">{order.price}</td>
+                    <td className="orders-table__body-td">{order.currency}</td>
                     <td className="orders-table__body-td">
                       <PricePerKmComponent
                         type={"table"}
                         price={order.price}
                         distance={order.distance}
+                        currency={order.currency}
                       />
                     </td>
                     <td className="orders-table__body-td">
                       {order.market_price}
                     </td>
-                    <td className="orders-table__body-td">{"STATUS"}</td>
+                    <td className="orders-table__body-td">
+                      {order.invoice && order.invoice.number}
+                    </td>
+                    <td className="orders-table__body-td">
+                      {order.invoice &&
+                        transformDate(order.invoice.invoicing_date)}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -13,6 +13,11 @@ const getCustomerDetails = (customer) => [
   },
   {
     id: uuidv4(),
+    title: "VAT Number",
+    value: customer.vat_number || "Відсутній",
+  },
+  {
+    id: uuidv4(),
     title: "Email",
     value: customer.email,
   },
@@ -25,13 +30,7 @@ const getCustomerDetails = (customer) => [
       </a>
     ),
   },
-  {
-    id: uuidv4(),
-    title: "Payment",
-    value: `${customer.payment_type === 1 ? "По оригіналам" : "По копіям"} - ${
-      customer.payment_period
-    } днів`,
-  },
+
   {
     id: uuidv4(),
     title: "Поштова адреса",

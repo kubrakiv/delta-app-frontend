@@ -1,23 +1,22 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import "./PriceComponent.scss";
-import PricePerKmComponent from "../PricePerKmComponent/PricePerKmComponent";
-import FormWrapper from "../../../components/FormWrapper";
 import { listPaymentTypes } from "../../../actions/paymentTypeActions";
-import { getCsrfToken } from "../../../utils/getCsrfToken";
+import { listCurrencies } from "../../../features/currencies/currenciesOperations";
 import { updateOrder } from "../../../actions/orderActions";
+import { transformSelectOptions } from "../../../utils/transformers";
+import { selectCurrencies } from "../../../features/currencies/currenciesSelectors";
+import cn from "classnames";
+
 import InputComponent from "../../../globalComponents/InputComponent";
 import SelectComponent from "../../../globalComponents/SelectComponent";
-import cn from "classnames";
-import { transformSelectOptions } from "../../../utils/transformers";
+import CheckboxComponent from "../../../globalComponents/CheckboxComponent";
+import PricePerKmComponent from "../PricePerKmComponent/PricePerKmComponent";
+import FormWrapper from "../../../components/FormWrapper";
 
-const PRICE_CONSTANTS = {
-  PRICE: "price",
-  PAYMENT_PERIOD: "payment_period",
-  PAYMENT_TYPE: "payment_type",
-};
+import { PRICE_CONSTANTS } from "../../../constants/global";
+import { formFields } from "./priceFormFields";
 
-const { PRICE, PAYMENT_PERIOD, PAYMENT_TYPE } = PRICE_CONSTANTS;
+import "./PriceComponent.scss";
 
 function PriceComponent() {
   const dispatch = useDispatch();
@@ -25,76 +24,76 @@ function PriceComponent() {
   const paymentTypes = useSelector(
     (state) => state.paymentTypesInfo.paymentTypes.data
   );
+  const currencies = useSelector(selectCurrencies);
+
   const paymentTypesOptions = transformSelectOptions(paymentTypes, "name");
+  const currenciesOptions = transformSelectOptions(currencies, "short_name");
 
   const [priceFields, setPriceFields] = useState(
     Object.values(PRICE_CONSTANTS).reduce((acc, item) => {
-      acc[item] = "";
+      acc[item] = item === PRICE_CONSTANTS.VAT ? false : ""; // Default `vat` to false
       return acc;
     }, {})
   );
 
-  const formFields = [
-    {
-      id: PRICE,
-      placeholder: "Тариф",
-      type: "number",
-    },
-    {
-      id: PAYMENT_PERIOD,
-      placeholder: "Дні оплати",
-      type: "text",
-    },
-    {
-      id: PAYMENT_TYPE,
-      type: "text",
-      component: "select",
-      title: "Тип оплати",
-      isFullWidth: true,
-    },
-  ];
-
   const [selectedPaymentType, setSelectedPaymentType] = useState("");
-
-  useEffect(() => {
-    getCsrfToken();
-  }, []);
+  const [selectedCurrency, setSelectedCurrency] = useState("");
 
   useEffect(() => {
     if (order) {
       const defaultValues = Object.values(PRICE_CONSTANTS).reduce(
         (acc, item) => {
-          acc[item] = order?.[item] || "";
+          acc[item] =
+            order?.[item] !== undefined
+              ? order[item]
+              : item === PRICE_CONSTANTS.VAT
+              ? false
+              : "";
           return acc;
         },
         {}
       );
       setPriceFields(defaultValues);
       setSelectedPaymentType(order.payment_type);
+      setSelectedCurrency(order.currency);
     }
   }, [order]);
 
   useEffect(() => {
     dispatch(listPaymentTypes());
+    dispatch(listCurrencies());
   }, [dispatch]);
 
   const handlePriceChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setPriceFields((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleFormSubmit = () => {
-    let dataToUpdate = {};
+    const dataToUpdate = {
+      ...priceFields,
+      payment_type: selectedPaymentType,
+      currency: selectedCurrency,
+    };
 
-    Object.keys(priceFields).forEach((key) => {
-      dataToUpdate[key] = priceFields[key];
-    });
-    dataToUpdate.payment_type = selectedPaymentType;
+    console.log("DataToUpdate", dataToUpdate);
 
     dispatch(updateOrder(dataToUpdate, order.id));
+  };
+
+  const getPaymentType = (paymentType) => {
+    switch (paymentType) {
+      case "by copies":
+        return "по копіям";
+      case "by originals":
+        return "по оригіналам";
+
+      default:
+        return "";
+    }
   };
 
   return (
@@ -112,20 +111,23 @@ function PriceComponent() {
                 }}
                 className="order-details__content-row-block-value"
               >
-                {order.price} EUR
+                {order.price} {order.currency} {order.vat ? "з ПДВ" : ""}
               </div>
               <div className="order-details__content-row-block-value">
-                {order.payment_period} днів {order.payment_type}
+                {order.payment_period} днів {getPaymentType(order.payment_type)}
               </div>
             </div>
           </>
         }
         secondTitle={
-          <PricePerKmComponent
-            type={"price"}
-            price={order.price}
-            distance={order.distance}
-          />
+          order.distance ? (
+            <PricePerKmComponent
+              type={"price"}
+              price={order.price}
+              distance={order.distance}
+              currency={order.currency}
+            />
+          ) : null
         }
         handleFormSubmit={handleFormSubmit}
       >
@@ -133,13 +135,30 @@ function PriceComponent() {
           <div className="order-details__price-form-container">
             <div className="order-details__form-row">
               {formFields.map((item) => {
-                const {
-                  component = "input",
-                  id,
-                  placeholder,
-                  type,
-                  title,
-                } = item;
+                const { component, id, placeholder, type, title, label } = item;
+
+                let options = [];
+                let value = "";
+                let handleChange;
+
+                switch (id) {
+                  case PRICE_CONSTANTS.PAYMENT_TYPE:
+                    options = paymentTypesOptions;
+                    value = selectedPaymentType || ""; // Bind selectedPaymentType to the dropdown
+                    handleChange = (e) =>
+                      setSelectedPaymentType(e.target.value); // Update selectedPaymentType
+                    break;
+                  case PRICE_CONSTANTS.CURRENCY:
+                    options = currenciesOptions;
+                    value = selectedCurrency || ""; // Bind selectedCurrency to the dropdown
+                    handleChange = (e) => setSelectedCurrency(e.target.value); // Update selectedCurrency
+                    break;
+                  default:
+                    value = priceFields[id] || "";
+                    handleChange = handlePriceChange; // Use general handler for other fields
+                    break;
+                }
+
                 return (
                   <div
                     key={id}
@@ -147,18 +166,28 @@ function PriceComponent() {
                       "full-width": item.isFullWidth,
                     })}
                   >
-                    {component === "select" ? (
+                    {component === "select" && (
                       <SelectComponent
                         title={title}
                         id={id}
                         name={id}
-                        value={selectedPaymentType}
-                        onChange={(e) => setSelectedPaymentType(e.target.value)}
-                        options={paymentTypesOptions}
+                        value={value}
+                        onChange={handleChange}
+                        options={options}
                       />
-                    ) : (
+                    )}
+                    {component === "checkbox" && (
+                      <CheckboxComponent
+                        id={id}
+                        name={id}
+                        type={type}
+                        label={label}
+                        checked={priceFields[id] || false}
+                        onChange={(e) => handlePriceChange(e)}
+                      />
+                    )}
+                    {component === "input" && (
                       <InputComponent
-                        key={id}
                         id={id}
                         name={id}
                         type={type}
@@ -166,7 +195,6 @@ function PriceComponent() {
                         placeholder={placeholder}
                         value={priceFields[id]}
                         onChange={(e) => handlePriceChange(e)}
-                        autoFocus
                       />
                     )}
                   </div>

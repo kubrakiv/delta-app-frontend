@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./DriverComponent.scss";
 import { FaUserCog } from "react-icons/fa";
-import FormWrapper from "../../../components/FormWrapper";
 import { listDrivers } from "../../../actions/driverActions";
 import { updateOrder } from "../../../actions/orderActions";
-import SelectComponent from "../../../globalComponents/SelectComponent";
 import { transformSelectOptions } from "../../../utils/transformers";
+
+import FormWrapper from "../../../components/FormWrapper";
+import SelectComponent from "../../../globalComponents/SelectComponent";
+
+import "./DriverComponent.scss";
 
 function DriverComponent() {
   const dispatch = useDispatch();

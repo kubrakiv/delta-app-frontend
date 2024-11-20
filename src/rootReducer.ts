@@ -24,6 +24,8 @@ import plannerReducers from "./features/planner/plannerSlice";
 import roleReducer from "./features/roles/roleSlice";
 import customerReducer from "./features/customers/customersSlice";
 import customerManagerReducer from "./features/customerManagers/customerManagersSlice";
+import currencyReducer from "./features/currencies/currenciesSlice";
+import invoiceReducer from "./features/invoices/invoicesSlice";
 
 const rootReducer = combineReducers({
   ordersInfo: orderReducer,
@@ -48,6 +50,8 @@ const rootReducer = combineReducers({
   rolesInfo: roleReducer,
   customersInfo: customerReducer,
   customerManagersInfo: customerManagerReducer,
+  currenciesInfo: currencyReducer,
+  invoicesInfo: invoiceReducer,
 });
 
 export default rootReducer;

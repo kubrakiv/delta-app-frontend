@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import "./CustomerComponent.scss";
-import PlatformComponent from "../../../components/PlatformComponent/PlatformComponent";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import FormWrapper from "../../../components/FormWrapper";
+
 import { updateOrder } from "../../../actions/orderActions";
 import { listCustomers } from "../../../features/customers/customersOperations";
 import {
   setCustomerDetailsData,
-  setManagerListData,
+  setManagersListData,
 } from "../../../features/customers/customersSlice";
-
-import SelectComponent from "../../../globalComponents/SelectComponent";
 import { transformSelectOptions } from "../../../utils/transformers";
+
+import PlatformComponent from "../../../components/PlatformComponent/PlatformComponent";
+import FormWrapper from "../../../components/FormWrapper";
+import SelectComponent from "../../../globalComponents/SelectComponent";
+
+import "./CustomerComponent.scss";
 
 function CustomerComponent() {
   const dispatch = useDispatch();
@@ -31,8 +33,7 @@ function CustomerComponent() {
       (customer) => customer.name === order.customer
     );
     if (currentCustomer) {
-      // dispatch(setManagerListData({ data: currentCustomer.managers }));
-      dispatch(setManagerListData(currentCustomer.managers));
+      dispatch(setManagersListData(currentCustomer.managers));
     }
   }, [dispatch, order.customer, customers]);
 
@@ -40,11 +41,7 @@ function CustomerComponent() {
     const customer = customers.find(
       (customer) => customer.name === selectedCustomer
     );
-    dispatch(
-      setCustomerDetailsData({
-        data: customer,
-      })
-    );
+    dispatch(setCustomerDetailsData(customer));
   }, [dispatch, selectedCustomer, customers]);
 
   const handleFormSubmit = () => {

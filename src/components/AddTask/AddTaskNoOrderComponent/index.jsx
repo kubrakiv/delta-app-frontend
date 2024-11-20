@@ -1,40 +1,44 @@
+import axios from "axios";
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import Select from "react-select";
-import "../AddTaskComponent.scss";
-import Map from "../../Map";
 import {
   listOrderDetails,
   listOrders,
   setAddTaskMode,
   setAddTaskNoOrderMode,
+  setShowTaskModal,
   setTaskListNoOrder,
 } from "../../../actions/orderActions";
 import { listTaskTypes } from "../../../actions/taskTypeActions";
 import { listPoints } from "../../../actions/pointActions";
 import { transformSelectOptions } from "../../../utils/transformers";
 import { getCsrfToken } from "../../../utils/getCsrfToken";
-import AddTaskFooterComponent from "../AddTaskFooterComponent/AddTaskFooterComponent";
-import SelectComponent from "../../../globalComponents/SelectComponent";
 import { setMapCurrentLocation } from "../../../actions/mapActions";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { setMapOption } from "../../../utils/setMapOption";
 import { listTrucks } from "../../../features/trucks/trucksOperations";
 import { listDrivers } from "../../../actions/driverActions";
-import { set } from "date-fns";
+
+import Map from "../../Map";
+import AddTaskFooterComponent from "../AddTaskFooterComponent/AddTaskFooterComponent";
+import SelectComponent from "../../../globalComponents/SelectComponent";
+
+import "../AddTaskComponent.scss";
 
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
-function AddTaskNoOrderComponent() {
+function AddTaskNoOrderComponent({ onCloseModal }) {
   const dispatch = useDispatch();
 
   const map = useSelector((state) => state.map);
   const currentLocation = useSelector((state) => state.map.currentLocation);
   const order = useSelector((state) => state.ordersInfo.order.data);
   const task = useSelector((state) => state.ordersInfo.task.data);
-  const editMode = useSelector((state) => state.ordersInfo.task.editMode);
+  const editModeTask = useSelector(
+    (state) => state.ordersInfo.task.editModeTask
+  );
   const addTaskMode = useSelector((state) => state.ordersInfo.addTaskMode);
   const addTaskNoOrderMode = useSelector(
     (state) => state.ordersInfo.addTaskNoOrderMode
@@ -76,7 +80,7 @@ function AddTaskNoOrderComponent() {
 
   // Set task data if in edit mode
   useEffect(() => {
-    if (editMode) {
+    if (editModeTask) {
       setCenter(currentLocation);
       setTitle(task ? task.title : "");
       setStartDate(task ? task.start_date : "");
@@ -88,7 +92,7 @@ function AddTaskNoOrderComponent() {
       setTaskType(task ? task.type : "");
       setSelectedPoint(selectedOption);
     }
-  }, [editMode, task, currentLocation, point, selectedOption]);
+  }, [editModeTask, task, currentLocation, selectedOption]);
 
   useEffect(() => {
     if (addTaskMode) {
@@ -170,7 +174,7 @@ function AddTaskNoOrderComponent() {
       end_time: endTime,
       truck: truck,
       driver: driver,
-      order: order ? order.number : null, // Create a new order reference
+      order: order?.number, // Create a new order reference
       type: taskType,
       point_details: selectedPoint,
       point_title: selectedPoint.title,
@@ -178,20 +182,19 @@ function AddTaskNoOrderComponent() {
 
     console.log("Data:", data);
 
-    if (order && !editMode && !addTaskNoOrderMode) {
+    if (order && !editModeTask && !addTaskNoOrderMode) {
       try {
         // Create a new task object to avoid mutating the existing task
         const newTask = { ...task, ...data, order: order.number };
         const responseTask = await axios.post(`/api/tasks/create/`, newTask);
         handleTaskCreate(responseTask.data);
         dispatch(listOrderDetails(order.id));
-        console.log(responseTask.data, "this is RESPONSE TASK DATA");
         dispatch(setAddTaskMode(false));
       } catch (taskError) {
         console.error("Error creating task:", taskError.message);
       }
     }
-    if (order && editMode) {
+    if (order && editModeTask) {
       try {
         // Create a new task object to avoid mutating the existing task
         const updatedTask = { ...task, ...data, order: order.number };
@@ -202,7 +205,6 @@ function AddTaskNoOrderComponent() {
 
         handleTaskUpdate(selectedTask.id, response.data);
         dispatch(setAddTaskMode(false));
-        console.log("Task edited successfully:", response.data);
       } catch (taskError) {
         console.error("Error creating task:", taskError.message);
       }
@@ -212,6 +214,7 @@ function AddTaskNoOrderComponent() {
       const newTaskWithoutOrder = { ...data, id: uuidv4() };
       dispatch(setTaskListNoOrder(newTaskWithoutOrder));
       dispatch(setAddTaskNoOrderMode(false));
+      dispatch(setShowTaskModal(false));
       console.log("TASK WITHOUT ORDER", newTaskWithoutOrder);
     }
   };
@@ -379,7 +382,7 @@ function AddTaskNoOrderComponent() {
               </div>
             </div>
 
-            <AddTaskFooterComponent />
+            <AddTaskFooterComponent onCloseModal={onCloseModal} />
           </form>
         </div>
       </div>

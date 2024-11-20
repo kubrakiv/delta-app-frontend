@@ -15,13 +15,14 @@ const FormWrapper = ({
   const [editMode, setEditMode] = useState(false);
   const [isShowHiddenContent, setIsShowHiddenContent] = useState(false);
 
-  const editModeOrder = useSelector((state) => state.ordersInfo.editMode);
+  const editModeOrder = useSelector((state) => state.ordersInfo.editModeOrder);
 
   const arrowBlock = isShowHiddenContent ? <FaAngleUp /> : <FaAngleDown />;
 
   return (
     <>
       <div
+        style={{ userSelect: "none" }}
         className="order-details__content-row-block"
         onDoubleClick={
           disableEditMode ? null : () => setEditMode((prev) => !prev)
@@ -57,7 +58,7 @@ const FormWrapper = ({
         ) : (
           content
         )}
-        {isShowHiddenContent && hiddenContent}
+        {isShowHiddenContent && !editMode && hiddenContent}
       </div>
     </>
   );
