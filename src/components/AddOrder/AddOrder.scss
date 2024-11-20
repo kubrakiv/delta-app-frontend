@@ -200,6 +200,7 @@
     &_save {
       background-color: rgba(53, 186, 60, 1);
       &:hover {
+        cursor: pointer;
         background-color: darken(rgba(53, 186, 60, 1), 10%);
         box-shadow: 0 8px 10px rgba(0, 0, 0, 0.45);
         transition: all 0.5s;

@@ -221,12 +221,6 @@ function Task({
             <div className="task__title">
               <span>{task.title}</span>
             </div>
-            {/* <div className="task__title">
-              <span>
-                {task.point_details?.country_short}-
-                {task.point_details?.postal_code} {task.point_details?.city}
-              </span>
-            </div> */}
           </div>
         </div>
       </div>

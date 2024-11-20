@@ -1,45 +1,48 @@
-import { useEffect, useMemo, useState } from "react";
-import TaskOrder from "../../../components/Task/TaskOrder";
-import { getDateTime } from "../../../utils/getDateTime";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+
 import {
   listOrderDetails,
   setEditModeTask,
+  setShowTaskModal,
 } from "../../../actions/orderActions";
+import { deleteTask } from "../../../features/tasks/tasksOperations";
+
+import { getDateTime } from "../../../utils/getDateTime";
 import { setPointDetailsData } from "../../../actions/pointActions";
+
+import TaskOrder from "../../../components/Task/TaskOrder";
 
 function TaskComponent() {
   const dispatch = useDispatch();
   const order = useSelector((state) => state.ordersInfo.order.data);
 
-  const [tasks, setTasks] = useState(order.tasks || []);
-
   useEffect(() => {
-    setTasks(order.tasks);
-  }, [order]);
+    if (order.id) {
+      dispatch(listOrderDetails(order.id));
+    }
+  }, [order.id]);
 
   const sortedTasks = useMemo(() => {
-    return tasks && tasks.length > 0
-      ? [...tasks].sort((a, b) => {
+    return order.tasks && order.tasks.length > 0
+      ? [...order.tasks].sort((a, b) => {
           let dateTimeA = getDateTime(a.start_date, a.start_time);
           let dateTimeB = getDateTime(b.start_date, b.start_time);
           return dateTimeA - dateTimeB;
         })
       : [];
-  }, [tasks]);
+  }, [order.tasks]);
 
   const handleEditModeTask = (e, task) => {
     e.preventDefault();
-    e.stopPropagation();
 
     dispatch(setEditModeTask(task, true));
+    dispatch(setShowTaskModal(true));
     dispatch(setPointDetailsData(task.point_details));
   };
 
   const handleDeleteTask = async (e, taskId) => {
     e.preventDefault();
-    e.stopPropagation();
 
     const isConfirmed = window.confirm(
       "Ви впевнені, що хочете видалити задачу?"
@@ -50,14 +53,10 @@ function TaskComponent() {
     }
 
     try {
-      const response = await axios.delete(`/api/tasks/delete/${taskId}/`);
-      console.log("Task deleted successfully:", response.data);
-
-      const updatedTasks = tasks.filter((task) => task.id !== taskId);
-      setTasks(updatedTasks);
+      await dispatch(deleteTask(taskId)).unwrap();
       dispatch(listOrderDetails(order.id));
     } catch (error) {
-      console.error("Error deleting task:", error.message);
+      console.error("Failed to delete the task:", error);
     }
   };
 

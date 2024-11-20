@@ -1,4 +1,8 @@
-import "./OrderPage.scss";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { listOrderDetails } from "../../actions/orderActions";
+
 import TruckComponent from "./TruckComponent/TruckComponent";
 import DriverComponent from "./DriverComponent/DriverComponent";
 import PriceComponent from "./PriceComponent/PriceComponent";
@@ -17,7 +21,54 @@ import MarketPriceComponent from "./MarketPriceComponent/MarketPriceComponent";
 import OrderMapComponent from "./OrderMapComponent";
 import UploadDocumentsComponent from "../../components/UploadDocumentsComponent/UploadDocumentsComponent";
 
+import { compareInvoiceWithOrder } from "../../features/invoices/invoiceUtils";
+import { findTrailer } from "../../components/OrdersTableComponent/OrdersTableComponent";
+import { setInvoiceUpdateNeeded } from "../../features/invoices/invoicesSlice";
+import { listTrucks } from "../../features/trucks/trucksOperations";
+import { listInvoiceDetails } from "../../features/invoices/invoicesOperations";
+
+import "./OrderPage.scss";
+
 const OrderPage = () => {
+  const dispatch = useDispatch();
+
+  const invoiceData = useSelector(
+    (state) => state.invoicesInfo.invoiceDetails.data
+  );
+  const trucks = useSelector((state) => state.trucksInfo.trucks.data);
+
+  const order = useSelector((state) => state.ordersInfo.order.data);
+  console.log("Order", order);
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(listOrderDetails(id));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    dispatch(listTrucks());
+    dispatch(listInvoiceDetails(order?.invoice?.id));
+  }, [dispatch, order?.invoice?.id]);
+
+  useEffect(() => {
+    console.log("Use Effect");
+    if (order && invoiceData) {
+      const trailer = order?.truck ? findTrailer(order?.truck, trucks) : "";
+      const orderData = {
+        ...order,
+        trailer: trailer,
+      };
+      console.log("Order Data", orderData);
+      console.log("Invoice Data", invoiceData);
+      const isUpdateNeeded = compareInvoiceWithOrder(orderData, invoiceData);
+      console.log("isUpdateNeeded", isUpdateNeeded);
+      dispatch(setInvoiceUpdateNeeded(isUpdateNeeded));
+    }
+  }, [order, invoiceData]); // Include `order.invoice` to track changes
+
   return (
     <>
       <AddTaskModalComponent />

@@ -1,4 +1,3 @@
-import { add } from "date-fns";
 import {
   SET_EDIT_MODE_ORDER,
   SET_ORDER_LIST_DATA,
@@ -9,6 +8,9 @@ import {
   SET_DELETE_ORDER,
   SET_TASK_LIST_NO_ORDER,
   SET_CLEAR_TASK_LIST_NO_ORDER,
+  SET_SELECTED_DRIVER,
+  SET_SELECTED_TRUCK,
+  SET_SHOW_TASK_MODAL,
 } from "../actions/orderActions";
 
 const initialState = {
@@ -22,16 +24,19 @@ const initialState = {
     loading: false,
     error: null,
   },
-  editMode: false,
-  addTaskMode: false,
-  addTaskNoOrderMode: false,
   task: {
     data: {},
-    editMode: false,
+    editModeTask: false,
   },
   taskListNoOrder: {
     data: [],
   },
+  selectedDriver: "",
+  selectedTruck: "",
+  showTaskModal: false,
+  editModeOrder: false,
+  addTaskMode: false,
+  addTaskNoOrderMode: false,
 };
 
 export const orderReducer = (state = initialState, action) => {
@@ -68,7 +73,7 @@ export const orderReducer = (state = initialState, action) => {
       };
 
     case SET_EDIT_MODE_ORDER:
-      return { ...state, editMode: action.payload };
+      return { ...state, editModeOrder: action.payload };
 
     case SET_ADD_TASK_MODE:
       return { ...state, addTaskMode: action.payload };
@@ -102,6 +107,24 @@ export const orderReducer = (state = initialState, action) => {
           ...state.taskListNoOrder,
           data: [], // Clear the task list by setting it to an empty array
         },
+      };
+
+    case SET_SELECTED_DRIVER:
+      return {
+        ...state,
+        selectedDriver: action.data,
+      };
+
+    case SET_SELECTED_TRUCK:
+      return {
+        ...state,
+        selectedTruck: action.data,
+      };
+
+    case SET_SHOW_TASK_MODAL:
+      return {
+        ...state,
+        showTaskModal: action.payload,
       };
 
     default:

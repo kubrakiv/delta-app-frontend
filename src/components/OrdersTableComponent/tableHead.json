@@ -1,6 +1,9 @@
 [
   { "CheckBox": "" },
-  { "Rout": "Rout" },
+  { "Order": "Order status" },
+  { "Invoice": "Invoice status" },
+  { "Documents": "Documents status" },
+  { "Route": "Rout" },
   { "Order number": "Order number" },
   { "Loading Address": "Loading Address" },
   { "Unloading Address": "Unloading Address" },
@@ -9,17 +12,18 @@
   { "Payment period days plan": "Payment Days" },
   { "Manager": "Manager" },
   { "Platform": "Platform" },
-
   { "Driver": "Driver" },
-  { "Truck plates": "Truck plates" },
-  { "Semitrailer plates": "Semitrailer plates" },
-  { "Loading date": "Loading Date" },
-  { "Loading time": "Loading Time" },
-  { "Unloading date": "Unloading Date" },
-  { "Unloading time": "Unloading Time" },
+  { "Truck": "Truck" },
+  { "Trailer": "Trailer" },
+  { "Loading Date": "Loading Date" },
+  { "Loading Time": "Loading Time" },
+  { "Unloading Date": "Unloading Date" },
+  { "Unloading Time": "Unloading Time" },
   { "Distance, km": "Distance, km" },
-  { "Price, EUR": "Price, EUR" },
+  { "Price": "Price without VAT" },
+  { "Currency": "Currency" },
   { "EUR/km": "EUR/km" },
   { "Market price, EUR": "Market price, EUR" },
-  { "Documents status": "Document Status" }
+  { "Invoice number": "Invoice number" },
+  { "Invoice date": "Invoice date" }
 ]

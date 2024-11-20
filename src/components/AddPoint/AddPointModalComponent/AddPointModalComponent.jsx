@@ -19,7 +19,6 @@ const AddPointModalComponent = ({
     setShowAddPointModal(false);
     setSelectedPoint({});
     dispatch(setMapCurrentLocationDelete());
-    console.log("CLOSE MODAL");
   };
 
   return (

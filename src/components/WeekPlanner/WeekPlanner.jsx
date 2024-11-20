@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { getISOWeek, parseISO, getYear } from "date-fns";
 import { generateDatesArray } from "./dateFunctions";
 
-import { FaAngleDown, FaAngleUp, FaTrailer, FaTruck } from "react-icons/fa";
+import {
+  FaAngleDown,
+  FaAngleUp,
+  FaFileAlt,
+  FaTrailer,
+  FaTruck,
+} from "react-icons/fa";
 
 import {
   setSwitchers,
@@ -17,13 +23,9 @@ import {
   setSelectedTruck,
   setSelectedDriver,
   setSelectedDate,
-  setAddModeServiceTask,
 } from "../../features/planner/plannerSlice";
 
-import {
-  selectSwitchers,
-  selectSelectedTask,
-} from "../../features/planner/plannerSelectors";
+import { selectSwitchers } from "../../features/planner/plannerSelectors";
 
 import { listDrivers } from "../../actions/driverActions";
 import { listTaskTypes } from "../../actions/taskTypeActions";
@@ -63,7 +65,7 @@ export const WeekPlanner = () => {
 
   const date = new Date();
 
-  const [showDetails, setShowDetails] = useState(false);
+  const [expandedTruckId, setExpandedTruckId] = useState(null);
 
   const [datesArray, setDatesArray] = useState(generateDatesArray(date, week));
   const [isToggledDriver, setIsToggledDriver] = useState(false);
@@ -77,6 +79,10 @@ export const WeekPlanner = () => {
     dispatch(listTasks());
   }, []);
 
+  const handleAddRouteBtn = () => {
+    navigate("/orders/add");
+  };
+
   const handleWeekChange = (newWeek) => {
     setWeek(newWeek);
     navigate(`/planner?year=${year}&week=${newWeek}`);
@@ -87,12 +93,13 @@ export const WeekPlanner = () => {
     setYear(newYear);
     navigate(`/planner?year=${newYear}&week=${week}`);
   };
-  const filterTasksForWeek = (tasks, week) => {
-    return tasks.filter((task) => {
-      const taskWeek = getISOWeek(parseISO(task.start_date));
-      return taskWeek === week;
-    });
-  };
+
+  // const filterTasksForWeek = (tasks, week) => {
+  //   return tasks.filter((task) => {
+  //     const taskWeek = getISOWeek(parseISO(task.start_date));
+  //     return taskWeek === week;
+  //   });
+  // };
 
   const handleTruckDateSelect = ({ truckId, dayNumber }) => {
     const truck = trucks.find((truck) => truck.id === truckId);
@@ -135,9 +142,10 @@ export const WeekPlanner = () => {
     dispatch(deleteTask(taskId));
   };
 
-  // Show driver phone number
-  const toggleDetails = () => {
-    setShowDetails(!showDetails);
+  const toggleDetails = (truckId) => {
+    setExpandedTruckId((prevTruckId) =>
+      prevTruckId === truckId ? null : truckId
+    );
   };
 
   const handleShowDriver = () => {
@@ -155,6 +163,10 @@ export const WeekPlanner = () => {
     setIsToggledCustomer(!isToggledCustomer);
   };
 
+  const isSameDate = (date1, date2) => {
+    return new Date(date1).toDateString() === new Date(date2).toDateString();
+  };
+
   return (
     <>
       <StartTimeModalComponent />
@@ -163,11 +175,13 @@ export const WeekPlanner = () => {
 
       <div className="planner-container">
         <div className="week-number">
-          <div className="week-number__btn-add-route">
-            <Link to="/orders/add">
-              <div>Створити маршрут</div>
-            </Link>
-          </div>
+          <button
+            className="week-number__btn-add-route"
+            title="Додати маршрут"
+            onClick={() => handleAddRouteBtn()}
+          >
+            <FaFileAlt />
+          </button>
 
           <WeekSwitcherComponent
             year={year}
@@ -215,14 +229,22 @@ export const WeekPlanner = () => {
               </div>
 
               {trucks.map((truck) => {
+                // const weeklyTasks = datesArray.map((date) =>
+                //   filterTasksForWeek(
+                //     tasks.filter(
+                //       (task) =>
+                //         isSameDate(task.start_date, date[1]) &&
+                //         // truck.plates === task.truck
+                //         task.truck === truck.plates
+                //     ),
+                //     week
+                //   )
+                // );
                 const weeklyTasks = datesArray.map((date) =>
-                  filterTasksForWeek(
-                    tasks.filter(
-                      (task) =>
-                        task.start_date === date[1] &&
-                        truck.plates === task.truck
-                    ),
-                    week
+                  tasks.filter(
+                    (task) =>
+                      isSameDate(task.start_date, date[1]) &&
+                      task.truck === truck.plates
                   )
                 );
 
@@ -247,13 +269,23 @@ export const WeekPlanner = () => {
                         {truck?.driver_details && (
                           <div
                             className="week-truck__driver-details"
-                            onClick={toggleDetails}
+                            onClick={() => toggleDetails(truck.id)}
                           >
-                            {truck?.driver_details?.full_name}
-                            {showDetails ? <FaAngleUp /> : <FaAngleDown />}
+                            <div className="week-truck__driver-details_title">
+                              <span className="week-truck__driver-details_name">
+                                {truck?.driver_details?.full_name}
+                              </span>
+                              <span className="week-truck__driver-details_arrow">
+                                {expandedTruckId === truck.id ? (
+                                  <FaAngleUp />
+                                ) : (
+                                  <FaAngleDown />
+                                )}
+                              </span>
+                            </div>
                           </div>
                         )}
-                        {showDetails && (
+                        {expandedTruckId === truck.id && (
                           <span className="week-truck__driver-details_phone-number">
                             {truck?.driver &&
                               truck?.driver_details?.phone_number}

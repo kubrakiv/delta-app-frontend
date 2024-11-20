@@ -1,4 +1,3 @@
-import React from "react";
 import "./style.scss";
 
 const InputComponent = ({
@@ -13,6 +12,7 @@ const InputComponent = ({
   multiple,
   type,
   required,
+  style = null,
 }) => {
   return (
     <>
@@ -24,7 +24,7 @@ const InputComponent = ({
         name={name}
         type={type}
         placeholder={placeholder}
-        className="form-field__input form-select-mb5"
+        className={style ? style : "form-field__input form-select-mb5"}
         value={value || ""}
         onChange={onChange}
         autoFocus={autoFocus}

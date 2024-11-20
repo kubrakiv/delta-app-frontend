@@ -10,7 +10,17 @@ import { getUserDetails } from "../../actions/userActions";
 import {
   clearTaskListNoOrder,
   setAddTaskNoOrderMode,
+  setShowTaskModal,
+  setTaskListNoOrder,
 } from "../../actions/orderActions";
+import { selectCurrencies } from "../../features/currencies/currenciesSelectors";
+
+import { listCurrencies } from "../../features/currencies/currenciesOperations";
+import { listCustomers } from "../../features/customers/customersOperations";
+import { listDrivers } from "../../actions/driverActions";
+import { listPaymentTypes } from "../../actions/paymentTypeActions";
+import { listPlatforms } from "../../actions/platformActions";
+import { listTrucks } from "../../features/trucks/trucksOperations";
 
 import AddOrderCustomerManagerComponent from "./AddOrderCustomerManagerComponent/AddOrderCustomerManagerComponent";
 import AddTaskModalComponent from "../AddTask/AddTaskModalComponent/AddTaskModalComponent";
@@ -23,51 +33,51 @@ import "./AddOrder.scss";
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
 function AddOrder() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const defaultCenter = useSelector((state) => state.map.defaultCenter);
   const map = useSelector((state) => state.map);
 
   const taskListNoOrder = useSelector(
     (state) => state.ordersInfo.taskListNoOrder.data
   );
+  const trucks = useSelector((state) => state.trucksInfo.trucks.data);
+  const drivers = useSelector((state) => state.driversInfo.drivers.data);
+  const customers = useSelector((state) => state.customersInfo.customers.data);
+  const platforms = useSelector((state) => state.platformsInfo.platforms.data);
+  const paymentTypes = useSelector(
+    (state) => state.paymentTypesInfo.paymentTypes.data
+  );
+  const currencies = useSelector(selectCurrencies);
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [center, setCenter] = useState(defaultCenter);
-
-  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-
   const [editModeOrder, setEditModeOrder] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [editModeTask, setEditModeTask] = useState(false);
 
   const [order, setOrder] = useState([]);
-  const [drivers, setDrivers] = useState([]);
-  const [customers, setCustomers] = useState([]);
-  const [trucks, setTrucks] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [points, setPoints] = useState([]);
+  const [tasks, setTasks] = useState(taskListNoOrder || []);
 
-  const [platforms, setPlatforms] = useState([]);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [price, setPrice] = useState("");
   const [marketPrice, setMarketPrice] = useState("");
   const [paymentDays, setPaymentDays] = useState("");
-  const [paymentTypes, setPaymentTypes] = useState([]);
-  const [selectedPaymentType, setSelectedPaymentType] = useState(null);
+  const [vat, setVat] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
-
   const [cargoName, setCargoName] = useState("");
   const [cargoWeight, setCargoWeight] = useState("");
   const [cargoLoadingType, setCargoLoadingType] = useState("");
   const [trailerType, setTrailerType] = useState("");
 
-  const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
   const [selectedTruck, setSelectedTruck] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [selectedCustomerManager, setSelectedCustomerManager] = useState(null);
+  const [selectedPaymentType, setSelectedPaymentType] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState(null);
   const [selectedPoint, setSelectedPoint] = useState({});
 
   const [customerManagersList, setCustomerManagersList] = useState([]);
@@ -77,9 +87,6 @@ function AddOrder() {
   const [directionsResponse, setDirectionsResponse] = useState(null);
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState("");
-
-  const userDetails = useSelector((state) => state.userDetails);
-  const { user } = userDetails;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -91,93 +98,83 @@ function AddOrder() {
   });
 
   useEffect(() => {
+    dispatch(listTrucks());
+    dispatch(listDrivers());
+    dispatch(listCustomers());
+    dispatch(listPlatforms());
+    dispatch(listPaymentTypes());
+    dispatch(listCurrencies());
+  }, []);
+
+  useEffect(() => {
     if (userInfo) {
       dispatch(getUserDetails(userInfo.id));
     }
-  }, [dispatch, userInfo]);
+  }, [userInfo]);
 
-  // const calculateDistance = (lat1, lng1, lat2, lng2) => {
-  //   const point1 = new window.google.maps.LatLng(lat1, lng1);
-  //   const point2 = new window.google.maps.LatLng(lat2, lng2);
-  //   return window.google.maps.geometry.spherical.computeDistanceBetween(
-  //     point1,
-  //     point2
-  //   );
-  // };
+  useEffect(() => {
+    if (taskListNoOrder.length > 0) {
+      setTasks(taskListNoOrder);
+    }
+  }, [taskListNoOrder]);
 
   async function calculateRoute(origin, destination) {
-    // eslint-disable-next-line no-undef
-    const directionsService = new google.maps.DirectionsService();
-    const results = await directionsService.route({
-      origin: origin,
-      destination: destination,
+    try {
       // eslint-disable-next-line no-undef
-      travelMode: google.maps.TravelMode.DRIVING,
-    });
-    setDistance(results.routes[0].legs[0].distance.text);
+      const directionsService = new google.maps.DirectionsService();
+      const results = await directionsService.route({
+        origin: origin,
+        destination: destination,
+        // eslint-disable-next-line no-undef
+        travelMode: google.maps.TravelMode.DRIVING,
+      });
+      return results.routes[0].legs[0].distance.value; // distance in meters
+    } catch (error) {
+      console.error("Error calculating route: ", error);
+      return 0;
+    }
   }
-
-  const handleTaskUpdate = (taskId, taskData) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return taskData;
-      }
-      return task;
-    });
-    console.log(updatedTasks, "this is updated tasks");
-    setTasks(updatedTasks);
-  };
 
   const handleTaskCreate = (taskData) => {
     setTasks((prevTasks) => [...prevTasks, taskData]);
   };
 
-  const handlePointCreate = (pointData) => {
-    setPoints((prevPoints) => [...prevPoints, pointData]);
-  };
-
-  const handleAddTaskReset = () => {
-    setSelectedTruck(null);
-  };
-
-  // const handleAddTaskButtonClick = (e) => {
-  //   e.stopPropagation();
-  //   setShowAddTaskModal(true);
-  //   dispatch(setAddTaskMode(true));
-  // };
-
-  const handleAddTaskNoOrderButtonClick = (e) => {
-    e.stopPropagation();
-    setShowAddTaskModal(true);
+  const handleAddTaskNoOrderButtonClick = () => {
+    dispatch(setShowTaskModal(true));
     dispatch(setAddTaskNoOrderMode(true));
-  };
-
-  const handleModalShow = () => {
-    setShowModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
   };
 
   useEffect(() => {
     getCsrfToken();
   }, []);
 
+  const calculateDistance = async () => {
+    if (tasks.length < 2) return;
+
+    let totalDistance = 0;
+    for (let i = 0; i < tasks.length - 1; i++) {
+      const origin = {
+        lat: parseFloat(tasks[i].point_details.gps_latitude),
+        lng: parseFloat(tasks[i].point_details.gps_longitude),
+      };
+
+      const destination = {
+        lat: parseFloat(tasks[i + 1].point_details.gps_latitude),
+        lng: parseFloat(tasks[i + 1].point_details.gps_longitude),
+      };
+
+      const distanceBetweenPoints = await calculateRoute(origin, destination);
+      totalDistance += distanceBetweenPoints;
+    }
+
+    const distanceInKm = (totalDistance / 1000).toFixed();
+    setDistance(distanceInKm);
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    calculateRoute(
-      {
-        lat: tasks[0]?.point_details.gps_latitude,
-        lng: tasks[0]?.point_details.gps_longitude,
-      },
-      {
-        lat: tasks[1]?.point_details.gps_latitude,
-        lng: tasks[1]?.point_details.gps_longitude,
-      }
-    );
-    console.log(distance, "this is distance");
+    calculateDistance();
 
     let dataOrder = {
       user: userInfo.id,
@@ -186,9 +183,11 @@ function AddOrder() {
       market_price: parseFloat(marketPrice),
       payment_period: parseInt(paymentDays),
       payment_type: selectedPaymentType,
+      currency: selectedCurrency,
+      vat: vat,
       driver: selectedDriver,
       customer: selectedCustomer,
-      distance: distance ? parseInt(distance.replace(" km", "")) : 0,
+      distance: distance ? parseInt(distance) : 0,
       customer_manager: selectedCustomerManager,
       cargo_name: cargoName,
       cargo_weight: cargoWeight,
@@ -197,7 +196,7 @@ function AddOrder() {
       order_number: orderNumber,
       platform: selectedPlatform,
     };
-    console.log(dataOrder, "this is dataOrder");
+    console.log("Created order data", dataOrder);
 
     try {
       const responseOrder = await axios.post(`/api/orders/create/`, dataOrder);
@@ -230,55 +229,6 @@ function AddOrder() {
   };
 
   useEffect(() => {
-    async function fetchTrucks() {
-      const { data } = await axios.get("/api/trucks/");
-      setTrucks(data);
-    }
-
-    fetchTrucks();
-  }, []);
-
-  console.log("Trucks:", trucks);
-
-  useEffect(() => {
-    async function fetchDrivers() {
-      const { data } = await axios.get("/api/driver-profiles/");
-      setDrivers(data);
-    }
-
-    fetchDrivers();
-  }, []);
-
-  console.log("Drivers:", drivers);
-
-  useEffect(() => {
-    async function fetchCustomers() {
-      const { data } = await axios.get("/api/customers/");
-      setCustomers(data);
-    }
-
-    fetchCustomers();
-  }, []);
-
-  useEffect(() => {
-    async function fetchPlatforms() {
-      const { data } = await axios.get("/api/platforms/");
-      setPlatforms(data);
-    }
-
-    fetchPlatforms();
-  }, []);
-
-  useEffect(() => {
-    async function fetchPaymentTypes() {
-      const { data } = await axios.get("/api/payment-types/");
-      setPaymentTypes(data);
-    }
-
-    fetchPaymentTypes();
-  }, []);
-
-  useEffect(() => {
     const targetCustomer = customers.find(
       (customer) => customer.name === selectedCustomer
     );
@@ -293,7 +243,7 @@ function AddOrder() {
       setSelectedTask(task);
     }
 
-    handleModalShow();
+    // handleModalShow();
   };
 
   const handleShowPointOnMap = (task) => {
@@ -314,39 +264,44 @@ function AddOrder() {
 
   const handleEditModeTask = (e, task) => {
     e.preventDefault();
-    e.stopPropagation();
+
     setEditModeTask(true);
     setSelectedTask(task);
-    setShowAddTaskModal(true);
+    dispatch(setShowTaskModal(true));
+    // setShowAddTaskModal(true);
   };
 
   const handleDeleteTask = async (e, taskId) => {
     e.preventDefault();
     e.stopPropagation();
+    console.log("Task to delete:", taskId);
 
     const taskToDelete = tasks.find((task) => task.id === taskId);
     if (taskToDelete) {
       console.log("Task deleted:", taskToDelete);
 
       const updatedTasks = tasks.filter((task) => task.id !== taskId);
-      setTasks(updatedTasks);
+      // setTasks(updatedTasks);
+      dispatch(setTaskListNoOrder(updatedTasks));
     } else {
       console.log("Task not found:", taskId);
     }
   };
 
   const directionsServiceOptions = useMemo(() => {
+    if (!tasks || tasks.length === 0) {
+      return null;
+    }
+
     const origin = {
-      lat: parseFloat(tasks.length > 0 && tasks[0].point_details.gps_latitude),
-      lng: parseFloat(tasks.length > 0 && tasks[0].point_details.gps_longitude),
+      lat: parseFloat(tasks[0].point_details.gps_latitude || 0),
+      lng: parseFloat(tasks[0].point_details.gps_longitude || 0),
     };
 
     const destination = {
-      lat: parseFloat(
-        tasks.length > 0 && tasks[tasks.length - 1].point_details.gps_latitude
-      ),
+      lat: parseFloat(tasks[tasks?.length - 1].point_details.gps_latitude || 0),
       lng: parseFloat(
-        tasks.length > 0 && tasks[tasks.length - 1].point_details.gps_longitude
+        tasks[tasks?.length - 1].point_details.gps_longitude || 0
       ),
     };
 
@@ -354,8 +309,8 @@ function AddOrder() {
       tasks &&
       tasks.slice(1, -1).map((task) => ({
         location: {
-          lat: parseFloat(tasks.length > 0 && task.point_details.gps_latitude),
-          lng: parseFloat(tasks.length > 0 && task.point_details.gps_longitude),
+          lat: parseFloat(task.point_details.gps_latitude || 0),
+          lng: parseFloat(task.point_details.gps_longitude || 0),
         },
         stopover: true,
       }));
@@ -373,31 +328,12 @@ function AddOrder() {
       if (response !== null) {
         if (response.status === "OK") {
           setDirectionsResponse(response);
-
-          const totalDistanceMeters = response.routes[0].legs.reduce(
-            (total, leg) => total + leg.distance.value,
-            0
-          );
-
-          const totalDistanceKm =
-            (totalDistanceMeters / 1000).toFixed(0) + " km";
-
-          setDistance(totalDistanceKm);
-
-          const totalDurationSeconds = response.routes[0].legs.reduce(
-            (total, leg) => total + leg.duration.value,
-            0
-          );
-
-          const totalDurationFormatted = formatDuration(totalDurationSeconds);
-
-          setDuration(totalDurationFormatted);
         } else {
           console.log("response: ", response);
         }
       }
     },
-    [setDirectionsResponse, setDistance, setDuration]
+    [setDirectionsResponse]
   );
 
   const handleGoBack = () => {
@@ -420,7 +356,6 @@ function AddOrder() {
               <div className="add-order-details__header-block">
                 Маршрут № {order.number}
               </div>
-              {/* TODO replace map function with reduce function*/}
               {tasks.length > 0 && (
                 <div className="add-order-details__header-block">
                   {tasks.reduce((acc, task, index) => {
@@ -429,23 +364,13 @@ function AddOrder() {
                   }, "")}
                 </div>
               )}
-              {/* {tasks.length > 0 && (
-                <div className="add-order-details__header-block">
-                  {tasks
-                    .map(
-                      (task) =>
-                        `${task.point_details.country_short}-${task.point_details.postal_code} ${task.point_details.city}`
-                    )
-                    .join(" - ")}
-                </div>
-              )} */}
 
               <div className="add-order-details__header-block">
                 <div className="add-order-details__header-block_order-number">
                   Заявка
                 </div>
                 <input
-                  className="form-field__input form-select-mb5"
+                  className="form-field__input"
                   id="orderNumber"
                   name="orderNumber"
                   value={orderNumber}
@@ -463,7 +388,6 @@ function AddOrder() {
                 Додати завдання
               </button>
             </div>
-            {/* <ActionsComponent /> */}
 
             <div className="add-order-details__content">
               <div className="add-order-details__content-block">
@@ -563,6 +487,21 @@ function AddOrder() {
                             placeholder="Ринковий тариф"
                             onChange={(e) => setMarketPrice(e.target.value)}
                           ></input>
+                          <div className="checkbox-container">
+                            <input
+                              id="vat"
+                              name="vat"
+                              type="checkbox"
+                              checked={vat}
+                              onChange={(e) => setVat(e.target.checked)}
+                            ></input>
+                            <label
+                              htmlFor="vat"
+                              className="upload-documents__form-title"
+                            >
+                              ПДВ
+                            </label>
+                          </div>
                         </div>
                         <div className="add-order-details__form-col">
                           <input
@@ -586,6 +525,22 @@ function AddOrder() {
                             {paymentTypes.map((paymentType) => (
                               <option key={paymentType.id}>
                                 {paymentType.name}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            id="currency"
+                            name="currency"
+                            className="form-field__select form-select-mb10"
+                            value={selectedCurrency || ""}
+                            onChange={(e) =>
+                              setSelectedCurrency(e.target.value)
+                            }
+                          >
+                            <option value={""}>Валюта</option>
+                            {currencies.map((currency) => (
+                              <option key={currency.id}>
+                                {currency.short_name}
                               </option>
                             ))}
                           </select>

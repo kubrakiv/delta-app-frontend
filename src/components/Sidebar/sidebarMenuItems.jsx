@@ -8,6 +8,7 @@ import {
   FaMapMarkedAlt,
   FaMapMarkerAlt,
   FaUsers,
+  FaFileInvoice,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 
@@ -64,6 +65,11 @@ const menuItems = [
         title: "Створити маршрут",
       },
     ],
+  },
+  {
+    title: "Рахунки",
+    path: "/invoices",
+    icon: <FaFileInvoice />,
   },
   {
     title: "Завдання",

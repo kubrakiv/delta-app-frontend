@@ -1,14 +1,7 @@
 import { CUSTOMER_CONSTANTS } from "../../../constants/global";
 
-const {
-  COMPANY_NAME,
-  NIP_NUMBER,
-  PAYMENT_PERIOD,
-  PAYMENT_TYPE,
-  EMAIL,
-  WEBSITE,
-  POST_ADDRESS,
-} = CUSTOMER_CONSTANTS;
+const { COMPANY_NAME, NIP_NUMBER, VAT_NUMBER, EMAIL, WEBSITE, POST_ADDRESS } =
+  CUSTOMER_CONSTANTS;
 
 export const formFields = [
   [
@@ -25,18 +18,12 @@ export const formFields = [
       placeholder: "Податковий номер",
     },
     {
-      id: PAYMENT_PERIOD,
-      title: "Період оплати",
+      id: VAT_NUMBER,
+      title: "VAT номер",
       type: "number",
-      placeholder: "Період оплати",
+      placeholder: "VAT номер",
     },
-    {
-      id: PAYMENT_TYPE,
-      title: "Тип оплати",
-      type: "text",
-      placeholder: "Тип оплати",
-      component: "select",
-    },
+
     {
       id: EMAIL,
       title: "Email",

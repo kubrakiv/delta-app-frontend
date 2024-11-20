@@ -9,6 +9,9 @@ export const SET_EDIT_MODE_TASK = "SET_EDIT_MODE_TASK";
 export const SET_DELETE_ORDER = "SET_DELETE_ORDER";
 export const SET_TASK_LIST_NO_ORDER = "SET_TASK_LIST_NO_ORDER";
 export const SET_CLEAR_TASK_LIST_NO_ORDER = "SET_CLEAR_TASK_LIST_NO_ORDER";
+export const SET_SELECTED_DRIVER = "SET_SELECTED_DRIVER";
+export const SET_SELECTED_TRUCK = "SET_SELECTED_TRUCK";
+export const SET_SHOW_TASK_MODAL = "SET_SHOW_TASK_MODAL";
 
 export const listOrders = () => async (dispatch) => {
   try {
@@ -130,4 +133,19 @@ export const setTaskListNoOrder = (taskListNoOrder) => ({
 
 export const clearTaskListNoOrder = () => ({
   type: SET_CLEAR_TASK_LIST_NO_ORDER,
+});
+
+export const setSelectedDriver = (driver) => ({
+  type: SET_SELECTED_DRIVER,
+  data: driver,
+});
+
+export const setSelectedTruck = (truck) => ({
+  type: SET_SELECTED_TRUCK,
+  data: truck,
+});
+
+export const setShowTaskModal = (showTaskModal) => ({
+  type: SET_SHOW_TASK_MODAL,
+  payload: showTaskModal,
 });

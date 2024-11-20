@@ -46,6 +46,7 @@ export const formFields = [
       component: "input",
     },
   ],
+  // Third Row: End Date and End Time
   [
     {
       id: TASK_END_DATE,
@@ -66,7 +67,7 @@ export const formFields = [
         ["loading", "unloading"].includes(taskFields[TASK_TYPE]?.toLowerCase()),
     },
   ],
-  // Third Row: Truck and Driver
+  // Fourth Row: Truck and Driver
   [
     {
       id: TASK_TRUCK,

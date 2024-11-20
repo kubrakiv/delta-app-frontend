@@ -1,36 +1,42 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import Select from "react-select";
-import "./AddTaskComponent.scss";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { getCsrfToken } from "../../utils/getCsrfToken";
-import { getTaskTitle } from "../../utils/getTaskTitle";
 import { listPoints } from "../../actions/pointActions";
 import { listTaskTypes } from "../../actions/taskTypeActions";
-import AddTaskFooterComponent from "./AddTaskFooterComponent/AddTaskFooterComponent";
-import Map from "../Map";
-import SelectComponent from "../../globalComponents/SelectComponent";
 import { setMapCurrentLocation } from "../../actions/mapActions";
 import {
   listOrderDetails,
-  listOrders,
   setAddTaskMode,
+  setShowTaskModal,
 } from "../../actions/orderActions";
 import { setMapOption } from "../../utils/setMapOption";
 import { transformSelectOptions } from "../../utils/transformers";
 
+import SelectComponent from "../../globalComponents/SelectComponent";
+import Map from "../Map";
+import Select from "react-select";
+import AddTaskFooterComponent from "./AddTaskFooterComponent/AddTaskFooterComponent";
+import InputComponent from "../../globalComponents/InputComponent";
+
+import "./AddTaskComponent.scss";
+
+import { TASK_CONSTANTS } from "../../constants/global";
+import { createTask, updateTask } from "../../features/tasks/tasksOperations";
+
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
-function AddTaskComponent() {
+function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
   const dispatch = useDispatch();
 
   const map = useSelector((state) => state.map);
   const currentLocation = useSelector((state) => state.map.currentLocation);
   const order = useSelector((state) => state.ordersInfo.order.data);
   const task = useSelector((state) => state.ordersInfo.task.data);
-  const editMode = useSelector((state) => state.ordersInfo.task.editMode);
+  const editModeTask = useSelector(
+    (state) => state.ordersInfo.task.editModeTask
+  );
   const addTaskMode = useSelector((state) => state.ordersInfo.addTaskMode);
   const trucks = useSelector((state) => state.trucksInfo.trucks.data);
   const drivers = useSelector((state) => state.driversInfo.drivers.data);
@@ -40,19 +46,21 @@ function AddTaskComponent() {
 
   const trucksOptions = transformSelectOptions(trucks, "plates");
   const driversOptions = transformSelectOptions(drivers, "full_name");
+  const taskTypesOptions = transformSelectOptions(taskTypes, "name");
 
   const [tasks, setTasks] = useState(order.tasks || []);
-  const [selectedTask, setSelectedTask] = useState(task);
 
   const [center, setCenter] = useState({});
+
   const [title, setTitle] = useState("");
+  const [taskType, setTaskType] = useState("");
+  const [driver, setDriver] = useState("");
+  const [truck, setTruck] = useState("");
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [truck, setTruck] = useState("");
-  const [driver, setDriver] = useState("");
-  const [taskType, setTaskType] = useState("");
+
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -69,7 +77,7 @@ function AddTaskComponent() {
 
   // Set task data if in edit mode
   useEffect(() => {
-    if (editMode) {
+    if (editModeTask) {
       setCenter(currentLocation);
       setTitle(task ? task.title : "");
       setStartDate(task ? task.start_date : "");
@@ -81,7 +89,7 @@ function AddTaskComponent() {
       setTaskType(task ? task.type : "");
       setSelectedPoint(selectedOption);
     }
-  }, [editMode, task, currentLocation, point, selectedOption]);
+  }, [editModeTask, task, currentLocation, point, selectedOption]);
 
   useEffect(() => {
     if (addTaskMode) {
@@ -126,15 +134,6 @@ function AddTaskComponent() {
     setTasks((prevTasks) => [...prevTasks, taskData]);
   };
 
-  const handleTaskUpdate = (taskId, taskData) => {
-    setTasks((prevTasks) => {
-      const newTasks = [...prevTasks];
-      const taskIndex = newTasks.findIndex((task) => task.id === taskId);
-      newTasks[taskIndex] = taskData;
-      return newTasks;
-    });
-  };
-
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -146,7 +145,7 @@ function AddTaskComponent() {
       end_time: endTime,
       truck: truck,
       driver: driver,
-      order: order ? order.number : null, // Create a new order reference
+      order: order || order.number, // Create a new order reference
       type: taskType,
       point_details: selectedPoint,
       point_title: selectedPoint.title,
@@ -154,31 +153,26 @@ function AddTaskComponent() {
 
     console.log("Data:", data);
 
-    if (order && !editMode) {
+    if (order && !editModeTask) {
       try {
-        // Create a new task object to avoid mutating the existing task
         const newTask = { ...task, ...data, order: order.number };
-        const responseTask = await axios.post(`/api/tasks/create/`, newTask);
-        handleTaskCreate(responseTask.data);
+        await dispatch(createTask(newTask)).unwrap();
+
         dispatch(listOrderDetails(order.id));
-        console.log(responseTask.data, "this is RESPONSE TASK DATA");
         dispatch(setAddTaskMode(false));
+        dispatch(setShowTaskModal(false));
       } catch (taskError) {
         console.error("Error creating task:", taskError.message);
       }
     }
-    if (order && editMode) {
+    if (order && editModeTask) {
       try {
-        // Create a new task object to avoid mutating the existing task
         const updatedTask = { ...task, ...data, order: order.number };
-        const response = await axios.put(
-          `/api/tasks/edit/${selectedTask.id}/`,
-          updatedTask
-        );
+        await dispatch(updateTask(updatedTask)).unwrap();
 
-        handleTaskUpdate(selectedTask.id, response.data);
         dispatch(setAddTaskMode(false));
-        console.log("Task edited successfully:", response.data);
+        dispatch(setShowTaskModal(false));
+        dispatch(listOrderDetails(order.id));
       } catch (taskError) {
         console.error("Error creating task:", taskError.message);
       }
@@ -186,9 +180,9 @@ function AddTaskComponent() {
     if (!order) {
       // For cases where no order exists, create a new task with a generated ID
       const newTaskWithoutOrder = { ...data, id: uuidv4() };
-      // data.id = uuidv4();
       handleTaskCreate(newTaskWithoutOrder);
       dispatch(setAddTaskMode(false));
+      dispatch(setShowTaskModal(false));
     }
   };
 
@@ -201,112 +195,89 @@ function AddTaskComponent() {
               <div className="add-task-details__content-block">
                 <div className="add-task-details__row">
                   <div className="add-task-details__content-row-block">
-                    <label className="add-task-details__form-title">
-                      Тип завдання
-                    </label>
-                    <select
+                    <SelectComponent
+                      label={"Тип завдання"}
+                      title={"Виберіть тип завдання"}
                       key="taskType"
                       id="taskType"
                       name="taskType"
                       value={taskType || ""}
-                      className="form-field__select form-select-mb10"
+                      placeholder="Виберіть тип завдання"
                       onChange={(e) => setTaskType(e.target.value)}
-                    >
-                      <option value={""} disabled>
-                        Виберіть тип завдання
-                      </option>
-                      {taskTypes.map((taskType) => (
-                        <option key={taskType.id} value={taskType.name}>
-                          {taskType.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="add-task-details__row">
-                  <div className="add-task-details__content-row-block">
-                    <label className="add-task-details__form-title">
-                      Назва завдання
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Введіть назву завдання"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="form-field__input form-select-mb5"
+                      options={taskTypesOptions}
                     />
                   </div>
                 </div>
-
                 <div className="add-task-details__row">
                   <div className="add-task-details__content-row-block">
-                    <label className="add-task-details__form-title">
-                      Дата початку
-                    </label>
-                    <input
-                      required
+                    <InputComponent
+                      label={"Назва завдання"}
+                      title={"Введіть назву завдання"}
+                      placeholder="Введіть назву завдання"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="add-task-details__row">
+                  <div className="add-task-details__content-row-block">
+                    <InputComponent
+                      label={"Дата початку"}
+                      title={"Введіть дату початку"}
+                      placeholder="Введіть дату початку"
                       type="date"
-                      placeholder="Enter task start date"
                       value={startDate}
-                      className="form-field__input form-select-mb5"
                       onChange={(e) => setStartDate(e.target.value)}
-                    ></input>
+                    />
                   </div>
                   <div className="add-task-details__content-row-block">
-                    <label className="add-task-details__form-title">
-                      Час початку
-                    </label>
-                    <input
-                      required
+                    <InputComponent
+                      label={"Час початку"}
+                      title={"Введіть час початку"}
+                      placeholder="Введіть час початку"
                       type="time"
-                      placeholder="Enter task start time"
                       value={startTime}
-                      className="form-field__input form-select-mb5"
                       onChange={(e) => setStartTime(e.target.value)}
-                    ></input>
+                    />
                   </div>
                 </div>
                 <div className="add-task-details__row">
                   <div className="add-task-details__content-row-block">
-                    <label className="add-task-details__form-title">
-                      Дата завершення
-                    </label>
-                    <input
+                    <InputComponent
+                      label={"Дата завершення"}
+                      title={"Введіть дату завершення"}
+                      placeholder="Введіть дату завершення"
                       type="date"
-                      placeholder="Enter task start date"
                       value={endDate}
-                      className="form-field__input form-select-mb5"
                       onChange={(e) => setEndDate(e.target.value)}
-                    ></input>
+                    />
                   </div>
                   <div className="add-task-details__content-row-block">
-                    <label className="add-task-details__form-title">
-                      Час завершення
-                    </label>
-                    <input
+                    <InputComponent
+                      label={"Час завершення"}
+                      title={"Введіть час завершення"}
+                      placeholder="Введіть час завершення"
                       type="time"
-                      placeholder="Enter task start time"
                       value={endTime}
-                      className="form-field__input form-select-mb5"
                       onChange={(e) => setEndTime(e.target.value)}
-                    ></input>
+                    />
                   </div>
                 </div>
                 <div className="add-task-details__row">
                   <div className="add-task-details__content-row-block">
-                    <div className="add-task-details__row-block">
-                      <SelectComponent
-                        label={"Автомобіль"}
-                        title={"Виберіть авто"}
-                        key="truck"
-                        id="truck"
-                        name="truck"
-                        value={truck || ""}
-                        placeholder="Виберіть авто"
-                        onChange={(e) => setTruck(e.target.value)}
-                        options={trucksOptions}
-                      />
-                    </div>
+                    <SelectComponent
+                      label={"Автомобіль"}
+                      title={"Виберіть авто"}
+                      key="truck"
+                      id="truck"
+                      name="truck"
+                      value={truck || ""}
+                      placeholder="Виберіть авто"
+                      onChange={(e) => setTruck(e.target.value)}
+                      options={trucksOptions}
+                    />
+                    {/* <div className="add-task-details__row-block">
+                    </div> */}
                   </div>
                   <div className="add-task-details__content-row-block">
                     <SelectComponent
@@ -354,8 +325,7 @@ function AddTaskComponent() {
                 </div>
               </div>
             </div>
-
-            <AddTaskFooterComponent />
+            <AddTaskFooterComponent onCloseModal={onCloseModal} />
           </form>
         </div>
       </div>

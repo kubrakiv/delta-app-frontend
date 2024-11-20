@@ -9,7 +9,7 @@
   &__header {
     position: sticky;
     top: 2px;
-    z-index: 2;
+    // z-index: 2;
 
     &-row {
       position: relative;
@@ -26,6 +26,7 @@
       background-color: $colorGray;
       font-weight: bold;
       font-size: 0.8em;
+      padding: 5px;
 
       &:first-child {
         border-top-left-radius: 4px;

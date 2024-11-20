@@ -1,13 +1,8 @@
-import { useCallback, useState, useEffect } from "react";
 import axios from "axios";
+import { useCallback, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { getLatLng, getZipCode } from "use-places-autocomplete";
-import "./AddPoint.scss";
-import Map from "../Map";
-import AddPointFooterComponent from "./AddPointFooterComponent/AddPointFooterComponent";
-import AddPointAutocomplete from "./AddPointAutocomplete/AddPointAutocomplete";
-import AddPointCustomerComponent from "./AddPointCustomerComponent/AddPointCustomerComponent";
 import {
   getCountry,
   getStreet,
@@ -16,6 +11,13 @@ import {
 } from "./address_functions";
 import { getCsrfToken } from "../../utils/getCsrfToken";
 import { setMapCurrentLocation } from "../../actions/mapActions";
+
+import Map from "../Map";
+import AddPointFooterComponent from "./AddPointFooterComponent/AddPointFooterComponent";
+import AddPointCustomerComponent from "./AddPointCustomerComponent/AddPointCustomerComponent";
+import AddPointAutocomplete from "./AddPointAutocomplete/AddPointAutocomplete";
+
+import "./AddPoint.scss";
 
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
