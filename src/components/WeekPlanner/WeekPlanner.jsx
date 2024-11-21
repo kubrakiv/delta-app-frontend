@@ -191,17 +191,17 @@ export const WeekPlanner = () => {
           />
           <div></div>
           <SwitchComponent
-            title="Показати водія"
+            title="Водій"
             isToggled={isToggledDriver}
             onToggle={handleShowDriver}
           />
           <SwitchComponent
-            title="Показати номер заявки"
+            title="Заявка"
             isToggled={isToggledOrderNumber}
             onToggle={handleShowOrderNumber}
           />
           <SwitchComponent
-            title="Показати замовника"
+            title="Замовник"
             isToggled={isToggledCustomer}
             onToggle={handleShowCustomer}
           />

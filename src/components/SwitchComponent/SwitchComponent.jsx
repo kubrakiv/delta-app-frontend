@@ -2,17 +2,7 @@ import "./SwitchComponent.scss";
 
 const SwitchComponent = ({ isToggled, onToggle, title }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "wheat",
-        padding: "10px",
-        borderRadius: "5px",
-        alignItems: "center",
-        gap: "5px",
-      }}
-    >
+    <div className="switch__container">
       <span className="switch__title">{title}</span>
       <label className="switch">
         <input

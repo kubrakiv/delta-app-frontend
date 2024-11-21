@@ -17,7 +17,7 @@ export const listInvoiceDetails = createAsyncThunk(
   "invoice/listInvoiceDetails",
   async (id, thunkAPI) => {
     try {
-      const { data } = await axios.get(`/api/invoices/${id}`);
+      const { data } = await axios.get(`/api/invoices/${id}/`);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue({ error: error.message });

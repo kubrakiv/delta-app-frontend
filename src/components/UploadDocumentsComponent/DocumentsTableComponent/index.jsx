@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { listDocuments } from "../../../actions/documentActions";
 import { FaFolderOpen, FaTrash } from "react-icons/fa";
@@ -11,7 +11,9 @@ const DocumentsTableComponent = () => {
     (state) => state.documentsInfo.documents.data.documents
   );
   const editModeDocument = useSelector((state) => state.documentsInfo.editMode);
-  const BASE_URL = "http://localhost:8000";
+
+  // const BASE_URL = import.meta.env.REACT_APP_API_BASE_URL;
+  const BASE_URL = import.meta.env.REACT_APP_PROXY;
 
   useEffect(() => {
     if (editModeDocument) {
@@ -21,7 +23,7 @@ const DocumentsTableComponent = () => {
 
   const openDocument = async (documentId) => {
     try {
-      const response = await axios.get(`/api/documents/${documentId}`);
+      const response = await axios.get(`/api/documents/${documentId}/`);
       window.open(`${BASE_URL}${response.data.file}`);
     } catch (error) {
       console.error("Error opening document:", error);
@@ -38,7 +40,7 @@ const DocumentsTableComponent = () => {
     }
 
     try {
-      await axios.delete(`/api/documents/delete/${documentId}`);
+      await axios.delete(`/api/documents/delete/${documentId}/`);
       dispatch(listDocuments(order.id));
     } catch (error) {
       console.error("Error deleting document:", error);

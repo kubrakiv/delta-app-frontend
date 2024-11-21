@@ -201,19 +201,22 @@ function OrdersTableComponent() {
           <h2 className="table__name">Реєстр маршрутів</h2>
           <div style={{ display: "flex", gap: "10px" }}>
             <SwitchComponent
+              type="orders-table"
               isToggled={showTruckData}
               onToggle={() => setShowTruckData(!showTruckData)}
-              title="Truck info"
+              title="Truck"
             />
             <SwitchComponent
+              type="orders-table"
               isToggled={showDateTime}
               onToggle={() => setShowDateTime(!showDateTime)}
-              title="Date/Time info"
+              title="Date"
             />
             <SwitchComponent
+              type="orders-table"
               isToggled={showAddresses}
               onToggle={() => setShowAddresses(!showAddresses)}
-              title="Route info"
+              title="Route"
             />
           </div>
         </div>
