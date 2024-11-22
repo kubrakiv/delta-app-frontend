@@ -289,7 +289,7 @@ function AddOrder() {
   };
 
   const directionsServiceOptions = useMemo(() => {
-    if (!tasks || tasks.length === 0) {
+    if (!tasks || tasks.length < 2) {
       return null;
     }
 
@@ -647,10 +647,12 @@ function AddOrder() {
                     <div className="order-details__content-row-block order-details__content-row-block-map">
                       {isLoaded ? (
                         <>
-                          <DirectionsService
-                            options={directionsServiceOptions}
-                            callback={directionsCallback}
-                          />
+                          {directionsServiceOptions && (
+                            <DirectionsService
+                              options={directionsServiceOptions}
+                              callback={directionsCallback}
+                            />
+                          )}
                           <Map
                             tasks={taskListNoOrder}
                             center={center}

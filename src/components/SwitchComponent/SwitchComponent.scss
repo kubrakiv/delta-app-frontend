@@ -1,18 +1,17 @@
 .switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 20px;
   &__container {
     display: flex;
     flex-direction: column;
-    // background-color: #b6cf94;
     border-radius: 5px;
     padding: 10px;
     align-items: center;
     gap: 5px;
     font-size: 14px;
   }
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 20px;
   &__input {
     display: none;
     &:checked + .slider {
