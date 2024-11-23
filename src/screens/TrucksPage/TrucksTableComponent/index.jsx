@@ -188,6 +188,7 @@ const TrucksTableComponent = ({ trucks, trailers, drivers }) => {
                           options={trailerOptions}
                           placeholder={"Виберіть причіп"}
                           title={"Виберіть причіп"}
+                          value={selectedTrailer}
                           onChange={(e) => setSelectedTrailer(e.target.value)}
                         />
                       ) : (
@@ -200,6 +201,7 @@ const TrucksTableComponent = ({ trucks, trailers, drivers }) => {
                           options={driverOptions}
                           placeholder={"Виберіть водія"}
                           title={"Виберіть водія"}
+                          value={selectedDriver}
                           onChange={(e) => setSelectedDriver(e.target.value)}
                         />
                       ) : (
