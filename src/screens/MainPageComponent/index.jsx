@@ -1,5 +1,3 @@
-import React from "react";
-import "./style.scss";
 import MainPageHeaderComponent from "./MainPageHeaderComponent";
 import GoalsComponent from "./GoalsComponent";
 import AboutComponent from "./AboutComponent";
@@ -9,6 +7,8 @@ import GalleryComponent from "./GalleryComponent";
 import MainComponent from "./MainComponent";
 import ContactsComponent from "./ContactsComponent";
 import FooterComponent from "./FooterComponent";
+
+import "./style.scss";
 
 const MainPageComponent = () => {
   return (

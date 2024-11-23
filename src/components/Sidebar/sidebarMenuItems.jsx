@@ -37,11 +37,11 @@ const menuItems = [
     ],
   },
 
-  {
-    path: "/dashboard",
-    title: "Dashboard",
-    icon: <MdDashboard />,
-  },
+  // {
+  //   path: "/dashboard",
+  //   title: "Dashboard",
+  //   icon: <MdDashboard />,
+  // },
   {
     path: "/planner",
     title: "Рознарядка",
@@ -56,10 +56,10 @@ const menuItems = [
         path: "/orders",
         title: "Список маршрутів",
       },
-      {
-        path: "/orders-list",
-        title: "Реєстр маршрутів",
-      },
+      // {
+      //   path: "/orders-list",
+      //   title: "Реєстр маршрутів",
+      // },
       {
         path: "/orders/add",
         title: "Створити маршрут",
@@ -71,31 +71,31 @@ const menuItems = [
     path: "/invoices",
     icon: <FaFileInvoice />,
   },
-  {
-    title: "Завдання",
-    path: "/tasks",
-    icon: <FaTasks />,
-    childrens: [
-      {
-        path: "/tasks",
-        title: "Реєстр завдань",
-      },
-      {
-        path: "/tasks/add",
-        title: "Додати завдання",
-      },
-    ],
-  },
+  // {
+  //   title: "Завдання",
+  //   path: "/tasks",
+  //   icon: <FaTasks />,
+  //   childrens: [
+  //     {
+  //       path: "/tasks",
+  //       title: "Реєстр завдань",
+  //     },
+  //     {
+  //       path: "/tasks/add",
+  //       title: "Додати завдання",
+  //     },
+  //   ],
+  // },
   {
     path: "/orders/add",
     title: "Створити маршрут",
     icon: <FaPlus />,
   },
-  {
-    path: "/map",
-    title: "Карта",
-    icon: <FaMapMarkedAlt />,
-  },
+  // {
+  //   path: "/map",
+  //   title: "Карта",
+  //   icon: <FaMapMarkedAlt />,
+  // },
   {
     path: "/points",
     title: "Мої пункти",

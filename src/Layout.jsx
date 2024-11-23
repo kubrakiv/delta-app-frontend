@@ -1,14 +1,29 @@
-import { Outlet } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Outlet, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { Suspense } from "react";
+import { useEffect, Suspense } from "react";
+
 import Sidebar from "./components/Sidebar/Sidebar";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
-import { useSelector } from "react-redux";
+
+import { logout } from "./actions/userActions";
 
 const Layout = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+
+  // Normalize path by removing trailing slash
+  const normalizedPathname = location.pathname.replace(/\/$/, "");
+  const isRootUrl = normalizedPathname === "";
+
+  useEffect(() => {
+    if (userInfo && isRootUrl) {
+      dispatch(logout());
+    }
+  }, [userInfo, isRootUrl, dispatch]);
 
   return userInfo ? (
     <div>
