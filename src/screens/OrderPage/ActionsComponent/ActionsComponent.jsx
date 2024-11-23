@@ -6,7 +6,7 @@ import {
   setAddTaskMode,
   setShowTaskModal,
 } from "../../../actions/orderActions";
-import { FaEnvelope, FaFileInvoiceDollar } from "react-icons/fa";
+import { FaFileInvoiceDollar } from "react-icons/fa";
 import EmailSenderComponent from "../../../components/EmailSenderComponent";
 import cn from "classnames";
 
@@ -36,12 +36,16 @@ const ActionsComponent = () => {
 
   const handleCreateInvoiceButtonClick = () => {
     if (!order.invoice) {
-      navigate("/invoices/create", { state: { initialInvoiceData: null } });
+      navigate("/invoices/create", {
+        state: { isInvoiceCreate: true, order: order },
+      });
     } else {
       dispatch(listInvoiceDetails(order.invoice.id));
       dispatch(listOrderDetails(order.id));
 
-      navigate(`/invoices/${order.invoice.id}`);
+      navigate(`/invoices/${order.invoice.id}`, {
+        state: { isInvoiceCreate: false },
+      });
     }
   };
 
@@ -85,10 +89,6 @@ const ActionsComponent = () => {
                 order.invoice.number +
                 " від " +
                 transformDate(order.invoice.invoicing_date)}
-            {/* {"Інвойс № " +
-              order.invoice.number +
-              " від " +
-              transformDate(order.invoice.invoicing_date)} */}
           </button>
         )}
 

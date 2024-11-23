@@ -67,3 +67,8 @@ export const PRICE_CONSTANTS = {
   CURRENCY: "currency",
   VAT: "vat",
 };
+
+export const USER_CONSTANTS = {
+  EMAIL: "email",
+  PASSWORD: "password",
+};

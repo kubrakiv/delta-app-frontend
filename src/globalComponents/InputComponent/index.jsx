@@ -1,7 +1,6 @@
 import "./style.scss";
 
 const InputComponent = ({
-  key,
   id,
   name,
   value,
@@ -19,7 +18,6 @@ const InputComponent = ({
       {label && <label className="upload-documents__form-title">{label}</label>}
       <input
         multiple={multiple}
-        key={key}
         id={id}
         name={name}
         type={type}

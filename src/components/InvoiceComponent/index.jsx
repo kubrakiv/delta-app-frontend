@@ -34,20 +34,33 @@ import "./style.scss";
 const { REACT_APP_COMPANY_CURRENCY: COMPANY_CURRENCY } = import.meta.env;
 
 const InvoiceComponent = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const isInvoiceUpdateNeeded = useSelector(
     (state) => state.invoicesInfo.isInvoiceUpdateNeeded
   );
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const isInvoiceCreate = location.state.isInvoiceCreate;
 
-  // const initialInvoiceData = location.state?.initialInvoiceData;
+  const orderState = location.state.order;
+
+  const orderStore = useSelector((state) => state.ordersInfo.order.data);
+
+  const order = useMemo(() => {
+    if (isInvoiceCreate) {
+      return orderState;
+    } else {
+      return orderStore;
+    }
+  }, []);
+
   const initialInvoiceData = useSelector(
     (state) => state.invoicesInfo.invoiceDetails.data
   );
-  const { invoiceId } = useParams();
 
-  const order = useSelector((state) => state.ordersInfo.order.data);
+  const { invoiceId } = useParams();
 
   const customers = useSelector((state) => state.customersInfo.customers.data);
   const currencies = useSelector(selectCurrencies);
@@ -71,11 +84,13 @@ const InvoiceComponent = () => {
   }, [initialInvoiceData]);
 
   useEffect(() => {
+    dispatch(listOrderDetails(order.id));
     dispatch(listCustomers());
     dispatch(listCurrencies());
     dispatch(listTrucks());
-    dispatch(listInvoiceDetails(invoiceId));
-    dispatch(listOrderDetails(invoiceDataFromDB.order_id));
+    if (invoiceId) {
+      dispatch(listInvoiceDetails(invoiceId));
+    }
   }, [dispatch, invoiceId, invoiceDataFromDB?.order_id]);
 
   const invoiceDataFromOrder = useMemo(() => {
@@ -112,10 +127,7 @@ const InvoiceComponent = () => {
     }
   }, [order, trucks]);
 
-  console.log("InvoiceDataFromOrder", invoiceDataFromOrder);
-  console.log("InvoiceDataFromDB", invoiceDataFromDB);
-
-  const invoiceData = invoiceDataFromDB || invoiceDataFromOrder;
+  const invoiceData = orderState ? invoiceDataFromOrder : invoiceDataFromDB;
 
   useEffect(() => {
     if (order && invoiceData) {
@@ -130,7 +142,7 @@ const InvoiceComponent = () => {
       );
       dispatch(setInvoiceUpdateNeeded(isUpdateNeeded));
     }
-  }, [order, invoiceData]); // Include `order.invoice` to track changes
+  }, [order, invoiceData]);
 
   useEffect(() => {
     if (invoiceData) {
@@ -315,7 +327,7 @@ const InvoiceComponent = () => {
         >
           <FaArrowLeft />
         </div>
-        {initialInvoiceData && (
+        {initialInvoiceData && !isInvoiceCreate && (
           <div id="createdInfo" className="invoice__created-info">
             Invoice created at {transformDate(invoiceData.created_at)}
           </div>
@@ -346,7 +358,7 @@ const InvoiceComponent = () => {
       {/* Invoice Actions */}
       <div className="invoice__actions">
         {/* Update Invoice Button */}
-        {invoiceData && isInvoiceUpdateNeeded && (
+        {invoiceData && isInvoiceUpdateNeeded && !isInvoiceCreate && (
           <button
             type="button"
             id="updateInvoiceButton"
