@@ -7,8 +7,6 @@ import {
   deleteInvoice,
 } from "./invoicesOperations";
 
-import { compareInvoiceWithOrder } from "../../features/invoices/invoiceUtils";
-
 export const invoicesSlice = createSlice({
   name: "invoices",
   initialState: {
@@ -31,9 +29,6 @@ export const invoicesSlice = createSlice({
     });
     builder.addCase(listInvoiceDetails.fulfilled, (state, action) => {
       state.invoiceDetails.data = action.payload;
-      // state.invoiceDetails.isInvoiceUpdateNeeded = compareInvoiceWithOrder(
-      //   state.invoiceDetails.data
-      // );
     });
     builder.addCase(createInvoice.fulfilled, (state, action) => {
       state.invoices.data.push(action.payload);

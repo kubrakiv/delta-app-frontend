@@ -15,7 +15,7 @@ import { mapDefaultCenter } from "./reducers/mapReducers";
 import { paymentTypeReducer } from "./reducers/paymentTypeReducers";
 import { platformReducer } from "./reducers/platformReducers";
 import { documentReducer } from "./reducers/documentReducers";
-import { pointReducer } from "./reducers/pointReducers";
+// import { pointReducer } from "./reducers/pointReducers";
 import { taskTypeReducer } from "./reducers/taskTypeReducers";
 import taskReducer from "./features/tasks/tasksSlice";
 import truckReducer from "./features/trucks/trucksSlice";
@@ -26,6 +26,9 @@ import customerReducer from "./features/customers/customersSlice";
 import customerManagerReducer from "./features/customerManagers/customerManagersSlice";
 import currencyReducer from "./features/currencies/currenciesSlice";
 import invoiceReducer from "./features/invoices/invoicesSlice";
+import pointReducer from "./features/points/pointsSlice";
+import countryReducer from "./features/countries/countriesSlice";
+import pointCompanyReducer from "./features/pointCompanies/pointCompanySlice";
 
 const rootReducer = combineReducers({
   ordersInfo: orderReducer,
@@ -52,6 +55,8 @@ const rootReducer = combineReducers({
   customerManagersInfo: customerManagerReducer,
   currenciesInfo: currencyReducer,
   invoicesInfo: invoiceReducer,
+  countriesInfo: countryReducer,
+  pointCompaniesInfo: pointCompanyReducer,
 });
 
 export default rootReducer;

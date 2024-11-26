@@ -1,22 +1,25 @@
-import React, { useRef, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import PointPage from "../../screens/PointPage/PointPage";
-import "./style.scss";
-import GenericModalComponent from "../../globalComponents/GenericModalComponent";
+import { useDispatch, useSelector } from "react-redux";
 import { setMapCurrentLocationDelete } from "../../actions/mapActions";
+import { selectSelectedPoint } from "../../features/points/pointsSelectors";
+import { setSelectedPoint } from "../../features/points/pointsSlice";
+
+import PointPage from "../../screens/PointPage/PointPage";
+import GenericModalComponent from "../../globalComponents/GenericModalComponent";
+
+import "./style.scss";
 
 const PointModalComponent = ({
   showPointModal,
   setShowPointModal,
-  selectedPoint,
-  setSelectedPoint,
   footer = true,
 }) => {
   const dispatch = useDispatch();
 
+  const selectedPoint = useSelector(selectSelectedPoint);
+
   const handleModalClose = () => {
     setShowPointModal(false);
-    setSelectedPoint({});
+    dispatch(setSelectedPoint({}));
     dispatch(setMapCurrentLocationDelete());
   };
   return (

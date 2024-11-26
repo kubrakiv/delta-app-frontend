@@ -16,9 +16,11 @@ const SelectComponent = ({
   widthStyle = null,
 }) => {
   return (
-    <div className={`select-component ${marginStyle}`}>
+    <div
+      className={`select-component select-component__${widthStyle} ${marginStyle}`}
+    >
       {label && (
-        <label htmlFor={id} className="upload-documents__form-title">
+        <label htmlFor={id} className="select-component__form-title">
           {label}
         </label>
       )}
@@ -32,9 +34,7 @@ const SelectComponent = ({
         disabled={disabled}
         aria-label={label || title}
       >
-        <option value="" disabled>
-          {title}
-        </option>
+        <option value="">{title}</option>
         {options.map((item) => (
           <option key={item.id || uuidv4()} value={item.value}>
             {item.label}

@@ -9,7 +9,7 @@ import {
 import { deleteTask } from "../../../features/tasks/tasksOperations";
 
 import { getDateTime } from "../../../utils/getDateTime";
-import { setPointDetailsData } from "../../../actions/pointActions";
+import { setPointDetailsData } from "../../../features/points/pointsSlice";
 
 import TaskOrder from "../../../components/Task/TaskOrder";
 

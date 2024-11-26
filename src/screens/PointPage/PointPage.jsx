@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useJsApiLoader } from "@react-google-maps/api";
-import "./PointPage.scss";
+import { setMapCurrentLocation } from "../../actions/mapActions";
+import { getFullAddress } from "../../utils/address";
+
 import Map from "../../components/Map";
 import PointHeaderComponent from "./PointHeaderComponent/PointHeaderComponent";
 import PointCustomerComponent from "./PointCustomerComponent/PointCustomerComponent";
@@ -9,7 +11,8 @@ import PointCompanyComponent from "./PointCompanyComponent/PointCompanyComponent
 import PointGpsComponent from "./PointGpsComponent/PointGpsComponent";
 import PointCountryComponent from "./PointCountryComponent/PointCountryComponent";
 import PointAddressComponent from "./PointAddressComponent/PointAddressComponent";
-import { setMapCurrentLocation } from "../../actions/mapActions";
+
+import "./PointPage.scss";
 
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
@@ -17,6 +20,12 @@ const PointPage = ({ selectedPoint, setShowPointModal }) => {
   const dispatch = useDispatch();
   const map = useSelector((state) => state.map);
   const currentLocation = useSelector((state) => state.map.currentLocation);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: API_KEY,
+    libraries: map.libraries,
+  });
 
   useEffect(() => {
     const { gps_latitude, gps_longitude } = selectedPoint;
@@ -28,29 +37,10 @@ const PointPage = ({ selectedPoint, setShowPointModal }) => {
     );
   }, [selectedPoint, dispatch]);
 
-  const [point, setPoint] = useState({});
-  const [customer, setCustomer] = useState(selectedPoint.customer);
-  const [company, setCompany] = useState(selectedPoint.company_name);
-  const [country, setCountry] = useState(selectedPoint.country);
-  const [countryShort, setCountryShort] = useState(selectedPoint.country_short);
-  const [postalCode, setPostalCode] = useState(selectedPoint.postal_code);
-  const [city, setCity] = useState(selectedPoint.city);
-  const [street, setStreet] = useState(
-    selectedPoint.street + ", " + selectedPoint.street_number
+  const fullAddress = useMemo(
+    () => getFullAddress(selectedPoint),
+    [selectedPoint]
   );
-  const [gpsLatitude, setGpsLatitude] = useState(selectedPoint.gps_latitude);
-  const [gpsLongitude, setGpsLongitude] = useState(selectedPoint.gps_longitude);
-  const [fullAddress, setFullAddress] = useState(() => {
-    const { postal_code, city, country_short, street, street_number } =
-      selectedPoint;
-    return `${country_short}-${postal_code} ${city}, ${street}, ${street_number}`;
-  });
-
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: API_KEY,
-    libraries: map.libraries,
-  });
 
   return (
     <>
@@ -63,19 +53,22 @@ const PointPage = ({ selectedPoint, setShowPointModal }) => {
           <div className="point-details__content">
             <div className="point-details__content-block">
               <div className="point-details__content-row">
-                <PointCustomerComponent customer={customer} />
+                <PointCustomerComponent customer={selectedPoint.customer} />
               </div>
               <div className="point-details__content-row">
-                <PointCompanyComponent company={company} />
+                <PointCompanyComponent company={selectedPoint.company_name} />
               </div>
               <div className="point-details__content-row">
-                <PointCountryComponent country={country} />
+                <PointCountryComponent country={selectedPoint.country} />
               </div>
               <div className="point-details__content-row">
                 <PointAddressComponent full_address={fullAddress} />
               </div>
               <div className="point-details__content-row">
-                <PointGpsComponent lat={gpsLatitude} lng={gpsLongitude} />
+                <PointGpsComponent
+                  lat={selectedPoint.gps_latitude}
+                  lng={selectedPoint.gps_longitude}
+                />
               </div>
             </div>
             <div className="point-details__content-block">

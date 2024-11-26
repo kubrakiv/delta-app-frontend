@@ -2,8 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { useJsApiLoader } from "@react-google-maps/api";
-import { getCsrfToken } from "../../utils/getCsrfToken";
-import { listPoints } from "../../actions/pointActions";
+import { listPoints } from "../../features/points/pointsOperations";
 import { listTaskTypes } from "../../actions/taskTypeActions";
 import { setMapCurrentLocation } from "../../actions/mapActions";
 import {
@@ -22,16 +21,21 @@ import InputComponent from "../../globalComponents/InputComponent";
 
 import "./AddTaskComponent.scss";
 
-import { TASK_CONSTANTS } from "../../constants/global";
 import { createTask, updateTask } from "../../features/tasks/tasksOperations";
+import { selectSelectedPoint } from "../../features/points/pointsSelectors";
+import { setSelectedPoint } from "../../features/points/pointsSlice";
 
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
 function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
   const dispatch = useDispatch();
 
+  const selectedPoint = useSelector(selectSelectedPoint);
   const map = useSelector((state) => state.map);
+
   const currentLocation = useSelector((state) => state.map.currentLocation);
+  const defaultCenter = useSelector((state) => state.map.defaultCenter);
+
   const order = useSelector((state) => state.ordersInfo.order.data);
   const task = useSelector((state) => state.ordersInfo.task.data);
   const editModeTask = useSelector(
@@ -48,9 +52,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
   const driversOptions = transformSelectOptions(drivers, "full_name");
   const taskTypesOptions = transformSelectOptions(taskTypes, "name");
 
-  const [tasks, setTasks] = useState(order.tasks || []);
-
-  const [center, setCenter] = useState({});
+  const [center, setCenter] = useState({ lat: 0, lng: 0 });
 
   const [title, setTitle] = useState("");
   const [taskType, setTaskType] = useState("");
@@ -61,7 +63,6 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  const [selectedPoint, setSelectedPoint] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { isLoaded } = useJsApiLoader({
@@ -72,13 +73,11 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
 
   // Convert API points to options format
   const pointOptions = points.map((point) => setMapOption(point));
-
-  const selectedOption = useMemo(() => setMapOption(point), [point]);
+  const selectedOptions = useMemo(() => setMapOption(point), [point]);
 
   // Set task data if in edit mode
   useEffect(() => {
     if (editModeTask) {
-      setCenter(currentLocation);
       setTitle(task ? task.title : "");
       setStartDate(task ? task.start_date : "");
       setStartTime(task ? task.start_time : "");
@@ -87,13 +86,12 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
       setTruck(task ? task.truck : "");
       setDriver(task ? task.driver : "");
       setTaskType(task ? task.type : "");
-      setSelectedPoint(selectedOption);
+      dispatch(setSelectedPoint(selectedOptions));
     }
-  }, [editModeTask, task, currentLocation, point, selectedOption]);
+  }, [editModeTask, task, selectedOptions]);
 
   useEffect(() => {
     if (addTaskMode) {
-      setCenter("");
       setTitle("");
       setStartDate("");
       setStartTime("");
@@ -102,13 +100,13 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
       setTruck(order.truck);
       setDriver(order.driver);
       setTaskType("");
-      setSelectedPoint("");
+      dispatch(setSelectedPoint({}));
     }
   }, [addTaskMode, order]);
 
-  // Set selected point
+  // Set selected point and center on map
   useEffect(() => {
-    if (selectedPoint) {
+    if (selectedPoint && Object.keys(selectedPoint).length > 0) {
       dispatch(
         setMapCurrentLocation({
           lat: parseFloat(selectedPoint.gps_latitude),
@@ -116,23 +114,21 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
         })
       );
       setTitle(selectedPoint.title);
+    } else {
+      dispatch(
+        setMapCurrentLocation({
+          lat: parseFloat(defaultCenter.lat),
+          lng: parseFloat(defaultCenter.lng),
+        })
+      );
     }
-  }, [selectedPoint, dispatch]);
-
-  // Fetch CSRF token
-  useEffect(() => {
-    getCsrfToken();
-  }, []);
+  }, [selectedPoint, defaultCenter, dispatch]);
 
   // Fetch points and task types
   useEffect(() => {
     dispatch(listPoints());
     dispatch(listTaskTypes());
   }, [dispatch]);
-
-  const handleTaskCreate = (taskData) => {
-    setTasks((prevTasks) => [...prevTasks, taskData]);
-  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -195,16 +191,16 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
               <div className="add-task-details__content-block">
                 <div className="add-task-details__row">
                   <div className="add-task-details__content-row-block">
-                    <SelectComponent
-                      label={"Тип завдання"}
-                      title={"Виберіть тип завдання"}
-                      key="taskType"
-                      id="taskType"
-                      name="taskType"
-                      value={taskType || ""}
-                      placeholder="Виберіть тип завдання"
-                      onChange={(e) => setTaskType(e.target.value)}
+                    <label className="add-task-details__form-title">
+                      Тип завдання
+                    </label>
+                    <Select
+                      className="add-task-details__row-block"
+                      value={taskType || null}
+                      onChange={(selected) => setTaskType(selected)}
                       options={taskTypesOptions}
+                      isSearchable
+                      placeholder="Виберіть тип завдання"
                     />
                   </div>
                 </div>
@@ -214,6 +210,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
                       label={"Назва завдання"}
                       title={"Введіть назву завдання"}
                       placeholder="Введіть назву завдання"
+                      type="text"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                     />
@@ -276,8 +273,6 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
                       onChange={(e) => setTruck(e.target.value)}
                       options={trucksOptions}
                     />
-                    {/* <div className="add-task-details__row-block">
-                    </div> */}
                   </div>
                   <div className="add-task-details__content-row-block">
                     <SelectComponent
@@ -301,19 +296,18 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
                     <label className="add-task-details__form-title">
                       Пункти
                     </label>
-                    <div className="add-task-details__content-row-block_search">
-                      <Select
-                        className="add-task-details__row-block"
-                        value={selectedPoint || ""}
-                        onChange={(selected) => setSelectedPoint(selected)}
-                        options={pointOptions}
-                        isSearchable
-                        placeholder="Пошук точки на карті..."
-                        onMenuOpen={() => setIsDropdownOpen(true)}
-                        onMenuClose={() => setIsDropdownOpen(false)}
-                        menuIsOpen={isDropdownOpen}
-                      />
-                    </div>
+                    <Select
+                      // value={selectedPoint ? selectedPoint : null}
+                      onChange={(selected) =>
+                        dispatch(setSelectedPoint(selected))
+                      }
+                      options={pointOptions}
+                      isSearchable
+                      placeholder="Пошук точки на карті..."
+                      onMenuOpen={() => setIsDropdownOpen(true)}
+                      onMenuClose={() => setIsDropdownOpen(false)}
+                      menuIsOpen={isDropdownOpen}
+                    />
                   </div>
                 </div>
                 <div className="add-task-details__row">

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setAddTaskMode,
@@ -6,6 +5,10 @@ import {
   setEditModeTask,
   setShowTaskModal,
 } from "../../../actions/orderActions";
+import {
+  setSelectedPoint,
+  setTabToggleMode,
+} from "../../../features/points/pointsSlice";
 
 import AddPoint from "../../AddPoint/AddPoint";
 import AddTaskComponent from "../AddTaskComponent";
@@ -14,6 +17,8 @@ import GenericModalComponent from "../../../globalComponents/GenericModalCompone
 import AddTaskNoOrderComponent from "../AddTaskNoOrderComponent";
 
 import "./AddTaskModalComponent.scss";
+import { setMapCurrentLocation } from "../../../actions/mapActions";
+import { selectSelectedPoint } from "../../../features/points/pointsSelectors";
 
 const AddTaskModalComponent = () => {
   const dispatch = useDispatch();
@@ -27,14 +32,17 @@ const AddTaskModalComponent = () => {
   );
   const showTaskModal = useSelector((state) => state.ordersInfo.showTaskModal);
 
-  const [activeTab, setActiveTab] = useState(true);
+  const tabToggleMode = useSelector((state) => state.pointsInfo.tabToggleMode);
+  const selectedPoint = useSelector(selectSelectedPoint);
 
   const handleToggleMode = () => {
-    setActiveTab(!activeTab);
+    dispatch(setTabToggleMode(!tabToggleMode));
   };
 
   const handleModalClose = () => {
     dispatch(setShowTaskModal(false));
+    dispatch(setMapCurrentLocation({}));
+    dispatch(setSelectedPoint({}));
 
     if (addTaskNoOrderMode) {
       dispatch(setAddTaskMode(false));
@@ -50,17 +58,16 @@ const AddTaskModalComponent = () => {
 
   return (
     <GenericModalComponent
-      // show={editModeTask || addTaskMode || addTaskNoOrderMode}
       show={showTaskModal}
       onClose={handleModalClose}
       content={
         <>
           <TabSwitcher
-            activeTab={activeTab}
+            activeTab={tabToggleMode}
             handleToggleMode={handleToggleMode}
           />
 
-          {activeTab ? (
+          {tabToggleMode ? (
             <>
               {addTaskNoOrderMode && (
                 <AddTaskNoOrderComponent onCloseModal={handleModalClose} />
@@ -76,11 +83,7 @@ const AddTaskModalComponent = () => {
               )}
             </>
           ) : (
-            <AddPoint
-              onToggleMode={handleToggleMode}
-              onAddTask={true}
-              editMode={false}
-            />
+            <AddPoint onAddTask={true} onCloseModal={handleModalClose} />
           )}
         </>
       }

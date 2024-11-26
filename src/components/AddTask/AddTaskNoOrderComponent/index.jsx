@@ -12,7 +12,7 @@ import {
   setTaskListNoOrder,
 } from "../../../actions/orderActions";
 import { listTaskTypes } from "../../../actions/taskTypeActions";
-import { listPoints } from "../../../actions/pointActions";
+import { listPoints } from "../../../features/points/pointsOperations";
 import { transformSelectOptions } from "../../../utils/transformers";
 import { getCsrfToken } from "../../../utils/getCsrfToken";
 import { setMapCurrentLocation } from "../../../actions/mapActions";
@@ -34,6 +34,7 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
 
   const map = useSelector((state) => state.map);
   const currentLocation = useSelector((state) => state.map.currentLocation);
+  const defaultCenter = useSelector((state) => state.map.defaultCenter);
   const order = useSelector((state) => state.ordersInfo.order.data);
   const task = useSelector((state) => state.ordersInfo.task.data);
   const editModeTask = useSelector(
@@ -51,6 +52,7 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
 
   const trucksOptions = transformSelectOptions(trucks, "plates");
   const driversOptions = transformSelectOptions(drivers, "full_name");
+  const taskTypesOptions = transformSelectOptions(taskTypes, "name");
 
   const [tasks, setTasks] = useState(order.tasks || []);
   const [selectedTask, setSelectedTask] = useState(task);
@@ -126,7 +128,7 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
 
   // Set selected point
   useEffect(() => {
-    if (selectedPoint) {
+    if (selectedPoint && Object.keys(selectedPoint).length > 0) {
       dispatch(
         setMapCurrentLocation({
           lat: parseFloat(selectedPoint.gps_latitude),
@@ -134,8 +136,10 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
         })
       );
       setTitle(selectedPoint.title);
+    } else {
+      dispatch(setMapCurrentLocation(defaultCenter));
     }
-  }, [selectedPoint, dispatch]);
+  }, [selectedPoint, defaultCenter, dispatch]);
 
   // Fetch CSRF token
   useEffect(() => {
@@ -231,23 +235,14 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
                     <label className="add-task-details__form-title">
                       Тип завдання
                     </label>
-                    <select
-                      key="taskType"
-                      id="taskType"
-                      name="taskType"
+
+                    <Select
+                      className="add-task-details__row-block"
                       value={taskType || ""}
-                      className="form-field__select form-select-mb10"
-                      onChange={(e) => setTaskType(e.target.value)}
-                    >
-                      <option value={""} disabled>
-                        Виберіть тип завдання
-                      </option>
-                      {taskTypes.map((taskType) => (
-                        <option key={taskType.id} value={taskType.name}>
-                          {taskType.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(selected) => setTaskType(selected)}
+                      options={taskTypesOptions}
+                      placeholder="Виберіть тип завдання"
+                    />
                   </div>
                 </div>
                 <div className="add-task-details__row">
@@ -357,19 +352,17 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
                     <label className="add-task-details__form-title">
                       Пункти
                     </label>
-                    <div className="add-task-details__content-row-block_search">
-                      <Select
-                        className="add-task-details__row-block"
-                        value={selectedPoint || ""}
-                        onChange={(selected) => setSelectedPoint(selected)}
-                        options={pointOptions}
-                        isSearchable
-                        placeholder="Пошук точки на карті..."
-                        onMenuOpen={() => setIsDropdownOpen(true)}
-                        onMenuClose={() => setIsDropdownOpen(false)}
-                        menuIsOpen={isDropdownOpen}
-                      />
-                    </div>
+                    <Select
+                      className="add-task-details__row-block"
+                      value={selectedPoint || ""}
+                      onChange={(selected) => setSelectedPoint(selected)}
+                      options={pointOptions}
+                      isSearchable
+                      placeholder="Пошук точки на карті..."
+                      onMenuOpen={() => setIsDropdownOpen(true)}
+                      onMenuClose={() => setIsDropdownOpen(false)}
+                      menuIsOpen={isDropdownOpen}
+                    />
                   </div>
                 </div>
                 <div className="add-task-details__row">

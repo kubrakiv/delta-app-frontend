@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import usePlacesAutocomplete, {
   getGeocode,
   getLatLng,
 } from "use-places-autocomplete";
 import useOnclickOutside from "react-cool-onclickoutside";
+
 import "./AddPointAutocomplete.scss";
 
 const AddPointAutocomplete = ({ isLoaded, onSelect }) => {
