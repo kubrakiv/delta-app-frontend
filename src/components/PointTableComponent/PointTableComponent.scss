@@ -5,11 +5,12 @@
   border-spacing: 0 3px;
   margin-bottom: 5px;
   width: 100%;
+  user-select: none;
 
   &__header {
     position: sticky;
     top: 2px;
-    // z-index: 2;
+    z-index: 1;
   }
 
   &__head {

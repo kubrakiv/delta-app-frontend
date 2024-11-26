@@ -15,7 +15,7 @@ const InputComponent = ({
 }) => {
   return (
     <>
-      {label && <label className="upload-documents__form-title">{label}</label>}
+      {label && <label className="input-component__form-title">{label}</label>}
       <input
         multiple={multiple}
         id={id}

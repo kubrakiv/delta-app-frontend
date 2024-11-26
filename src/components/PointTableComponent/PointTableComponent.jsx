@@ -1,49 +1,41 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "./PointTableComponent.scss";
-import PointSearchComponent from "../PointSearchComponent/PointSearchComponent";
-import Modal from "../Modal/Modal";
-import AddPointModalComponent from "../AddPoint/AddPointModalComponent/AddPointModalComponent";
+import { useState, useEffect } from "react";
 import { FaPencilAlt, FaRegTrashAlt } from "react-icons/fa";
+import AddPointModalComponent from "../AddPoint/AddPointModalComponent/AddPointModalComponent";
+import PointSearchComponent from "../PointSearchComponent/PointSearchComponent";
 import PointModalComponent from "../PointModalComponent";
 
+import { useDispatch, useSelector } from "react-redux";
+import {
+  listPoints,
+  deletePoint,
+} from "../../features/points/pointsOperations";
+
+import {
+  setEditModePoint,
+  setSelectedPoint,
+} from "../../features/points/pointsSlice";
+
+import "./PointTableComponent.scss";
+
 const PointTableComponent = () => {
-  const [points, setPoints] = useState([]);
-  const [selectedPoint, setSelectedPoint] = useState({});
+  const dispatch = useDispatch();
+
+  const points = useSelector((state) => state.pointsInfo.points.data);
+
   const [search, setSearch] = useState("");
   const [showPointModal, setShowPointModal] = useState(false);
   const [showAddPointModal, setShowAddPointModal] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-
-  const handlePointCreate = (pointData) => {
-    setPoints((prevPoints) => [...prevPoints, pointData]);
-  };
-
-  const handlePointUpdate = (pointId, pointData) => {
-    const updatedPoints = points.map((point) => {
-      if (point.id === pointId) {
-        return pointData;
-      }
-      return point;
-    });
-    setPoints(updatedPoints);
-  };
 
   useEffect(() => {
-    async function fetchPoints() {
-      const { data } = await axios.get("/api/points/");
-      setPoints(data);
-    }
-    fetchPoints();
+    dispatch(listPoints());
   }, []);
 
   const handleRowDoubleClick = (e, point) => {
-    console.log("Row double click:", point);
     e.stopPropagation();
+    console.log("Row double click:", point);
     setShowPointModal(true);
-    setSelectedPoint(point);
+    dispatch(setSelectedPoint(point));
   };
-  console.log("ShowPointModal:", showPointModal);
 
   const handleAddPointButtonClick = (e) => {
     e.stopPropagation();
@@ -52,8 +44,8 @@ const PointTableComponent = () => {
 
   const handleEditModeButton = (e, point) => {
     e.stopPropagation();
-    setEditMode(true);
-    setSelectedPoint(point);
+    dispatch(setEditModePoint(true));
+    dispatch(setSelectedPoint(point));
     setShowAddPointModal(true);
   };
 
@@ -68,14 +60,12 @@ const PointTableComponent = () => {
     }
 
     try {
-      await axios.delete(`/api/points/delete/${pointId}/`);
-
-      setPoints((prevPoints) =>
-        prevPoints.filter((point) => point.id !== pointId)
-      );
+      dispatch(deletePoint(pointId)).unwrap();
       console.log(`Point with ID ${pointId} was deleted successfully.`);
+
+      dispatch(listPoints());
     } catch (err) {
-      console.log("Error deleting point:", err);
+      console.log("Error deleting point:", err.message);
     }
   };
 
@@ -85,19 +75,12 @@ const PointTableComponent = () => {
         <PointModalComponent
           showPointModal={showPointModal}
           setShowPointModal={setShowPointModal}
-          selectedPoint={selectedPoint}
-          setSelectedPoint={setSelectedPoint}
         />
       )}
       {showAddPointModal && (
         <AddPointModalComponent
           showAddPointModal={showAddPointModal}
           setShowAddPointModal={setShowAddPointModal}
-          onPointCreate={handlePointCreate}
-          editMode={editMode}
-          selectedPoint={selectedPoint}
-          setSelectedPoint={setSelectedPoint}
-          onPointUpdate={handlePointUpdate}
         />
       )}
       <div className="points-container">

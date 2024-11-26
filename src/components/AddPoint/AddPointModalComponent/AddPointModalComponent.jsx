@@ -1,23 +1,28 @@
-import React, { useRef, useEffect } from "react";
-import AddPoint from "../AddPoint";
-import "./AddPointModalComponent.scss";
-import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
+import { useDispatch, useSelector } from "react-redux";
 import { setMapCurrentLocationDelete } from "../../../actions/mapActions";
-import { useDispatch } from "react-redux";
+import {
+  setEditModePoint,
+  setSelectedPoint,
+} from "../../../features/points/pointsSlice";
+import { selectSelectedPoint } from "../../../features/points/pointsSelectors";
+
+import AddPoint from "../AddPoint";
+import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
+
+import "./AddPointModalComponent.scss";
 
 const AddPointModalComponent = ({
   showAddPointModal,
   setShowAddPointModal,
-  onPointCreate,
-  editMode,
-  selectedPoint,
-  setSelectedPoint,
-  onPointUpdate,
 }) => {
   const dispatch = useDispatch();
+
+  const selectedPoint = useSelector(selectSelectedPoint);
+
   const handleCloseModal = () => {
     setShowAddPointModal(false);
-    setSelectedPoint({});
+    dispatch(setEditModePoint(false));
+    dispatch(setSelectedPoint({}));
     dispatch(setMapCurrentLocationDelete());
   };
 
@@ -27,12 +32,8 @@ const AddPointModalComponent = ({
       onClose={handleCloseModal}
       content={
         <AddPoint
+          initialPointData={selectedPoint}
           setShowAddPointModal={setShowAddPointModal}
-          onPointCreate={onPointCreate}
-          editMode={editMode}
-          selectedPoint={selectedPoint}
-          setSelectedPoint={setSelectedPoint}
-          onPointUpdate={onPointUpdate}
         />
       }
     ></GenericModalComponent>

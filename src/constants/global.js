@@ -72,3 +72,15 @@ export const USER_CONSTANTS = {
   EMAIL: "email",
   PASSWORD: "password",
 };
+
+export const POINT_CONSTANTS = {
+  COMPANY_NAME: "company_name",
+  COUNTRY: "country",
+  CUSTOMER: "customer",
+  POSTAL_CODE: "postal_code",
+  CITY: "city",
+  STREET: "street",
+  STREET_NUMBER: "street_number",
+  GPS_LATITUDE: "gps_latitude",
+  GPS_LONGITUDE: "gps_longitude",
+};

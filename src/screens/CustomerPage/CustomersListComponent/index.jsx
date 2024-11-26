@@ -80,7 +80,7 @@ const CustomersListComponent = () => {
         setSelectedCustomers([]);
         dispatch(listCustomers());
       } catch (error) {
-        console.error("Error deleting drivers:", error.message);
+        console.error("Error deleting customers:", error.message);
       }
     }
   };
