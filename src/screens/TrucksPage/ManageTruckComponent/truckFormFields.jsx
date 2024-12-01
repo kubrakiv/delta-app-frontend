@@ -10,6 +10,7 @@ const {
   TRUCK_YEAR,
   TRUCK_ENTRY_MILEAGE,
   TRUCK_PRICE,
+  TRUCK_GPS_ID,
 } = TRUCK_CONSTANTS;
 
 export const formFields = [
@@ -69,6 +70,12 @@ export const formFields = [
       title: "Ціна",
       type: "number",
       placeholder: "Ціна",
+    },
+    {
+      id: TRUCK_GPS_ID,
+      title: "GPS ID",
+      type: "text",
+      placeholder: "GPS ID",
     },
   ],
 ];

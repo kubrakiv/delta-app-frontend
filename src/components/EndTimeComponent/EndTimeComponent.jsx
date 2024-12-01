@@ -26,9 +26,9 @@ const EndTimeComponent = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!endDate || !endTime) {
-      return;
-    }
+    // if (!endDate || !endTime) {
+    //   return;
+    // }
 
     const data = {
       end_date: endDate,
@@ -40,6 +40,7 @@ const EndTimeComponent = () => {
       dispatch(setShowEndTimeModal(false));
     }
   };
+
   return (
     <>
       <div className="end-time-container">

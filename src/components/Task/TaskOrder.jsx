@@ -16,6 +16,7 @@ import {
 import { formattedTime } from "../../utils/formattedTime";
 import { getTaskTitle } from "../../utils/getTaskTitle";
 import { setMapCurrentLocation } from "../../actions/mapActions";
+import { transformDate } from "../../utils/formatDate";
 
 import { DELIVERY_CONSTANTS } from "../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
@@ -100,7 +101,7 @@ function TaskOrder({ task, handleDeleteTask, onEditMode }) {
         return !loadingStatus ? (
           <>
             <div className="task-order__date">
-              <FaCalendar /> {task.start_date}
+              <FaCalendar /> {transformDate(task.start_date)}
             </div>
             <div className="task-order__time">
               <FaClock /> {formattedTime(task.start_time)}
@@ -109,7 +110,7 @@ function TaskOrder({ task, handleDeleteTask, onEditMode }) {
         ) : (
           <>
             <div className="task-order__date">
-              <FaCalendar /> {task.end_date}
+              <FaCalendar /> {transformDate(task.end_date)}
             </div>
             <div className="task-order__time">
               <FaClock /> {formattedTime(task.end_time)}
@@ -120,7 +121,7 @@ function TaskOrder({ task, handleDeleteTask, onEditMode }) {
         return !unloadingStatus ? (
           <>
             <div className="task-order__date">
-              <FaCalendar /> {task.start_date}
+              <FaCalendar /> {transformDate(task.start_date)}
             </div>
             <div className="task-order__time">
               <FaClock /> {formattedTime(task.start_time)}
@@ -129,7 +130,7 @@ function TaskOrder({ task, handleDeleteTask, onEditMode }) {
         ) : (
           <>
             <div className="task-order__date">
-              <FaCalendar /> {task.end_date}
+              <FaCalendar /> {transformDate(task.end_date)}
             </div>
             <div className="task-order__time">
               <FaClock /> {formattedTime(task.end_time)}

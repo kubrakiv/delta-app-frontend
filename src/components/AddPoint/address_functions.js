@@ -14,7 +14,7 @@ export const getStreet = (obj) => {
     (component) =>
       component.types.includes("route") || component.types.includes("street")
   );
-  return tr(streetComponent) ? tr(streetComponent.long_name) : "";
+  return tr(streetComponent) ? tr(streetComponent?.long_name) : "";
 };
 
 export const getStreetNumber = (obj) => {

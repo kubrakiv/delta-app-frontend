@@ -42,6 +42,11 @@ const getTruckDetails = (truck) => [
     title: "Ціна, EUR",
     value: truck.price,
   },
+  {
+    id: uuidv4(),
+    title: "GPS ID",
+    value: truck.gps_id,
+  },
 ];
 
 export default getTruckDetails;

@@ -112,6 +112,22 @@
       background-color: green;
     }
   }
+  &_map {
+    margin: 2px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: none;
+    text-align: center;
+    background-color: green;
+    color: white;
+    &:hover {
+      background-color: rgb(20, 179, 20);
+      cursor: pointer;
+    }
+    &:focus {
+      background-color: green;
+    }
+  }
   &_delete {
     margin: 2px;
     padding: 2px 5px;

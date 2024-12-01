@@ -20,6 +20,7 @@ export const plannerSlice = createSlice({
       showStartTimeModal: false,
       showEndTimeModal: false,
       showServiceTaskModal: false,
+      showTruckOnMapModal: false,
     },
     switchers: {
       showOrderNumber: false,
@@ -61,6 +62,9 @@ export const plannerSlice = createSlice({
     setAddModeServiceTask: (state, action) => {
       state.addModeServiceTask = action.payload;
     },
+    setShowTruckOnMapModal: (state, action) => {
+      state.modals.showTruckOnMapModal = action.payload;
+    },
   },
 });
 
@@ -75,6 +79,7 @@ export const {
   setShowServiceTaskModal,
   setEditModeServiceTask,
   setAddModeServiceTask,
+  setShowTruckOnMapModal,
 } = plannerSlice.actions;
 
 export default plannerSlice.reducer;

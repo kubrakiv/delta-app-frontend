@@ -41,6 +41,7 @@ import EndTimeModalComponent from "./EndTimeModalComponent/EndTimeModalComponent
 import StartTimeModalComponent from "./StartTimeModalComponent/StartTimeModalComponent";
 import ServiceTaskModalComponent from "./ServiceTaskModalComponent/ServiceTaskModalComponent";
 import SwitchComponent from "../SwitchComponent/SwitchComponent";
+import TruckOnMapModalComponent from "./TruckOnMapModalComponent";
 
 import "./WeekPlanner.scss";
 
@@ -172,6 +173,7 @@ export const WeekPlanner = () => {
       <StartTimeModalComponent />
       <EndTimeModalComponent />
       <ServiceTaskModalComponent />
+      <TruckOnMapModalComponent />
 
       <div className="planner-container">
         <div className="week-number">

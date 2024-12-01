@@ -36,6 +36,7 @@ export const TRUCK_CONSTANTS = {
   TRUCK_YEAR: "year",
   TRUCK_ENTRY_MILEAGE: "entry_mileage",
   TRUCK_PRICE: "price",
+  TRUCK_GPS_ID: "gps_id",
 };
 
 export const TRAILER_CONSTANTS = {

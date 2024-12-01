@@ -131,8 +131,7 @@ const CustomersListComponent = () => {
               <tr className="customers-table__head-row">
                 <th className="customers-table__head-th">ID</th>
                 <th className="customers-table__head-th">Назва</th>
-                <th className="customers-table__head-th">Номер</th>
-                <th className="customers-table__head-th">Оплата</th>
+                <th className="customers-table__head-th">VAT Номер</th>
                 <th className="customers-table__head-th">Вебсайт</th>
                 <th className="customers-table__head-th">Менеджер</th>
                 <th className="customers-table__head-th"></th>
