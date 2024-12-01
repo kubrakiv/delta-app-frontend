@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import { calculateRouteDistance } from "../../../services/DistanceCalculationService";
+import { calculateRouteDistance } from "../../../services/distanceCalculationService";
 
 import { DELIVERY_CONSTANTS } from "../../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;

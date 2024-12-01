@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaCalculator } from "react-icons/fa";
 import { listOrderDetails, updateOrder } from "../../../actions/orderActions";
-import { calculateTotalDistance } from "../../../services/DistanceCalculationService";
+import { calculateTotalDistance } from "../../../services/distanceCalculationService";
 
 import "./RouteComponent.scss";
 
