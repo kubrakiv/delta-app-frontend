@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { listOrderDetails } from "../../actions/orderActions";
@@ -20,17 +20,25 @@ import AddTaskModalComponent from "../../components/AddTask/AddTaskModalComponen
 import MarketPriceComponent from "./MarketPriceComponent/MarketPriceComponent";
 import OrderMapComponent from "./OrderMapComponent";
 import UploadDocumentsComponent from "../../components/UploadDocumentsComponent/UploadDocumentsComponent";
+import TruckLocationComponent from "./TruckLocationComponent";
 
 import { compareInvoiceWithOrder } from "../../features/invoices/invoiceUtils";
-import { findTrailer } from "../../components/OrdersTableComponent/OrdersTableComponent";
+import { findTrailer } from "../../utils/getTrailer";
 import { setInvoiceUpdateNeeded } from "../../features/invoices/invoicesSlice";
 import { listTrucks } from "../../features/trucks/trucksOperations";
 import { listInvoiceDetails } from "../../features/invoices/invoicesOperations";
+import { getTruckLocation } from "../../services/truckLocationService";
 
 import "./OrderPage.scss";
 
+import { DELIVERY_CONSTANTS } from "../../constants/global";
+import { setTruckDetails } from "../../actions/mapActions";
+const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
+
 const OrderPage = () => {
   const dispatch = useDispatch();
+
+  const [truckLocationLoaded, setTruckLocationLoaded] = useState(false); // Track if truck location is loaded
 
   const invoiceData = useSelector(
     (state) => state.invoicesInfo.invoiceDetails.data
@@ -40,6 +48,8 @@ const OrderPage = () => {
   const order = useSelector((state) => state.ordersInfo.order.data);
   console.log("Order", order);
 
+  const tasks = useSelector((state) => state.ordersInfo.order.data.tasks);
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -48,26 +58,73 @@ const OrderPage = () => {
     }
   }, [id]);
 
+  // Fetch trucks and invoice details on component mount
   useEffect(() => {
     dispatch(listTrucks());
-    dispatch(listInvoiceDetails(order?.invoice?.id));
-  }, [dispatch, order?.invoice?.id]);
+    if (order && order.invoice && order.invoice.id) {
+      dispatch(listInvoiceDetails(order.invoice.id));
+    }
+  }, [dispatch, order]);
 
+  // Compare invoice with order data to determine if update is needed
   useEffect(() => {
-    console.log("Use Effect");
     if (order && invoiceData) {
       const trailer = order?.truck ? findTrailer(order?.truck, trucks) : "";
       const orderData = {
         ...order,
         trailer: trailer,
       };
-      console.log("Order Data", orderData);
-      console.log("Invoice Data", invoiceData);
       const isUpdateNeeded = compareInvoiceWithOrder(orderData, invoiceData);
       console.log("isUpdateNeeded", isUpdateNeeded);
       dispatch(setInvoiceUpdateNeeded(isUpdateNeeded));
     }
   }, [order, invoiceData]); // Include `order.invoice` to track changes
+
+  // Determine if the order is finished
+  const isOrderFinished = tasks?.every(
+    (task) =>
+      (task.type === LOADING || task.type === UNLOADING) &&
+      task.end_date &&
+      task.end_time
+  );
+
+  // Fetch truck location if truck is assigned to the order
+  useEffect(() => {
+    if (isOrderFinished) {
+      console.log("Order is finished, not fetching truck location.");
+      return;
+    }
+
+    if (order?.truck) {
+      const truck = trucks.find((t) => t.plates === order.truck);
+      dispatch(setTruckDetails(truck));
+      if (truck) {
+        if (truck.gps_id) {
+          // Only attempt to fetch truck location if gps_id is present
+          getTruckLocation(truck, dispatch)
+            .then(() => {
+              setTruckLocationLoaded(true);
+            })
+            .catch((error) => {
+              console.error("Failed to fetch truck location:", error);
+              setTruckLocationLoaded(false); // Set false if location fetch fails
+            });
+        } else {
+          // No gps_id, set truck location as not loaded
+          setTruckLocationLoaded(false);
+          console.log("Truck found, but no gps_id available");
+        }
+      } else {
+        // Truck not found in the list
+        setTruckLocationLoaded(false);
+        console.log("Truck not found in the list");
+      }
+    } else {
+      // No truck assigned to the order
+      setTruckLocationLoaded(false);
+      console.log("No truck assigned to the order");
+    }
+  }, [order, trucks, dispatch, isOrderFinished]);
 
   return (
     <>
@@ -104,6 +161,7 @@ const OrderPage = () => {
                 <CargoComponent />
                 <CustomerManagerComponent />
               </div>
+              <TruckLocationComponent />
               <OrderMapComponent />
             </div>
           </div>

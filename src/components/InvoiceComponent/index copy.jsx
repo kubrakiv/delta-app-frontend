@@ -6,7 +6,7 @@ import html2canvas from "html2canvas";
 
 import { setCustomerDetailsData } from "../../features/customers/customersSlice";
 import { calculateDueDate, transformDate } from "../../utils/formatDate";
-import { findTrailer } from "../OrdersTableComponent/OrdersTableComponent";
+import { findTrailer } from "../../utils/getTrailer";
 import { FaArrowLeft, FaFilePdf } from "react-icons/fa";
 import {
   createInvoice,

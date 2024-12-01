@@ -1,13 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { GoogleMap, Marker, DirectionsRenderer } from "@react-google-maps/api";
-import CustomMarker from "../CustomMarkerComponent/CustomMarkerComponent";
-import { FaMapMarkerAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { mapDefaultCenter } from "../../reducers/mapReducers";
-import { setMapCurrentLocation } from "../../actions/mapActions";
-import { AdvancedMarker } from "./AdvancedMarker";
-import { DELIVERY_CONSTANTS } from "../../constants/global";
 
+import { DELIVERY_CONSTANTS } from "../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
 // import { defaultTheme } from "./Theme";
@@ -27,11 +22,13 @@ const defaultOptions = {
   //   styles: defaultTheme,
 };
 
-const Map = ({ tasks, directionsResponse }) => {
+const Map = ({ tasks, directionsResponse, truckDirectionsResponse, truck }) => {
+  console.log("Truck", truck);
   const dispatch = useDispatch();
   const mapRef = useRef(undefined);
   const currentLocation = useSelector((state) => state.map.currentLocation);
   const defaultCenter = useSelector((state) => state.map.defaultCenter);
+  const truckLocation = useSelector((state) => state.map.truckLocation);
   const [center, setCenter] = useState(null);
 
   useEffect(() => {
@@ -45,6 +42,8 @@ const Map = ({ tasks, directionsResponse }) => {
 
   const loadingIcon = "http://maps.google.com/mapfiles/ms/icons/green-dot.png"; // Green icon for loading
   const unloadingIcon = "http://maps.google.com/mapfiles/ms/icons/red-dot.png"; // Red icon for unloading
+  // const truckIcon = "http://maps.google.com/mapfiles/ms/icons/truck.png"; // Icon for truck marker
+  const truckIcon = "https://maps.gstatic.com/mapfiles/ms2/micons/truck.png"; // Icon for truck marker
 
   const onLoad = useCallback(function callback(map) {
     mapRef.current = map;
@@ -89,26 +88,6 @@ const Map = ({ tasks, directionsResponse }) => {
                 task.point_details.city);
 
           return (
-            // <AdvancedMarker
-            //   key={task.id}
-            //   position={position}
-            //   icon={icon}
-            //   title={title}
-            // >
-            //   <svg
-            //     xmlns="http://www.w3.org/2000/svg"
-            //     width="24"
-            //     height="24"
-            //     viewBox="0 0 24 24"
-            //     fill="none"
-            //     stroke="#000000"
-            //     strokeWidth="2"
-            //     strokeLinecap="round"
-            //     strokeLinejoin="round"
-            //   >
-            //     <path d="M12 5v13M5 12l7 7 7-7" />
-            //   </svg>
-            // </AdvancedMarker>
             <Marker
               key={task.id}
               position={position}
@@ -119,26 +98,36 @@ const Map = ({ tasks, directionsResponse }) => {
         })
       ) : (
         <Marker position={center} />
-        // <AdvancedMarker position={center}>
-        //   <svg
-        //     xmlns="http://www.w3.org/2000/svg"
-        //     width="24"
-        //     height="24"
-        //     viewBox="0 0 24 24"
-        //     fill="none"
-        //     stroke="#000000"
-        //     strokeWidth="2"
-        //     strokeLinecap="round"
-        //     strokeLinejoin="round"
-        //   >
-        //     <path d="M12 5v13M5 12l7 7 7-7" />
-        //   </svg>
-        // </AdvancedMarker>
       )}
+      {/* Add truck marker */}
+      {truckLocation && (
+        <Marker
+          position={{
+            lat: parseFloat(truckLocation.lat),
+            lng: parseFloat(truckLocation.lng),
+          }}
+          icon={truckIcon}
+          title={`Truck ${truck?.plates}`}
+        />
+      )}
+      {/* Directions for order */}
       {directionsResponse && (
         <DirectionsRenderer
           directions={directionsResponse}
           options={{ suppressMarkers: true }}
+        />
+      )}
+      {/* Directions for truck route with green polyline */}
+      {truckDirectionsResponse && (
+        <DirectionsRenderer
+          directions={truckDirectionsResponse}
+          options={{
+            polylineOptions: {
+              strokeColor: "green",
+              strokeWeight: 5,
+            },
+            suppressMarkers: true,
+          }}
         />
       )}
     </GoogleMap>

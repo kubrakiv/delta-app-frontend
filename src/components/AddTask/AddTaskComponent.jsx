@@ -55,7 +55,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
 
   const [title, setTitle] = useState("");
-  const [taskType, setTaskType] = useState("");
+  const [taskType, setTaskType] = useState({});
   const [driver, setDriver] = useState("");
   const [truck, setTruck] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -78,6 +78,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
   // Set task data if in edit mode
   useEffect(() => {
     if (editModeTask) {
+      console.log("Task in edit mode:", task);
       setTitle(task ? task.title : "");
       setStartDate(task ? task.start_date : "");
       setStartTime(task ? task.start_time : "");
@@ -85,10 +86,16 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
       setEndTime(task ? task.end_time : "");
       setTruck(task ? task.truck : "");
       setDriver(task ? task.driver : "");
-      setTaskType(task ? task.type : "");
+      // setTaskType(task ? task.type : "");
+      // Find the corresponding task type object from taskTypesOptions
+      const taskTypeOption = taskTypesOptions.find(
+        (option) => option.value === task?.type
+      );
+      setTaskType(taskTypeOption || {});
+
       dispatch(setSelectedPoint(selectedOptions));
     }
-  }, [editModeTask, task, selectedOptions]);
+  }, [editModeTask, task, selectedOptions, taskTypesOptions]);
 
   useEffect(() => {
     if (addTaskMode) {
@@ -99,7 +106,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
       setEndTime("");
       setTruck(order.truck);
       setDriver(order.driver);
-      setTaskType("");
+      setTaskType({});
       dispatch(setSelectedPoint({}));
     }
   }, [addTaskMode, order]);
@@ -130,6 +137,8 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
     dispatch(listTaskTypes());
   }, [dispatch]);
 
+  console.log("Task Types", taskTypes);
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -142,7 +151,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
       truck: truck,
       driver: driver,
       order: order || order.number, // Create a new order reference
-      type: taskType,
+      type: taskType?.value,
       point_details: selectedPoint,
       point_title: selectedPoint.title,
     };
@@ -170,7 +179,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
         dispatch(setShowTaskModal(false));
         dispatch(listOrderDetails(order.id));
       } catch (taskError) {
-        console.error("Error creating task:", taskError.message);
+        console.error("Error updating task:", taskError.message);
       }
     }
     if (!order) {
@@ -196,7 +205,9 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
                     </label>
                     <Select
                       className="add-task-details__row-block"
-                      value={taskType || null}
+                      value={
+                        Object.keys(taskType).length === 0 ? null : taskType
+                      }
                       onChange={(selected) => setTaskType(selected)}
                       options={taskTypesOptions}
                       isSearchable

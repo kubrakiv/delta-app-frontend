@@ -9,6 +9,7 @@ import { formattedTime } from "../../utils/formattedTime";
 import { listTrucks } from "../../features/trucks/trucksOperations";
 import { listDrivers } from "../../actions/driverActions";
 import { transformDate } from "../../utils/formatDate";
+import { findTrailer } from "../../utils/getTrailer";
 
 import tableHead from "./tableHead.json";
 
@@ -21,13 +22,6 @@ import { FaCheck } from "react-icons/fa";
 import SwitchComponent from "../SwitchComponent/SwitchComponent";
 
 import "./OrdersTableComponent.scss";
-
-export const findTrailer = (truckPlates, trucks) => {
-  if (!truckPlates || !trucks) return "";
-  const truckInfo = trucks.find((item) => item.plates === truckPlates);
-
-  return truckInfo?.trailer || "";
-};
 
 function OrdersTableComponent() {
   const dispatch = useDispatch();

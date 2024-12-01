@@ -39,7 +39,8 @@ const ActionsComponent = () => {
       navigate("/invoices/create", {
         state: { isInvoiceCreate: true, order: order },
       });
-    } else {
+    } else if (order.invoice.id) {
+      // Ensure invoice ID is defined before making API call
       dispatch(listInvoiceDetails(order.invoice.id));
       dispatch(listOrderDetails(order.id));
 

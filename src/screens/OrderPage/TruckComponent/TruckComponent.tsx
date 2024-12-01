@@ -1,14 +1,16 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaTruckMoving } from "react-icons/fa";
-import FormWrapper from "../../../components/FormWrapper";
 import { listTrucks } from "../../../features/trucks/trucksOperations";
 import { updateOrder } from "../../../actions/orderActions";
-import SelectComponent from "../../../globalComponents/SelectComponent";
 import { transformSelectOptions } from "../../../utils/transformers";
 import { RootState, AppDispatch } from "../../../store";
 
+import SelectComponent from "../../../globalComponents/SelectComponent";
+import FormWrapper from "../../../components/FormWrapper";
+
 import "./TruckComponent.scss";
+import { findTrailer } from "../../../utils/getTrailer";
 
 interface Truck {
   id: number;
@@ -41,7 +43,6 @@ const TruckComponent = () => {
   }, [dispatch, order]);
 
   const handleFormSubmit = () => {
-    // let dataToUpdate = {};
     const dataToUpdate = { truck: selectedTruck };
     dispatch(updateOrder(dataToUpdate, order.id));
   };
@@ -59,7 +60,8 @@ const TruckComponent = () => {
         title="Автомобіль"
         content={
           <div className="order-details__content-row-block-value">
-            <FaTruckMoving /> {selectedTruck}
+            <FaTruckMoving /> {selectedTruck} /{" "}
+            {findTrailer(selectedTruck, trucks)}
           </div>
         }
         handleFormSubmit={handleFormSubmit}

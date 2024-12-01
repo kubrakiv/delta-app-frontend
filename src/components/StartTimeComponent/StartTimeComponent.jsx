@@ -26,9 +26,9 @@ const StartTimeComponent = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!startDate || !startTime) {
-      return;
-    }
+    // if (!startDate || !startTime) {
+    //   return;
+    // }
 
     const data = {
       start_date: startDate,

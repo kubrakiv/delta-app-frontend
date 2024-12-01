@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaCalculator } from "react-icons/fa";
 import { listOrderDetails, updateOrder } from "../../../actions/orderActions";
+import { calculateTotalDistance } from "../../../services/DistanceCalculationService";
 
 import "./RouteComponent.scss";
 
@@ -21,46 +22,14 @@ const RouteComponent = () => {
     setHovered(false);
   };
 
-  async function calculateRoute(origin, destination) {
-    try {
-      // eslint-disable-next-line no-undef
-      const directionsService = new google.maps.DirectionsService();
-      const results = await directionsService.route({
-        origin: origin,
-        destination: destination,
-        // eslint-disable-next-line no-undef
-        travelMode: google.maps.TravelMode.DRIVING,
-      });
-      return results.routes[0].legs[0].distance.value; // distance in meters
-    } catch (error) {
-      console.error("Error calculating route: ", error);
-      return 0;
-    }
-  }
-
   const calculateDistance = async () => {
     if (tasks.length < 2) return;
 
-    let totalDistance = 0;
-    for (let i = 0; i < tasks.length - 1; i++) {
-      const origin = {
-        lat: parseFloat(tasks[i].point_details.gps_latitude),
-        lng: parseFloat(tasks[i].point_details.gps_longitude),
-      };
+    const totalDistance = await calculateTotalDistance(tasks);
 
-      const destination = {
-        lat: parseFloat(tasks[i + 1].point_details.gps_latitude),
-        lng: parseFloat(tasks[i + 1].point_details.gps_longitude),
-      };
+    setDistance(totalDistance);
 
-      const distanceBetweenPoints = await calculateRoute(origin, destination);
-      totalDistance += distanceBetweenPoints;
-    }
-
-    const distanceInKm = (totalDistance / 1000).toFixed();
-    setDistance(distanceInKm);
-
-    const dataToUpdate = { distance: parseFloat(distanceInKm) };
+    const dataToUpdate = { distance: parseFloat(totalDistance) };
     await dispatch(updateOrder(dataToUpdate, order.id));
 
     // Fetch new order details to refresh data

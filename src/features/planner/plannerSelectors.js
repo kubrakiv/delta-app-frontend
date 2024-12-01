@@ -12,6 +12,9 @@ export const selectShowEndTimeModal = (state) =>
 export const selectShowServiceTaskModal = (state) =>
   state.plannerInfo.modals.showServiceTaskModal;
 
+export const selectShowTruckOnMapModal = (state) =>
+  state.plannerInfo.modals.showTruckOnMapModal;
+
 export const selectEditModeServiceTask = (state) =>
   state.plannerInfo.editModeServiceTask;
 

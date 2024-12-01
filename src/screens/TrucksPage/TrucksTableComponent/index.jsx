@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FaPencilAlt, FaPlus, FaRegTrashAlt, FaSave } from "react-icons/fa";
+import {
+  FaCheck,
+  FaPencilAlt,
+  FaPlus,
+  FaRegTrashAlt,
+  FaSave,
+} from "react-icons/fa";
 import cn from "classnames";
 import { transformSelectOptions } from "../../../utils/transformers";
 
@@ -155,6 +161,7 @@ const TrucksTableComponent = ({ trucks, trailers, drivers }) => {
 
                 <th className="trucks-table__head-th">Рік випуску</th>
                 <th className="trucks-table__head-th">VIN</th>
+                <th className="trucks-table__head-th">GPS ID</th>
                 <th className="trucks-table__head-th"></th>
               </tr>
             </thead>
@@ -210,6 +217,13 @@ const TrucksTableComponent = ({ trucks, trailers, drivers }) => {
                     </td>
                     <td className="trucks-table__body-td">{truck.year}</td>
                     <td className="trucks-table__body-td">{truck.vin_code}</td>
+                    <td className="trucks-table__body-td">
+                      {truck.gps_id ? (
+                        <FaCheck style={{ color: "green" }} />
+                      ) : (
+                        <FaCheck style={{ color: "red" }} />
+                      )}
+                    </td>
                     <td className="trucks-table__body-td">
                       <input
                         type="checkbox"

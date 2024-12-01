@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import {
+  FaMapMarkerAlt,
   FaPencilAlt,
   FaRegCheckCircle,
   FaRegClock,
@@ -10,12 +11,20 @@ import {
   FaRoute,
 } from "react-icons/fa";
 
-import { selectSwitchers } from "../../features/planner/plannerSelectors";
+import {
+  selectShowTruckOnMapModal,
+  selectSwitchers,
+} from "../../features/planner/plannerSelectors";
 
 import { DELIVERY_CONSTANTS } from "../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
 import "./Task.scss";
+import { setShowTruckOnMapModal } from "../../features/planner/plannerSlice";
+import { listOrderDetails } from "../../actions/orderActions";
+import { selectTrucks } from "../../features/trucks/trucksSelectors";
+import { getTruckLocation } from "../../services/truckLocationService";
+import { setTruckDetails } from "../../actions/mapActions";
 
 function Task({
   task,
@@ -24,6 +33,10 @@ function Task({
   handleDeleteTask,
   handleEditModeTask,
 }) {
+  const dispatch = useDispatch();
+
+  const showTruckOnMapModal = useSelector(selectShowTruckOnMapModal);
+  const trucks = useSelector(selectTrucks);
   const { showDriver, showOrderNumber, showCustomer } =
     useSelector(selectSwitchers);
 
@@ -31,6 +44,7 @@ function Task({
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [unloadingStatus, setUnloadingStatus] = useState(false);
 
+  // Set loading and unloading statuses
   useEffect(() => {
     // Function to set loading and unloading statuses
     const setStatus = () => {
@@ -57,6 +71,65 @@ function Task({
 
   const handleMouseLeave = () => {
     setHovered(false);
+  };
+
+  // Fetch truck details and location
+  // useEffect(() => {
+  //   if (task?.truck) {
+  //     const truck = trucks.find((t) => t.plates === task.truck);
+  //     dispatch(setTruckDetails(truck));
+  //     if (truck) {
+  //       if (truck.gps_id) {
+  //         // Only attempt to fetch truck location if gps_id is present
+  //         getTruckLocation(truck, dispatch).catch((error) => {
+  //           console.error("Failed to fetch truck location:", error);
+  //         });
+  //       } else {
+  //         // No gps_id, set truck location as not loaded
+  //         console.log("Truck found, but no gps_id available");
+  //       }
+  //     } else {
+  //       // Truck not found in the list
+  //       console.log("Truck not found in the list");
+  //     }
+  //   } else {
+  //     // No truck assigned to the order
+  //     console.log("No truck assigned to the task");
+  //   }
+  // }, [task, trucks, dispatch]);
+
+  // const handleShowTruckOnMap = (e) => {
+  //   e.stopPropagation();
+  //   console.log("Show truck on map");
+  //   dispatch(setShowTruckOnMapModal(true));
+  //   dispatch(listOrderDetails(task.order_id));
+  // };
+
+  const handleShowTruckOnMap = (e) => {
+    e.stopPropagation();
+
+    console.log("Show truck on map");
+    dispatch(setShowTruckOnMapModal(true));
+    dispatch(listOrderDetails(task.order_id));
+
+    if (task?.truck) {
+      const truck = trucks.find((t) => t.plates === task.truck);
+      dispatch(setTruckDetails(truck));
+
+      if (truck && truck.gps_id) {
+        getTruckLocation(truck, dispatch).catch((error) => {
+          console.error("Failed to fetch truck location:", error);
+        });
+      } else {
+        console.log(
+          truck
+            ? "Truck found, but no gps_id available"
+            : "Truck not found in the list"
+        );
+      }
+    } else {
+      console.log("No truck assigned to the task");
+    }
   };
 
   const getTaskColor = (taskType, endDate, endTime) => {
@@ -105,31 +178,37 @@ function Task({
       case LOADING:
         return !loadingStatus ? (
           <>
-            <div className="task__time">{task.start_time.substring(0, 5)}</div>
+            <div className="task__time">
+              {task?.start_time?.substring(0, 5)}
+            </div>
           </>
         ) : (
           <>
-            <div className="task__time">{task.end_time.substring(0, 5)}</div>
+            <div className="task__time">{task?.end_time?.substring(0, 5)}</div>
           </>
         );
       case UNLOADING:
         return !unloadingStatus ? (
           <>
-            <div className="task__time">{task.start_time.substring(0, 5)}</div>
+            <div className="task__time">
+              {task?.start_time?.substring(0, 5)}
+            </div>
           </>
         ) : (
           <>
-            <div className="task__time">{task.end_time.substring(0, 5)}</div>
+            <div className="task__time">{task?.end_time?.substring(0, 5)}</div>
           </>
         );
       case "Service":
         return !loadingStatus ? (
           <>
-            <div className="task__time">{task.start_time.substring(0, 5)}</div>
+            <div className="task__time">
+              {task?.start_time?.substring(0, 5)}
+            </div>
           </>
         ) : (
           <>
-            <div className="task__time">{task.end_time.substring(0, 5)}</div>
+            <div className="task__time">{task?.end_time?.substring(0, 5)}</div>
           </>
         );
       default:
@@ -157,15 +236,25 @@ function Task({
           {isHovered && (
             <div className="task-actions">
               {task.type === LOADING || task.type === UNLOADING ? (
-                <Link to={`/orders/${task.order_id}`}>
+                <>
+                  <Link to={`/orders/${task.order_id}`}>
+                    <button
+                      type="button"
+                      title="Перейти в маршрут"
+                      className="task-actions_first"
+                    >
+                      <FaRoute />
+                    </button>
+                  </Link>
                   <button
                     type="button"
-                    title="Перейти в маршрут"
-                    className="task-actions_first"
+                    title="Показати авто"
+                    className="task-actions_map"
+                    onClick={(e) => handleShowTruckOnMap(e)}
                   >
-                    <FaRoute />
+                    <FaMapMarkerAlt />
                   </button>
-                </Link>
+                </>
               ) : (
                 <button
                   type="button"
