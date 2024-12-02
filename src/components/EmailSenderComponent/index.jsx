@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 import { FaEnvelope, FaEnvelopeOpenText } from "react-icons/fa";
 
-const EmailSenderComponent = () => {
-  const dispatch = useDispatch();
+import { DELIVERY_CONSTANTS } from "../../constants/global";
+const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
+const EmailSenderComponent = () => {
   const order = useSelector((state) => state.ordersInfo.order.data);
   const documents = useSelector(
     (state) => state.documentsInfo.documents.data.documents
@@ -15,21 +17,30 @@ const EmailSenderComponent = () => {
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
 
+  const isOrderFinished = order.tasks?.every(
+    (task) =>
+      (task.type === LOADING || task.type === UNLOADING) &&
+      task.end_date &&
+      task.end_time
+  );
+
   const handleSendEmail = async () => {
+    console.log("Sending email...");
     const confirmSending = window.confirm(
       "Ви впевнені що хочете відправити Email?"
     );
     if (!confirmSending) {
+      console.log("Email sending cancelled.");
       return; // Exit if the user cancels the deletion
     }
 
     setIsSending(true);
     try {
       // Extracting necessary information
-      // const customerEmail = "kubrak.ivan@gmail.com";
       const customerEmail = [
         "ymailo096@gmail.com",
-        "maylo.ya@agromat.ua",
+        // "maylo.ya@agromat.ua",
+        "kubrak.i@agromat.ua",
         "kubrak.ivan@gmail.com",
       ];
       const documentFiles = documents.map((doc) => doc.file);
@@ -44,9 +55,25 @@ const EmailSenderComponent = () => {
         documents: documentFiles,
       };
 
-      await axios.post("/api/send-email/", emailData);
-      setMessage("Email sent successfully.");
+      if (isOrderFinished) {
+        await axios.post("/api/send-email/", emailData);
+        toast.success("Email sent successfully.", {
+          position: "top-right",
+          style: { color: "black", marginTop: "0rem" },
+        });
+        setMessage("Email sent successfully.");
+      } else {
+        toast.error("Order is not finished yet.", {
+          position: "top-right",
+          style: { color: "black", marginTop: "0rem" },
+        });
+        setMessage("Order is not finished yet.");
+      }
     } catch (error) {
+      toast.error("Failed to send email.", {
+        position: "top-right",
+        style: { color: "black", marginTop: "0rem" },
+      });
       setMessage("Failed");
     }
     setIsSending(false);

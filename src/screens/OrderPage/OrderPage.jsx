@@ -28,11 +28,12 @@ import { setInvoiceUpdateNeeded } from "../../features/invoices/invoicesSlice";
 import { listTrucks } from "../../features/trucks/trucksOperations";
 import { listInvoiceDetails } from "../../features/invoices/invoicesOperations";
 import { getTruckLocation } from "../../services/truckLocationService";
+import { listDocuments } from "../../actions/documentActions";
+import { setTruckDetails } from "../../actions/mapActions";
 
 import "./OrderPage.scss";
 
 import { DELIVERY_CONSTANTS } from "../../constants/global";
-import { setTruckDetails } from "../../actions/mapActions";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
 const OrderPage = () => {
@@ -55,6 +56,7 @@ const OrderPage = () => {
   useEffect(() => {
     if (id) {
       dispatch(listOrderDetails(id));
+      dispatch(listDocuments(id));
     }
   }, [id]);
 
