@@ -145,11 +145,11 @@ const EditDriverComponent = ({
 
   return (
     <>
-      <AddDriverHeaderComponent
+      {/* <AddDriverHeaderComponent
         setShowDriverModal={setShowDriverModal}
         editDriverProfileMode={editDriverProfileMode}
         selectedDriver={selectedDriver}
-      />
+      /> */}
       <div>
         <div className="driver-details">
           <form

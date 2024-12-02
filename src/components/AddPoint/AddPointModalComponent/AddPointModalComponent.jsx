@@ -10,6 +10,7 @@ import AddPoint from "../AddPoint";
 import GenericModalComponent from "../../../globalComponents/GenericModalComponent";
 
 import "./AddPointModalComponent.scss";
+import { getFullAddress } from "../../../utils/address";
 
 const AddPointModalComponent = ({
   showAddPointModal,
@@ -28,6 +29,11 @@ const AddPointModalComponent = ({
 
   return (
     <GenericModalComponent
+      title={
+        Object.keys(selectedPoint).length !== 0
+          ? `Адреса: ${getFullAddress(selectedPoint)}`
+          : "Додайте точку"
+      }
       show={showAddPointModal}
       onClose={handleCloseModal}
       content={
@@ -36,7 +42,8 @@ const AddPointModalComponent = ({
           setShowAddPointModal={setShowAddPointModal}
         />
       }
-    ></GenericModalComponent>
+      header
+    />
   );
 };
 

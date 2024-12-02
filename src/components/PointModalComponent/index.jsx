@@ -7,11 +7,13 @@ import PointPage from "../../screens/PointPage/PointPage";
 import GenericModalComponent from "../../globalComponents/GenericModalComponent";
 
 import "./style.scss";
+import { getFullAddress } from "../../utils/address";
 
 const PointModalComponent = ({
   showPointModal,
   setShowPointModal,
   footer = true,
+  header = true,
 }) => {
   const dispatch = useDispatch();
 
@@ -24,14 +26,11 @@ const PointModalComponent = ({
   };
   return (
     <GenericModalComponent
+      title={`Адреса: ${getFullAddress(selectedPoint)}` || "Точка"}
       show={showPointModal}
       onClose={handleModalClose}
-      content={
-        <PointPage
-          selectedPoint={selectedPoint}
-          setShowPointModal={setShowPointModal}
-        />
-      }
+      content={<PointPage selectedPoint={selectedPoint} />}
+      header={header}
       footer={footer}
     />
   );

@@ -1,15 +1,11 @@
-import ModalCloseComponent from "../../../components/Modal/ModalCloseComponent/ModalCloseComponent";
+import GenericModalCloseComponent from "../GenericModalCloseComponent/GenericModalCloseComponent";
 
 const GenericHeaderComponent = ({ title, onClose }) => {
-  //   const wordToLowerCase = (word) => {
-  //     return word?.toLowerCase();
-  //   };
-
   return (
     <>
       <div className="generic-modal__header">
         <div className="generic-modal__header-block">{title && title}</div>
-        <ModalCloseComponent onClose={onClose} />
+        <GenericModalCloseComponent onClose={onClose} />
       </div>
     </>
   );
