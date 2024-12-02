@@ -5,7 +5,7 @@ import { setMapCurrentLocation } from "../../actions/mapActions";
 import { getFullAddress } from "../../utils/address";
 
 import Map from "../../components/Map";
-import PointHeaderComponent from "./PointHeaderComponent/PointHeaderComponent";
+// import PointHeaderComponent from "./PointHeaderComponent/PointHeaderComponent";
 import PointCustomerComponent from "./PointCustomerComponent/PointCustomerComponent";
 import PointCompanyComponent from "./PointCompanyComponent/PointCompanyComponent";
 import PointGpsComponent from "./PointGpsComponent/PointGpsComponent";
@@ -16,7 +16,7 @@ import "./PointPage.scss";
 
 const { REACT_APP_API_KEY: API_KEY } = import.meta.env;
 
-const PointPage = ({ selectedPoint, setShowPointModal }) => {
+const PointPage = ({ selectedPoint }) => {
   const dispatch = useDispatch();
   const map = useSelector((state) => state.map);
   const currentLocation = useSelector((state) => state.map.currentLocation);
@@ -46,10 +46,6 @@ const PointPage = ({ selectedPoint, setShowPointModal }) => {
     <>
       <div className="point-container">
         <div className="point-details">
-          <PointHeaderComponent
-            address={fullAddress}
-            setShowPointModal={setShowPointModal}
-          />
           <div className="point-details__content">
             <div className="point-details__content-block">
               <div className="point-details__content-row">

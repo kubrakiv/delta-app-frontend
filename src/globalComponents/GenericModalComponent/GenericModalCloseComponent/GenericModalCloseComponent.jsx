@@ -1,16 +1,13 @@
 import React from "react";
 
-const ModalCloseComponent = ({ setShowPointModal }) => {
-    return (
-        <>
-            <div
-                className="modal__close"
-                onClick={() => setShowPointModal(false)}
-            >
-                &times;
-            </div>
-        </>
-    );
+const GenericModalCloseComponent = ({ onClose }) => {
+  return (
+    <>
+      <div className="generic-modal__close" onClick={onClose}>
+        &times;
+      </div>
+    </>
+  );
 };
 
-export default ModalCloseComponent;
+export default GenericModalCloseComponent;

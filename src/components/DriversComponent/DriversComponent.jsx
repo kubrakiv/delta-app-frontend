@@ -122,6 +122,11 @@ const DriversComponent = () => {
   return (
     <>
       <GenericModalComponent
+        title={
+          editDriverProfileMode
+            ? `Редагування водія: ${selectedDriver.full_name}`
+            : `Водій: ${selectedDriver.full_name}`
+        }
         show={showDriverModal}
         onClose={handleModalClose}
         content={
@@ -136,6 +141,7 @@ const DriversComponent = () => {
             handleDriverUpdate={handleDriverUpdate}
           />
         }
+        header
       />
       <div className="drivers-container">
         <div className="drivers-header-block">
