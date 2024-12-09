@@ -38,6 +38,7 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
 
   const order = useSelector((state) => state.ordersInfo.order.data);
   const task = useSelector((state) => state.ordersInfo.task.data);
+
   const editModeTask = useSelector(
     (state) => state.ordersInfo.task.editModeTask
   );
@@ -50,7 +51,11 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
 
   const trucksOptions = transformSelectOptions(trucks, "plates");
   const driversOptions = transformSelectOptions(drivers, "full_name");
-  const taskTypesOptions = transformSelectOptions(taskTypes, "name");
+  // const taskTypesOptions = transformSelectOptions(taskTypes, "name");
+  const taskTypesOptions = useMemo(
+    () => transformSelectOptions(taskTypes, "name"),
+    [taskTypes]
+  );
 
   const [center, setCenter] = useState({ lat: 0, lng: 0 });
 
@@ -77,25 +82,31 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
 
   // Set task data if in edit mode
   useEffect(() => {
-    if (editModeTask) {
-      console.log("Task in edit mode:", task);
-      setTitle(task ? task.title : "");
-      setStartDate(task ? task.start_date : "");
-      setStartTime(task ? task.start_time : "");
-      setEndDate(task ? task.end_date : "");
-      setEndTime(task ? task.end_time : "");
-      setTruck(task ? task.truck : "");
-      setDriver(task ? task.driver : "");
-      // setTaskType(task ? task.type : "");
-      // Find the corresponding task type object from taskTypesOptions
-      const taskTypeOption = taskTypesOptions.find(
-        (option) => option.value === task?.type
-      );
-      setTaskType(taskTypeOption || {});
+    const data = initialTaskData || task; // Use initialTaskData if available
+    if (editModeTask && data) {
+      console.log("Task in edit mode:", data);
+      setTitle(data ? data.title : "");
+      setStartDate(data ? data.start_date : "");
+      setStartTime(data ? data.start_time : "");
+      setEndDate(data ? data.end_date : "");
+      setEndTime(data ? data.end_time : "");
+      setTruck(data ? data.truck : "");
+      setDriver(data ? data.driver : "");
 
+      // Find the corresponding task type object from taskTypesOptions
+      // const taskTypeOption = taskTypesOptions.find(
+      //   (option) => option.value === task?.type
+      // );
+
+      const taskTypeOption = taskTypes.find((type) => type.name === data?.type);
+      setTaskType(
+        taskTypeOption
+          ? { value: taskTypeOption.id, label: taskTypeOption.name }
+          : {}
+      );
       dispatch(setSelectedPoint(selectedOptions));
     }
-  }, [editModeTask, task, selectedOptions, taskTypesOptions]);
+  }, [editModeTask, initialTaskData, task, selectedOptions, taskTypes]);
 
   useEffect(() => {
     if (addTaskMode) {
