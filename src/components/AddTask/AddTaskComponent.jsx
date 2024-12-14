@@ -93,15 +93,10 @@ function AddTaskComponent({ onCloseModal, initialTaskData = null }) {
       setTruck(data ? data.truck : "");
       setDriver(data ? data.driver : "");
 
-      // Find the corresponding task type object from taskTypesOptions
-      // const taskTypeOption = taskTypesOptions.find(
-      //   (option) => option.value === task?.type
-      // );
-
       const taskTypeOption = taskTypes.find((type) => type.name === data?.type);
       setTaskType(
         taskTypeOption
-          ? { value: taskTypeOption.id, label: taskTypeOption.name }
+          ? { value: taskTypeOption.name, label: taskTypeOption.name }
           : {}
       );
       dispatch(setSelectedPoint(selectedOptions));
