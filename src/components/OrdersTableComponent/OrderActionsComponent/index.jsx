@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -38,6 +39,7 @@ const OrderActionsComponent = ({
   onEndDateChange,
 }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const editModeDocument = useSelector((state) => state.documentsInfo.editMode);
 
   const trucks = useSelector(selectTrucks);
@@ -75,9 +77,14 @@ const OrderActionsComponent = ({
     dispatch(setEditModeDocument(!editModeDocument));
   };
 
-  const handleAddTaskButtonClick = (e) => {
-    e.stopPropagation();
-    dispatch(setAddTaskMode(true));
+  // const handleAddTaskButtonClick = (e) => {
+  //   e.stopPropagation();
+  //   dispatch(setAddTaskMode(true));
+  // };
+
+  const handleAddOrderButtonClick = () => {
+    console.log("Add order button clicked");
+    navigate("/orders/add/");
   };
 
   return (
@@ -85,12 +92,12 @@ const OrderActionsComponent = ({
       <div className="order-actions order-details">
         <button
           className="order-actions__add-order-btn"
-          onClick={handleAddTaskButtonClick}
+          onClick={handleAddOrderButtonClick}
           title="Додати маршрут"
         >
           <FaFileAlt />
         </button>
-        <button
+        {/* <button
           className="order-actions__copy-order-btn"
           //   onClick={handleAddTaskButtonClick}
           title="Копіювати маршрут"
@@ -103,7 +110,7 @@ const OrderActionsComponent = ({
           title="Додати документи"
         >
           <FaFolder />
-        </button>
+        </button> */}
         <button
           className="order-actions__find-driver-btn"
           onClick={handleDriverSelect}

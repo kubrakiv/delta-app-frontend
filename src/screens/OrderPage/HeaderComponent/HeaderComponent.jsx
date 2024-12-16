@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 
+import { getRouteTitle } from "../../../utils/getRouteTitle";
+
 import OrderNumberComponent from "../OrderNumberComponent/OrderNumberComponent";
 
 import "./HeaderComponent.scss";
@@ -23,18 +25,6 @@ const HeaderComponent = () => {
     navigate(-1);
   };
 
-  const handleOrderTitle = () => {
-    if (tasks?.length > 0) {
-      return tasks
-        .map(
-          (task) =>
-            `${task.point_details.country_short}-${task.point_details.postal_code} ${task.point_details.city}`
-        )
-        .join(" - ");
-    }
-    return "Маршрут";
-  };
-
   return (
     <>
       <div className="order-details__header">
@@ -46,7 +36,7 @@ const HeaderComponent = () => {
         </div>
         {tasks?.length > 0 && (
           <div className="order-details__header-block">
-            {handleOrderTitle()}
+            {getRouteTitle(tasks)}
           </div>
         )}
 

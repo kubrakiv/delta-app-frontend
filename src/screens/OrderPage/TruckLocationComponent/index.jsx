@@ -6,8 +6,9 @@ import { calculateRouteDistance } from "../../../services/distanceCalculationSer
 import { DELIVERY_CONSTANTS } from "../../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
 
-const TruckLocationComponent = () => {
+const TruckLocationComponent = ({ style }) => {
   const [remainingDistance, setRemainingDistance] = useState(null);
+  const [pendingTask, setPendingTask] = useState(null);
 
   const tasks = useSelector((state) => state.ordersInfo.order.data.tasks);
   const truckLocation = useSelector((state) => state.map.truckLocation);
@@ -38,6 +39,7 @@ const TruckLocationComponent = () => {
           (task.type === LOADING && !(task.end_date && task.end_time)) ||
           (task.type === UNLOADING && !(task.end_date && task.end_time))
       );
+      setPendingTask(pendingTask);
 
       if (!pendingTask) {
         setRemainingDistance(null);
@@ -52,7 +54,7 @@ const TruckLocationComponent = () => {
 
       // Calculate the distance using the service
       const distance = await calculateRouteDistance(truckLocation, destination);
-      setRemainingDistance((distance / 1000).toFixed(2)); // Convert to km and round to 2 decimal places
+      setRemainingDistance((distance / 1000).toFixed(0)); // Convert to km and round to 2 decimal places
     };
 
     calculateRemainingDistance();
@@ -63,14 +65,22 @@ const TruckLocationComponent = () => {
     return null;
   }
 
+  console.log("Pending task", pendingTask);
+
   return (
     <>
-      <div className="order-details__content-row-block order-details__content-row-block_tasks">
-        <div className="order-details__route">
-          <div className="order-details__route_title">Положення авто</div>
-          <div className="order-details__route_distance">
-            Відстань:{" "}
-            {remainingDistance !== null ? `${remainingDistance} км` : "N/A"}
+      <div className={`order-details__content-row ${style}`}>
+        <div className="order-details__content-row-block">
+          <div className="order-details__route">
+            <div className="order-details__route_title">
+              Місцезнаходження авто
+            </div>
+            <div className="order-details__route_distance">
+              Відстань:{" "}
+              {remainingDistance !== null
+                ? `${remainingDistance} км до пункту ${pendingTask?.title}`
+                : "N/A"}
+            </div>
           </div>
         </div>
       </div>

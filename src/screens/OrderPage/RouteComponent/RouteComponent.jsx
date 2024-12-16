@@ -40,7 +40,7 @@ const RouteComponent = () => {
     <>
       {order && (
         <div
-          className="order-details__route"
+          className="order-details__route mb-5"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >

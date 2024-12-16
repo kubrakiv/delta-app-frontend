@@ -7,6 +7,7 @@ import {
   setTruckCurrentLocation,
   setTruckDetails,
 } from "../../../actions/mapActions";
+import TruckLocationComponent from "../../../screens/OrderPage/TruckLocationComponent";
 
 const TruckOnMapModalComponent = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,12 @@ const TruckOnMapModalComponent = () => {
       <GenericModalComponent
         show={showTruckOnMapModal}
         onClose={handleCloseModal}
-        content={<OrderMapComponent />}
+        content={
+          <>
+            <TruckLocationComponent style={"mb-5"} />
+            <OrderMapComponent />
+          </>
+        }
       />
     </>
   );

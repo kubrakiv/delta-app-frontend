@@ -65,7 +65,7 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
   const [endTime, setEndTime] = useState("");
   const [truck, setTruck] = useState("");
   const [driver, setDriver] = useState("");
-  const [taskType, setTaskType] = useState("");
+  const [taskType, setTaskType] = useState({});
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -179,7 +179,7 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
       truck: truck,
       driver: driver,
       order: order?.number, // Create a new order reference
-      type: taskType,
+      type: taskType?.value,
       point_details: selectedPoint,
       point_title: selectedPoint.title,
     };
@@ -238,7 +238,7 @@ function AddTaskNoOrderComponent({ onCloseModal }) {
 
                     <Select
                       className="add-task-details__row-block"
-                      value={taskType || ""}
+                      value={taskType || null}
                       onChange={(selected) => setTaskType(selected)}
                       options={taskTypesOptions}
                       placeholder="Виберіть тип завдання"

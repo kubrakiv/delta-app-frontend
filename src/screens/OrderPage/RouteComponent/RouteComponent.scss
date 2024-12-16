@@ -65,7 +65,6 @@
   background-color: rgba(30, 88, 235, 0.3);
   padding: 5px;
   border-radius: 4px;
-  margin-bottom: 5px;
   transition: all 0.5s ease;
   &:hover {
     background-color: rgba(30, 88, 235, 0.5);
@@ -76,7 +75,8 @@
     font-size: 14px;
   }
   &_distance {
-    width: calc(50% - 10px);
+    width: calc(100% - 20px);
+    // width: 100%;
     font-size: 14px;
     margin-left: 20px;
   }

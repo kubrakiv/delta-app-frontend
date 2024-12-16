@@ -2,6 +2,19 @@
 
 .order-details {
   padding-right: 0px;
+
+  &__route {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    background-color: rgba(30, 88, 235, 0.3);
+    padding: 5px;
+    border-radius: 4px;
+    // margin-bottom: 5px;
+    transition: all 0.5s ease;
+  }
+
   &__header {
     position: sticky;
     display: flex;
@@ -289,5 +302,9 @@
 }
 
 .form-select-mb5 {
+  margin-bottom: 5px;
+}
+
+.mb-5 {
   margin-bottom: 5px;
 }

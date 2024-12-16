@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { DirectionsService, useJsApiLoader } from "@react-google-maps/api";
-import { formatDuration } from "../../utils/formatDuration";
 import { getCsrfToken } from "../../utils/getCsrfToken";
 import { getUserDetails } from "../../actions/userActions";
+import { getRouteNoOrderTasks, getRouteTitle } from "../../utils/getRouteTitle";
 import {
   clearTaskListNoOrder,
   setAddTaskNoOrderMode,
@@ -42,6 +42,8 @@ function AddOrder() {
   const taskListNoOrder = useSelector(
     (state) => state.ordersInfo.taskListNoOrder.data
   );
+  console.log("Task list no order", taskListNoOrder);
+
   const trucks = useSelector((state) => state.trucksInfo.trucks.data);
   const drivers = useSelector((state) => state.driversInfo.drivers.data);
   const customers = useSelector((state) => state.customersInfo.customers.data);
@@ -358,10 +360,7 @@ function AddOrder() {
               </div>
               {tasks.length > 0 && (
                 <div className="add-order-details__header-block">
-                  {tasks.reduce((acc, task, index) => {
-                    const taskString = `${task.point_details.country_short}-${task.point_details.postal_code} ${task.point_details.city}`;
-                    return index === 0 ? taskString : `${acc} - ${taskString}`;
-                  }, "")}
+                  {getRouteNoOrderTasks(tasks)}
                 </div>
               )}
 
