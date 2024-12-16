@@ -3,6 +3,11 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
+import { extractRoute } from "../../utils/getRoute";
+import { transformDate } from "../../utils/formatDate";
+import { getEmailsFromOrder } from "../../utils/getEmailsFromOrder";
+import { getCmrNumber } from "../../utils/getCmrNumber";
+
 import { FaEnvelope, FaEnvelopeOpenText } from "react-icons/fa";
 
 import { DELIVERY_CONSTANTS } from "../../constants/global";
@@ -13,6 +18,10 @@ const EmailSenderComponent = () => {
   const documents = useSelector(
     (state) => state.documentsInfo.documents.data.documents
   );
+  const invoiceData = useSelector(
+    (state) => state.invoicesInfo.invoiceDetails.data
+  );
+  const customer = useSelector((state) => state.customersInfo.customer.data);
 
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -37,22 +46,29 @@ const EmailSenderComponent = () => {
     setIsSending(true);
     try {
       // Extracting necessary information
-      const customerEmail = [
-        "ymailo096@gmail.com",
-        // "maylo.ya@agromat.ua",
-        "kubrak.i@agromat.ua",
-        "kubrak.ivan@gmail.com",
-      ];
+      const customerEmail = getEmailsFromOrder(order, customer);
+      // const customerEmail = [
+      //   "ymailo096@gmail.com",
+      //   "maylo.ya@agromat.ua",
+      //   "kubrak.i@agromat.ua",
+      //   "kubrak.ivan@gmail.com",
+      // ];
       const documentFiles = documents.map((doc) => doc.file);
 
       // Prepare data to be sent to the backend
       const emailData = {
         order_number: order.order_number,
-        customer_email: customerEmail,
+        customer: order.customer,
         customer_manager: order.customer_manager,
+        customer_email: customerEmail,
         price: order.price,
-        file_name: "Документи",
         documents: documentFiles,
+        route: extractRoute(order),
+        payment_type: order.payment_type,
+        invoice_number: invoiceData?.number,
+        invoice_date: transformDate(invoiceData?.invoicing_date),
+        post_address: customer?.post_address,
+        cmr_number: getCmrNumber(documents),
       };
 
       if (isOrderFinished) {

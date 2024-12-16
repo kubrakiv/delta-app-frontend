@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-import "./DriversComponent.scss";
-import SearchComponent from "../../globalComponents/SearchComponent";
-import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import driverImagePlaceholder from "../../img/driver_placeholder.jpg";
 import cn from "classnames";
-import GenericModalComponent from "../../globalComponents/GenericModalComponent";
-import EditDriverComponent from "./EditDriverComponent/EditDriverComponent";
-import { useDispatch, useSelector } from "react-redux";
 import {
   deleteDriver,
   listDrivers,
   setUpdateDriversList,
 } from "../../actions/driverActions";
-import RegisterFormComponent from "../../screens/RegisterPage/RegisterFormComponent";
-import { useNavigate } from "react-router-dom";
 
-const { REACT_APP_PROXY: BASE_URL } = import.meta.env;
+import GenericModalComponent from "../../globalComponents/GenericModalComponent";
+import EditDriverComponent from "./EditDriverComponent/EditDriverComponent";
+import SearchComponent from "../../globalComponents/SearchComponent";
+
+import { FaPencilAlt, FaPlus, FaRegTrashAlt } from "react-icons/fa";
+
+import "./DriversComponent.scss";
+
+// const { REACT_APP_PROXY: BASE_URL } = import.meta.env;
+const { REACT_APP_API_BASE_URL: BASE_URL } = import.meta.env;
 
 const DriversComponent = () => {
   const dispatch = useDispatch();
