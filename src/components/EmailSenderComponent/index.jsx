@@ -7,6 +7,7 @@ import { extractRoute } from "../../utils/getRoute";
 import { transformDate } from "../../utils/formatDate";
 import { getEmailsFromOrder } from "../../utils/getEmailsFromOrder";
 import { getCmrNumber } from "../../utils/getCmrNumber";
+import { getPostAddressFromOrder } from "../../utils/getPostAddress";
 
 import { FaEnvelope, FaEnvelopeOpenText } from "react-icons/fa";
 
@@ -21,7 +22,7 @@ const EmailSenderComponent = () => {
   const invoiceData = useSelector(
     (state) => state.invoicesInfo.invoiceDetails.data
   );
-  const customer = useSelector((state) => state.customersInfo.customer.data);
+  const customers = useSelector((state) => state.customersInfo.customers.data);
 
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -46,13 +47,8 @@ const EmailSenderComponent = () => {
     setIsSending(true);
     try {
       // Extracting necessary information
-      const customerEmail = getEmailsFromOrder(order, customer);
-      // const customerEmail = [
-      //   "ymailo096@gmail.com",
-      //   "maylo.ya@agromat.ua",
-      //   "kubrak.i@agromat.ua",
-      //   "kubrak.ivan@gmail.com",
-      // ];
+      const customerEmail = getEmailsFromOrder(order, customers);
+      console.log("Customer email", customerEmail);
       const documentFiles = documents.map((doc) => doc.file);
 
       // Prepare data to be sent to the backend
@@ -67,9 +63,10 @@ const EmailSenderComponent = () => {
         payment_type: order.payment_type,
         invoice_number: invoiceData?.number,
         invoice_date: transformDate(invoiceData?.invoicing_date),
-        post_address: customer?.post_address,
+        post_address: getPostAddressFromOrder(order, customers),
         cmr_number: getCmrNumber(documents),
       };
+      console.log("Email data", emailData);
 
       if (isOrderFinished) {
         await axios.post("/api/send-email/", emailData);
