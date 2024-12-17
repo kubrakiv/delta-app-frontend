@@ -227,7 +227,7 @@ const InvoiceComponent = () => {
       user: userInfo.id,
     };
 
-    console.log("Invoice data", newInvoiceData);
+    console.log("New invoice data", newInvoiceData);
     dispatch(createInvoice(newInvoiceData));
     dispatch(listOrderDetails(order.id));
   };

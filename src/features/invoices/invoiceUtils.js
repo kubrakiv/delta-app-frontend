@@ -115,7 +115,7 @@ export const renderRouteTitle = (order) => {
 };
 
 export const totalPrice = (vat, price) => {
-  return vat
+  return parseInt(vat)
     ? (parseFloat(price) + parseFloat(price) * 0.21).toFixed(2)
     : parseFloat(price).toFixed(2);
 };
