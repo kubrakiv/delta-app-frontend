@@ -28,6 +28,7 @@ import {
 } from "../../../features/trucks/trucksSlice";
 
 import "./style.scss";
+import { set } from "date-fns";
 
 const TrucksTableComponent = ({ trucks, trailers, drivers }) => {
   const dispatch = useDispatch();
@@ -76,6 +77,8 @@ const TrucksTableComponent = ({ trucks, trailers, drivers }) => {
 
     setChangeMode(false);
     setSelectedTrucks([]);
+    setSelectedTrailer(null);
+    setSelectedDriver(null);
   };
 
   const handleAddTruckButton = () => {
