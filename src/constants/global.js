@@ -9,6 +9,15 @@ export const DELIVERY_CONSTANTS = {
   COMPLETED: "Completed",
 };
 
+export const ORDER_STATUSES = {
+  CREATED: { id: 1, name: "created" },
+  PLANNED: { id: 2, name: "planned" },
+  IN_TRANSIT: { id: 4, name: "in_transit" },
+  COMPLETED: { id: 6, name: "completed" },
+  DOCUMENTS_SENT: { id: 7, name: "documents_sent" },
+  PAID: { id: 8, name: "paid" },
+};
+
 export const CUSTOMER_MANAGER_CONSTANTS = {
   FULL_NAME: "full_name",
   POSITION: "position",

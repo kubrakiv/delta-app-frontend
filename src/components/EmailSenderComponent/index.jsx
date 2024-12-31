@@ -1,7 +1,9 @@
-import axios from "axios";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
+
+import { sendEmail } from "../../features/emails/emailsOperations";
+import { updateOrderStatus } from "../../features/orderStatuses/orderStatusesOperations";
 
 import { extractRoute } from "../../utils/getRoute";
 import { transformDate } from "../../utils/formatDate";
@@ -11,10 +13,12 @@ import { getPostAddressFromOrder } from "../../utils/getPostAddress";
 
 import { FaEnvelope, FaEnvelopeOpenText } from "react-icons/fa";
 
-import { DELIVERY_CONSTANTS } from "../../constants/global";
+import { DELIVERY_CONSTANTS, ORDER_STATUSES } from "../../constants/global";
 const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
+const { DOCUMENTS_SENT } = ORDER_STATUSES;
 
 const EmailSenderComponent = () => {
+  const dispatch = useDispatch();
   const order = useSelector((state) => state.ordersInfo.order.data);
   const documents = useSelector(
     (state) => state.documentsInfo.documents.data.documents
@@ -34,6 +38,21 @@ const EmailSenderComponent = () => {
       task.end_time
   );
 
+  // const updateOrderStatus = async (order_id) => {
+  //   try {
+  //     await axios.post(`/api/order-statuses/${order_id}/update-status/`, {
+  //       status_id: ORDER_STATUSES.DOCUMENTS_SENT.id,
+  //     });
+  //     toast.success("Order status updated to 'Documents Sent'.", {
+  //       position: "top-right",
+  //     });
+  //   } catch (error) {
+  //     toast.error("Failed to update order status.", {
+  //       position: "top-right",
+  //     });
+  //   }
+  // };
+
   const handleSendEmail = async () => {
     console.log("Sending email...");
     const confirmSending = window.confirm(
@@ -41,14 +60,13 @@ const EmailSenderComponent = () => {
     );
     if (!confirmSending) {
       console.log("Email sending cancelled.");
-      return; // Exit if the user cancels the deletion
+      return; // Exit if the user cancels
     }
 
     setIsSending(true);
     try {
       // Extracting necessary information
       const customerEmail = getEmailsFromOrder(order, customers);
-      console.log("Customer email", customerEmail);
       const documentFiles = documents.map((doc) => doc.file);
 
       // Prepare data to be sent to the backend
@@ -66,30 +84,58 @@ const EmailSenderComponent = () => {
         post_address: getPostAddressFromOrder(order, customers),
         cmr_number: getCmrNumber(documents),
       };
-      console.log("Email data", emailData);
+      console.log("Email data:", emailData);
 
-      if (isOrderFinished) {
-        await axios.post("/api/send-email/", emailData);
-        toast.success("Email sent successfully.", {
-          position: "top-right",
-          style: { color: "black", marginTop: "0rem" },
-        });
-        setMessage("Email sent successfully.");
-      } else {
+      if (!isOrderFinished) {
         toast.error("Order is not finished yet.", {
           position: "top-right",
           style: { color: "black", marginTop: "0rem" },
         });
         setMessage("Order is not finished yet.");
+        setIsSending(false);
+        return;
       }
+
+      // Dispatch sendEmail and ensure it succeeds
+      const emailResult = await dispatch(sendEmail(emailData)).unwrap();
+      console.log("Email result:", emailResult);
+
+      toast.success("Email sent successfully.", {
+        position: "top-right",
+        style: { color: "black", marginTop: "0rem" },
+      });
+
+      // Update order status after successful email dispatch
+      try {
+        const orderStatusData = {
+          status_id: ORDER_STATUSES.DOCUMENTS_SENT.id,
+        };
+        await dispatch(
+          updateOrderStatus({ orderId: order.id, orderStatusData })
+        ).unwrap(); // Unwrap to handle success/failure
+        toast.success("Order status updated to 'Documents Sent'.", {
+          position: "top-right",
+          style: { color: "black", marginTop: "0rem" },
+        });
+      } catch (statusError) {
+        console.error("Failed to update order status:", statusError);
+        toast.error("Failed to update order status.", {
+          position: "top-right",
+          style: { color: "black", marginTop: "0rem" },
+        });
+      }
+
+      setMessage("Email sent successfully.");
     } catch (error) {
+      console.error("Failed to send email:", error);
       toast.error("Failed to send email.", {
         position: "top-right",
         style: { color: "black", marginTop: "0rem" },
       });
-      setMessage("Failed");
+      setMessage("Failed to send email.");
+    } finally {
+      setIsSending(false);
     }
-    setIsSending(false);
   };
 
   return (

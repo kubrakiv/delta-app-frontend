@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import chroma from "chroma-js";
 
 import { deleteOrder, listOrders } from "../../actions/orderActions";
-import { formattedTime } from "../../utils/formattedTime";
+import { extractTime, formattedTime } from "../../utils/formattedTime";
 import { listTrucks } from "../../features/trucks/trucksOperations";
 import { listDrivers } from "../../actions/driverActions";
 import { transformDate } from "../../utils/formatDate";
@@ -270,7 +270,17 @@ function OrdersTableComponent() {
                     </td>
                     {/* Order status */}
                     <td className="orders-table__body-td">
-                      <OrderStatusComponent order={order} />
+                      {/* <OrderStatusComponent order={order} /> */}
+                      {order.current_status ? (
+                        <span
+                          style={{ textTransform: "capitalize", width: "100%" }}
+                          className={`order-status ${"green"}`}
+                        >
+                          {order.current_status.status}
+                        </span>
+                      ) : (
+                        <span></span>
+                      )}
                     </td>
                     {/* Invoice status */}
                     <td className="orders-table__body-td">
@@ -278,7 +288,26 @@ function OrdersTableComponent() {
                     </td>
                     {/* Documents status */}
                     <td className="orders-table__body-td">
-                      <FaCheck style={{ color: "red" }} />
+                      {(() => {
+                        const documentStatus = order?.status_history.find(
+                          (status) => status.status === "documents_sent"
+                        );
+
+                        if (documentStatus) {
+                          const { started_at } = documentStatus;
+                          return (
+                            <>
+                              <span>Sent</span>
+                              <br />
+                              <span>{transformDate(started_at)}</span>
+                              <br />
+                              <span>at {extractTime(started_at)}</span>
+                            </>
+                          );
+                        }
+
+                        return <FaCheck style={{ color: "red" }} />;
+                      })()}
                     </td>
 
                     <td className="orders-table__body-td">
