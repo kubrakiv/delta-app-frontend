@@ -12,8 +12,8 @@ const DocumentsTableComponent = () => {
   );
   const editModeDocument = useSelector((state) => state.documentsInfo.editMode);
 
-  // const BASE_URL = import.meta.env.REACT_APP_API_BASE_URL;
-  const BASE_URL = import.meta.env.REACT_APP_PROXY;
+  const BASE_URL = import.meta.env.REACT_APP_API_BASE_URL;
+  // const BASE_URL = import.meta.env.REACT_APP_PROXY;
 
   useEffect(() => {
     if (editModeDocument) {

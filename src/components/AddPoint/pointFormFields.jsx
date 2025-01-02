@@ -64,7 +64,7 @@ export const formFields = [
     id: STREET_NUMBER,
     title: "Номер будинку",
     label: "Номер будинку",
-    type: "number",
+    type: "text",
     placeholder: "Номер будинку",
     component: "input",
   },
