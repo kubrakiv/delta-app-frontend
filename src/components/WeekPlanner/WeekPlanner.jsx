@@ -243,12 +243,30 @@ export const WeekPlanner = () => {
                 //   )
                 // );
                 const weeklyTasks = datesArray.map((date) =>
-                  tasks.filter(
-                    (task) =>
-                      isSameDate(task.start_date, date[1]) &&
-                      task.truck === truck.plates
-                  )
+                  tasks
+                    .filter(
+                      (task) =>
+                        isSameDate(task.start_date, date[1]) &&
+                        task.truck === truck.plates
+                    )
+                    .sort((a, b) => {
+                      // Compare based on start_date and start_time
+                      const startDateComparison =
+                        new Date(a.start_date + " " + a.start_time) -
+                        new Date(b.start_date + " " + b.start_time);
+
+                      if (startDateComparison !== 0) {
+                        return startDateComparison;
+                      }
+
+                      // If start_date and start_time are equal, fallback to end_date and end_time
+                      return (
+                        new Date(a.end_date + " " + a.end_time) -
+                        new Date(b.end_date + " " + b.end_time)
+                      );
+                    })
                 );
+                console.log("weeklyTasks", weeklyTasks);
 
                 return (
                   <div className="week-truck__row" key={truck.id}>
