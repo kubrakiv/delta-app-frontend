@@ -11,12 +11,6 @@ const InvoiceStatusComponent = ({ order }) => {
           color: "green",
         };
       }
-      // if (invoice.send_date) {
-      //   return {
-      //     status: `Sent ${transformDate(invoice.send_date)}`,
-      //     color: "blue",
-      //   };
-      // }
       if (invoice.due_date) {
         const currentDate = new Date();
         const dueDate = new Date(invoice.due_date);
@@ -41,10 +35,6 @@ const InvoiceStatusComponent = ({ order }) => {
           };
         }
       }
-      // return {
-      //   status: `Created ${transformDate(invoice.created_at)}`,
-      //   color: "light-blue",
-      // };
     }
     return { status: "No Invoice", color: "gray" };
   };
