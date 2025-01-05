@@ -6,7 +6,7 @@ import StartScreen from "./screens/StartScreen";
 import ProfilePage from "./screens/ProfilePage/ProfilePage";
 import UserListPage from "./screens/UserListPage/UserListPage";
 import UserEditPage from "./screens/UserEditPage/UserEditPage";
-import Orders from "./components/Orders/Orders";
+// import Orders from "./components/Orders/Orders";
 import OrdersTableComponent from "./components/OrdersTableComponent/OrdersTableComponent";
 import PlanScreen from "./screens/PlanScreen";
 import TaskPage from "./screens/TaskPage/TaskPage";
@@ -42,7 +42,7 @@ const routes = [
   { path: "/profile", element: <ProfilePage />, roles: ["admin", "logist"] },
   { path: "/admin/userlist", element: <UserListPage />, roles: ["admin"] },
   { path: "/admin/user/:id/edit", element: <UserEditPage />, roles: ["admin"] },
-  { path: "/orders-list", element: <Orders />, roles: ["admin", "logist"] },
+  // { path: "/orders-list", element: <Orders />, roles: ["admin", "logist"] },
   {
     path: "/orders",
     element: <OrdersTableComponent />,

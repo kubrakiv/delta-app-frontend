@@ -1,7 +1,8 @@
 import React from "react";
+import InvoicesListComponent from "./InvoicesListComponent";
 
 const InvoicePage = () => {
-  return <div>InvoicePage</div>;
+  return <InvoicesListComponent />;
 };
 
 export default InvoicePage;
