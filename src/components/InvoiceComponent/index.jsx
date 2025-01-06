@@ -195,10 +195,27 @@ const InvoiceComponent = () => {
   };
 
   const handleGoBack = () => {
-    navigate(-1);
+    if (location.state?.fromOrder) {
+      navigate(`/orders/${order.id}`); // Replace `/orders/${order.id}` with your order page URL
+    } else {
+      navigate(-1); // Default behavior
+    }
   };
 
-  const handleCreateInvoice = () => {
+  const handleCreateInvoice = async () => {
+    // Parse and validate price
+    const parsedPrice = parseFloat(order.price);
+    if (isNaN(parsedPrice)) {
+      console.error("Invalid price:", order.price);
+      return;
+    }
+
+    // Determine VAT amount and total price
+    const vatAmount = order.vat ? parsedPrice * 0.21 : 0;
+    const totalPriceValue = order.vat
+      ? (parsedPrice + vatAmount).toFixed(2)
+      : parsedPrice.toFixed(2);
+
     let newInvoiceData = {
       invoice_number: "",
       service_name: renderRouteTitle(order),
@@ -211,7 +228,7 @@ const InvoiceComponent = () => {
       order_id: order.id,
       price: parseFloat(order.price),
       vat: order.vat ? order.price * 0.21 : 0,
-      total_price: parseFloat(totalPrice(order.vat, order)),
+      total_price: parseFloat(totalPriceValue),
       currency: getCurrencyId(order?.currency),
       currency_rate: parseFloat(COMPANY_CURRENCY).toFixed(3),
       customer_id: customer.id,
@@ -228,8 +245,17 @@ const InvoiceComponent = () => {
     };
 
     console.log("New invoice data", newInvoiceData);
-    dispatch(createInvoice(newInvoiceData));
-    dispatch(listOrderDetails(order.id));
+    try {
+      const response = await dispatch(createInvoice(newInvoiceData)).unwrap();
+      dispatch(listOrderDetails(order.id));
+      if (response?.id) {
+        navigate(`/invoices/${response.id}`, { state: { fromOrder: true } });
+      } else {
+        console.error("Failed to create invoice: Missing invoice ID");
+      }
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+    }
   };
 
   const handleUpdateInvoice = () => {
