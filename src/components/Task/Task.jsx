@@ -17,7 +17,8 @@ import {
 } from "../../features/planner/plannerSelectors";
 
 import { DELIVERY_CONSTANTS } from "../../constants/global";
-const { LOADING, UNLOADING } = DELIVERY_CONSTANTS;
+const { LOADING, UNLOADING, SERVICE, DRIVING, WEEKEND, RESERVE } =
+  DELIVERY_CONSTANTS;
 
 import "./Task.scss";
 import { setShowTruckOnMapModal } from "../../features/planner/plannerSlice";
@@ -140,17 +141,20 @@ function Task({
         } else {
           return "rgba(0, 0, 255, 0.8)"; //blue color
         }
-
       case UNLOADING:
         if (!endDate || !endTime) {
           return "rgb(255, 0, 255)"; //pink color
         } else {
           return "rgba(0, 255, 0, 0.8)"; //green color
         }
-      case "Service":
+      case SERVICE:
         return "red"; //red color
-      case "Driving":
-        return "rgba(255, 165, 0, 0.8)"; //orange color
+      case DRIVING:
+        return "rgba(255, 229, 152, 1)"; //sweet yellow color
+      case RESERVE:
+        return "rgba(0, 255, 255, 1)"; //cyan color
+      case WEEKEND:
+        return "rgba(255, 153, 0, 1)"; //orange color
       default:
         return "rgba(140, 177, 186, 0.3)"; //grey color
     }
@@ -166,8 +170,6 @@ function Task({
         }
       case UNLOADING:
         return "black";
-      // case "Ремонт":
-      // return "white";
       default:
         return "black";
     }
@@ -265,7 +267,11 @@ function Task({
                   <FaRegTrashAlt />
                 </button>
               )}
-              {task.type === "Service" || task.type === "Driving" ? (
+              {task.type === "Service" ||
+              task.type === "Driving" ||
+              task.type === "Service" ||
+              task.type === "Weekend" ||
+              task.type === "Reserve" ? (
                 <button
                   type="button"
                   title="Редагувати"

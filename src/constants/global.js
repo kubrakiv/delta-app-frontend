@@ -1,6 +1,10 @@
 export const DELIVERY_CONSTANTS = {
   UNLOADING: "Unloading",
   LOADING: "Loading",
+  SERVICE: "Service",
+  DRIVING: "Driving",
+  WEEKEND: "Weekend",
+  RESERVE: "Reserve",
   DELIVERY: "Delivery",
   WAITING: "Waiting",
   DELIVERED: "Delivered",
