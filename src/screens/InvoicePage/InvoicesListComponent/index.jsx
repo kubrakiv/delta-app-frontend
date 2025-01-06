@@ -64,7 +64,6 @@ const InvoicesListComponent = () => {
       formatNumberForExcel(invoice.vat),
       formatNumberForExcel(invoice.total_price),
       invoice.currency,
-      transformDateFormat(invoice.due_date),
       invoice.order_number,
       invoice.customer,
       invoice.service_name,
@@ -84,7 +83,6 @@ const InvoicesListComponent = () => {
       "ПДВ",
       "Загальна ціна",
       "Валюта",
-      "Дата оплати",
       "Номер замовлення",
       "Замовник",
       "Послуга",
@@ -156,9 +154,8 @@ const InvoicesListComponent = () => {
                 </td>
                 <td className="invoices-table__body-td">{invoice.number}</td>
                 <td
-                  headers={"Customer"}
                   className="invoices-table__body-td"
-                  style={{ marginLeft: "0px" }}
+                  style={{ textAlign: "right" }}
                 >
                   {formatNumber(invoice.price)}
                 </td>

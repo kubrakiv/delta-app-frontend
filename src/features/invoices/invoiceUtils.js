@@ -115,9 +115,14 @@ export const renderRouteTitle = (order) => {
 };
 
 export const totalPrice = (vat, price) => {
-  return parseInt(vat)
-    ? (parseFloat(price) + parseFloat(price) * 0.21).toFixed(2)
-    : parseFloat(price).toFixed(2);
+  const isVatApplicable = typeof vat === "boolean" ? vat : parseInt(vat) !== 0;
+  const priceFloat = parseFloat(price);
+
+  if (isNaN(priceFloat)) return 0;
+
+  return isVatApplicable
+    ? (priceFloat + priceFloat * 0.21).toFixed(2)
+    : priceFloat.toFixed(2);
 };
 
 export const formatNumber = (num) => {

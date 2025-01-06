@@ -575,7 +575,6 @@ const InvoiceComponent = () => {
       </div>
 
       {/* VAT Tables */}
-      {console.log("VAT", parseInt(invoiceData?.vat)) === 0}
       {parseInt(invoiceData.vat) !== 0 && (
         <>
           <div style={{ marginTop: "20px" }}>
