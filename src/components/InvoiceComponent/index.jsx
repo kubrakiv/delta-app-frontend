@@ -43,8 +43,8 @@ const InvoiceComponent = () => {
   );
 
   const isInvoiceCreate = location.state.isInvoiceCreate;
-
   const orderState = location.state.order;
+  const invoiceFromTable = location.state.invoiceFromTable;
 
   const orderStore = useSelector((state) => state.ordersInfo.order.data);
 
@@ -384,17 +384,20 @@ const InvoiceComponent = () => {
       {/* Invoice Actions */}
       <div className="invoice__actions">
         {/* Update Invoice Button */}
-        {invoiceData && isInvoiceUpdateNeeded && !isInvoiceCreate && (
-          <button
-            type="button"
-            id="updateInvoiceButton"
-            className="invoice__update-invoice-btn"
-            onClick={handleUpdateInvoice}
-            title="Оновити інвойс"
-          >
-            Оновити інвойс
-          </button>
-        )}
+        {invoiceData &&
+          isInvoiceUpdateNeeded &&
+          !isInvoiceCreate &&
+          !invoiceFromTable && (
+            <button
+              type="button"
+              id="updateInvoiceButton"
+              className="invoice__update-invoice-btn"
+              onClick={handleUpdateInvoice}
+              title="Оновити інвойс"
+            >
+              Оновити інвойс
+            </button>
+          )}
       </div>
 
       {/* Invoice Header */}

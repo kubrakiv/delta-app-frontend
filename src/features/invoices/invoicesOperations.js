@@ -52,6 +52,21 @@ export const updateInvoice = createAsyncThunk(
   }
 );
 
+export const updateInvoicePaymentDate = createAsyncThunk(
+  "invoice/updateInvoicePaymentDate",
+  async (invoice, thunkAPI) => {
+    try {
+      const { data } = await axios.put(
+        `/api/invoices/update/${invoice.id}/payment-date/`,
+        invoice
+      );
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue({ error: error.message });
+    }
+  }
+);
+
 export const deleteInvoice = createAsyncThunk(
   "invoice/deleteInvoice",
   async (id, thunkAPI) => {

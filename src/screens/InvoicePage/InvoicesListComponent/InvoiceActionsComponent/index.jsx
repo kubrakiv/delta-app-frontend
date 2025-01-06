@@ -59,7 +59,7 @@ const InvoiceActionsComponent = ({
             <DatePicker
               selected={startDate}
               onChange={onStartDateChange}
-              placeholderText="Select Start Date"
+              placeholderText="Початкова дата"
               className="date-picker styled-date-picker"
               dateFormat="dd.MM.yyyy"
               isClearable
@@ -67,7 +67,7 @@ const InvoiceActionsComponent = ({
             <DatePicker
               selected={endDate}
               onChange={onEndDateChange}
-              placeholderText="Select End Date"
+              placeholderText="Кінцева дата"
               className="date-picker styled-date-picker"
               dateFormat="dd.MM.yyyy"
               isClearable

@@ -1,26 +1,40 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import * as XLSX from "xlsx"; // Import xlsx library
+import { FaSave, FaTimes } from "react-icons/fa";
 
 import { selectInvoices } from "../../../features/invoices/invoicesSelectors";
-import { listInvoices } from "../../../features/invoices/invoicesOperations";
-import tableHeaderInvoices from "./tableHeaderInvoices.json";
+import {
+  listInvoiceDetails,
+  listInvoices,
+} from "../../../features/invoices/invoicesOperations";
 
 import { formatNumberForExcel } from "../../../utils/formatNumber";
 import { formatNumber } from "../../../features/invoices/invoiceUtils";
 import { transformDate, transformDateFormat } from "../../../utils/formatDate";
+import { updateInvoicePaymentDate } from "../../../features/invoices/invoicesOperations";
 
 import InvoiceActionsComponent from "../InvoicesListComponent/InvoiceActionsComponent";
 
+import tableHeaderInvoices from "./tableHeaderInvoices.json";
+
 import "./style.scss";
+import { setInvoiceUpdateNeeded } from "../../../features/invoices/invoicesSlice";
 
 const InvoicesListComponent = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const invoicesList = useSelector(selectInvoices);
   console.log("Invoices List", invoicesList);
 
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [paymentDate, setPaymentDate] = useState(null);
+  const [showInputField, setShowInputField] = useState(false);
+  const [editableRowId, setEditableRowId] = useState(null); // Track editable row ID
 
   useEffect(() => {
     dispatch(listInvoices());
@@ -119,6 +133,24 @@ const InvoicesListComponent = () => {
     XLSX.writeFile(workbook, fileName);
   };
 
+  const handlePaymentDate = async (invoice) => {
+    console.log("Payment date", paymentDate);
+    const dataToUpdate = {
+      id: invoice.id,
+      payment_date: paymentDate,
+    };
+    await dispatch(updateInvoicePaymentDate(dataToUpdate)).unwrap();
+    dispatch(listInvoices());
+    setEditableRowId(null); // Close the input field after saving
+  };
+
+  const handleInvoiceOpen = (id) => {
+    dispatch(listInvoiceDetails(id));
+    navigate(`/invoices/${id}`, {
+      state: { isInvoiceCreate: false, invoiceFromTable: true },
+    });
+  };
+
   return (
     <div className="invoices-table-container">
       <div className="invoices-table-block">
@@ -148,26 +180,30 @@ const InvoicesListComponent = () => {
           </thead>
           <tbody className="invoices-table__body">
             {filteredInvoices.map((invoice) => (
-              <tr key={invoice.id} className="invoices-table__body-row">
+              <tr
+                key={invoice.id}
+                className="invoices-table__body-row"
+                onDoubleClick={() => handleInvoiceOpen(invoice.id)}
+              >
                 <td className="invoices-table__body-td">
                   {transformDateFormat(invoice.invoicing_date)}
                 </td>
                 <td className="invoices-table__body-td">{invoice.number}</td>
                 <td
                   className="invoices-table__body-td"
-                  style={{ textAlign: "right" }}
+                  style={{ textAlign: "right", whiteSpace: "nowrap" }}
                 >
                   {formatNumber(invoice.price)}
                 </td>
                 <td
                   className="invoices-table__body-td"
-                  style={{ textAlign: "right" }}
+                  style={{ textAlign: "right", whiteSpace: "nowrap" }}
                 >
                   {formatNumber(invoice.vat)}
                 </td>
                 <td
                   className="invoices-table__body-td"
-                  style={{ textAlign: "right" }}
+                  style={{ textAlign: "right", whiteSpace: "nowrap" }}
                 >
                   {formatNumber(invoice.total_price)}
                 </td>
@@ -176,16 +212,65 @@ const InvoicesListComponent = () => {
                   {transformDateFormat(invoice.due_date)}
                 </td>
                 <td className="invoices-table__body-td">
-                  {invoice.paid_date && transformDateFormat(invoice.paid_date)}
-                </td>
-                <td headers={"Status"} className="invoices-table__body-td">
-                  {invoice.invoicing_date !== null ? (
-                    <div style={{ color: "red" }}>Не оплачено</div>
+                  {invoice.payment_date ? (
+                    transformDateFormat(invoice.payment_date)
                   ) : (
-                    <div style={{ color: "green" }}>Оплачено</div>
+                    <>
+                      {editableRowId !== invoice.id && (
+                        <button
+                          type="button"
+                          className="invoices-header-block__add-order-btn"
+                          onClick={() => {
+                            setEditableRowId(invoice.id);
+                            setPaymentDate(null); // Clear previous input
+                          }}
+                        >
+                          Додати
+                        </button>
+                      )}
+                      {editableRowId === invoice.id && (
+                        <div className="payment-date-input-wrapper">
+                          <input
+                            type="date"
+                            className="payment-date-input"
+                            value={paymentDate}
+                            onChange={(e) => setPaymentDate(e.target.value)}
+                          />
+                          <button
+                            type="button"
+                            className="payment-date-save-btn"
+                            title="Зберегти"
+                            onClick={() => handlePaymentDate(invoice)}
+                          >
+                            <FaSave />
+                          </button>
+                          <button
+                            className="payment-date-reject-btn"
+                            onClick={() => setEditableRowId(null)}
+                            title="Відмінити"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </td>
-                <td className="invoices-table__body-td">
+                <td headers={"Status"} className="invoices-table__body-td">
+                  {invoice.payment_date === null ? (
+                    <div style={{ color: "red", fontWeight: "bold" }}>
+                      Не оплачено
+                    </div>
+                  ) : (
+                    <div style={{ color: "green", fontWeight: "bold" }}>
+                      Оплачено
+                    </div>
+                  )}
+                </td>
+                <td
+                  className="invoices-table__body-td"
+                  style={{ whiteSpace: "nowrap" }}
+                >
                   {invoice.order_number}
                 </td>
                 <td className="invoices-table__body-td">{invoice.customer}</td>
