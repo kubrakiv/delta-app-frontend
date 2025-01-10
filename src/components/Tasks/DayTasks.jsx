@@ -1,5 +1,8 @@
 import Task from "../Task/Task";
 import AddTaskButton from "../AddTaskButton/AddTaskButton";
+import TachoCardComponent from "../WeekPlanner/TachoCardComponent";
+
+import "./DayTasks.scss";
 
 function DayTasks({
   tasks,
@@ -28,12 +31,15 @@ function DayTasks({
             />
           </div>
         ))}
-      <AddTaskButton
-        onTruckDateSelect={onTruckDateSelect}
-        dayNumber={dayNumber}
-        truckId={truckId}
-        style={week}
-      />
+      <div className="weekplanner__button-container">
+        <AddTaskButton
+          onTruckDateSelect={onTruckDateSelect}
+          dayNumber={dayNumber}
+          truckId={truckId}
+          style={week}
+        />
+        <TachoCardComponent truckId={truckId} />
+      </div>
     </>
   );
 }
