@@ -14,10 +14,27 @@ export default defineConfig({
     }),
     envCompatible(),
   ],
+  // server: {
+  //   port: 3000,
+  //   open: true,
+  //   proxy: {
+  //     "/api": {
+  //       target: "http://127.0.0.1:8000",
+  //       changeOrigin: true,
+  //       secure: false,
+  //     },
+  //   },
+  // },
   server: {
     port: 3000,
     open: true,
     proxy: {
+      "/api/fm-track": {
+        target: "https://api.fm-track.com",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api\/fm-track/, ""),
+      },
       "/api": {
         target: "http://127.0.0.1:8000",
         changeOrigin: true,
@@ -25,6 +42,7 @@ export default defineConfig({
       },
     },
   },
+
   build: {
     outDir: "build",
   },

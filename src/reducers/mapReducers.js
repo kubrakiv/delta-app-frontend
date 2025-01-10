@@ -3,6 +3,7 @@ const initialState = {
   libraries: ["places", "geometry"],
   currentLocation: null,
   truckLocation: null,
+  driverId: null,
   truck: {},
 };
 
@@ -19,6 +20,9 @@ export const mapDefaultCenter = (state = initialState, action) => {
 
     case "SET_TRUCK_DETAILS":
       return { ...state, truck: action.truck };
+
+    case "SET_DRIVER_ID":
+      return { ...state, driverId: action.driverId };
 
     default:
       return state;
