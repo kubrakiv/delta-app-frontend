@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import cn from "classnames";
@@ -16,11 +16,13 @@ const TachoCardComponent = ({ style = "tacho-card", truckId }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [driverAnalysis, setDriverAnalysis] = useState(null);
   const [driverData, setDriverData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
 
   const trucks = useSelector(selectTrucks);
 
   const handleShowTachoData = () => {
-    togglePopup();
+    // togglePopup();
+    setIsLoading(true); // Start loading before fetching data
     const truck = trucks.find((truck) => truck.id === truckId);
 
     const fetchDriverData = async () => {
@@ -31,18 +33,17 @@ const TachoCardComponent = ({ style = "tacho-card", truckId }) => {
             truck.driver_details.last_name.toLowerCase()
         );
         setDriverData(driver);
-        console.log("Driver ID:", driver.id);
 
         // Fetch driver analysis data
         const driverTachoData = await fetchDriverCurrentTimeAnalysis(driver.id);
-        console.log(
-          `Driver ${driver.last_name} Analysis Data:`,
-          driverTachoData
-        );
-
         setDriverAnalysis(driverTachoData);
       } catch (error) {
         console.error("Error fetching driver data or analysis:", error);
+        setDriverData(null);
+        setDriverAnalysis(null);
+      } finally {
+        setIsLoading(false); // Data fetching complete
+        setIsPopupOpen(true); // Open the popup after loading
       }
     };
 
@@ -68,8 +69,20 @@ const TachoCardComponent = ({ style = "tacho-card", truckId }) => {
       {isPopupOpen && (
         <div className="popup-card">
           <div className="popup-content">
-            <h2>{`${driverData.first_name} ${driverData.last_name}`}</h2>
-            <DriverCardComponent data={driverAnalysis} />
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : driverData ? (
+              <>
+                <h2>{`${driverData.first_name} ${driverData.last_name}`}</h2>
+                {driverAnalysis ? (
+                  <DriverCardComponent data={driverAnalysis} />
+                ) : (
+                  <p>No data to show!</p>
+                )}
+              </>
+            ) : (
+              <p>Driver information not found!</p>
+            )}
             <button onClick={togglePopup} className="close-popup-btn">
               Close
             </button>

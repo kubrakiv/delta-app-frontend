@@ -8,11 +8,18 @@
   &__address {
     margin-bottom: 5px;
   }
+  &__company {
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(43, 84, 233, 0.8);
+    margin-bottom: 5px;
+  }
   &__icon {
     display: block;
     padding: 10px;
+    align-content: center;
     align-items: center;
-    font-size: 26px;
+    font-size: 32px;
     border-radius: 4px;
   }
   &__info {
@@ -20,6 +27,7 @@
     flex-direction: column;
     width: 100%;
     justify-content: center;
+    padding: 4px;
   }
   &__date-time {
     display: flex;

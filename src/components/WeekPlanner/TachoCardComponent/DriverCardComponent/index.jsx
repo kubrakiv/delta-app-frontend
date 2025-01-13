@@ -3,6 +3,9 @@ import React from "react";
 import "./style.scss";
 
 const DriverCardComponent = ({ data }) => {
+  if (!data) {
+    return <p>No data to show!</p>;
+  }
   const calculateHours = (seconds) => {
     const hours = Math.floor(seconds / 3600); // Get full hours
     const minutes = Math.floor((seconds % 3600) / 60); // Get remaining minutes

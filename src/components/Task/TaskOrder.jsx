@@ -168,6 +168,9 @@ function TaskOrder({ task, handleDeleteTask, onEditMode }) {
             <div className="task-order__address">
               {task.title || getTaskTitle(task)}
             </div>
+            <div className="task-order__company">
+              {task.point_details?.company_name || "No company name"}
+            </div>
             <div className="task-order__date-time">{getTimeComponent()}</div>
           </div>
           {isHovered && (
