@@ -313,9 +313,17 @@ function OrdersTableComponent() {
                     <td className="orders-table__body-td">
                       {extractRoute(order)}
                     </td>
-                    <td className="orders-table__body-td">{order.number}</td>
+                    <td
+                      className="orders-table__body-td"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
+                      {order.number}
+                    </td>
                     {showAddresses && (
-                      <td className="orders-table__body-td">
+                      <td
+                        className="orders-table__body-td"
+                        style={{ whiteSpace: "nowrap" }}
+                      >
                         {order.tasks &&
                           order.tasks
                             .filter((task) => task.type === "Loading")
@@ -329,7 +337,10 @@ function OrdersTableComponent() {
                       </td>
                     )}
                     {showAddresses && (
-                      <td className="orders-table__body-td">
+                      <td
+                        className="orders-table__body-td"
+                        style={{ whiteSpace: "nowrap" }}
+                      >
                         {order.tasks &&
                           order.tasks
                             .filter((task) => task.type === "Unloading")
@@ -354,7 +365,10 @@ function OrdersTableComponent() {
                         ? order.customer_manager
                         : order.customer}
                     </td>
-                    <td className="orders-table__body-td">
+                    <td
+                      className="orders-table__body-td"
+                      style={{ whiteSpace: "nowrap" }}
+                    >
                       {order.order_number}
                     </td>
                     <td className="orders-table__body-td">
@@ -409,7 +423,12 @@ function OrdersTableComponent() {
                       </td>
                     )}
                     <td className="orders-table__body-td">{order.distance}</td>
-                    <td className="orders-table__body-td">{order.price}</td>
+                    <td
+                      className="orders-table__body-td"
+                      style={{ textAlign: "right", whiteSpace: "nowrap" }}
+                    >
+                      {order.price}
+                    </td>
                     <td className="orders-table__body-td">{order.currency}</td>
                     <td className="orders-table__body-td">
                       <PricePerKmComponent
@@ -419,7 +438,10 @@ function OrdersTableComponent() {
                         currency={order.currency}
                       />
                     </td>
-                    <td className="orders-table__body-td">
+                    <td
+                      className="orders-table__body-td"
+                      style={{ textAlign: "right", whiteSpace: "nowrap" }}
+                    >
                       {order.market_price}
                     </td>
                     <td className="orders-table__body-td">
